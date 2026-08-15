@@ -6,151 +6,311 @@
   <title>Margots</title>
   <style>
     :root {
-      --bg: #0f1115;
-      --panel: #171a21;
-      --text: #e8eaed;
-      --muted: #9aa3b2;
-      --line: #2a303c;
-      --accent: #6aa1ff;
-      --ok: #3dd68c;
-      --warn: #f0b429;
+      --bg: #0b0d10;
+      --surface: #12151a;
+      --surface2: #181c23;
+      --text: #eef1f5;
+      --muted: #8b93a7;
+      --line: #262b36;
+      --accent: #4f8cff;
+      --accent-dim: rgba(79, 140, 255, 0.12);
+      --ok: #3ecf8e;
+      --err: #ff6b6b;
+      --radius: 14px;
     }
+
     * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
     body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #152038 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #101820 0%, transparent 50%),
+        var(--bg);
       color: var(--text);
       line-height: 1.5;
     }
-    .wrap { max-width: 960px; margin: 0 auto; padding: 28px 16px 60px; }
-    h1 { margin: 0 0 4px; font-size: 1.7rem; letter-spacing: -0.02em; }
-    .sub { color: var(--muted); margin-bottom: 22px; }
-    .grid { display: grid; gap: 14px; }
-    .card {
-      background: var(--panel);
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: var(--radius);
       padding: 16px;
     }
-    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
-    input, textarea, select, button {
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    input, textarea, button {
       width: 100%;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid var(--line);
-      background: #0e1117;
+      background: var(--surface2);
       color: var(--text);
-      padding: 10px 12px;
+      padding: 11px 12px;
       font: inherit;
     }
-    textarea { min-height: 120px; resize: vertical; }
-    button {
-      background: var(--accent);
-      color: #061018;
-      border: none;
-      font-weight: 650;
-      cursor: pointer;
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
     }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
-    .keys input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+
+    .keys input {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
     .tab {
-      width: auto;
       background: transparent;
       color: var(--muted);
       border: 1px solid var(--line);
+      padding: 9px 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
     }
-    .tab.active { color: var(--text); border-color: var(--accent); }
-    pre, .out {
+    .tab.active {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    #run {
+      margin-top: 14px;
+      background: var(--accent);
+      color: #061018;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 12px;
+    }
+    #run:hover { filter: brightness(1.05); }
+    #run:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .status {
+      min-height: 1.2em;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .ok { color: var(--ok); }
+    .err { color: var(--err); }
+
+    .results {
+      display: grid;
+      gap: 14px;
+    }
+
+    .facts pre {
+      margin: 0;
       white-space: pre-wrap;
       word-break: break-word;
-      background: #0c0f14;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.86rem;
+      font-size: 0.82rem;
+      color: #c9d1d9;
+      background: #0d1015;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      max-height: 180px;
+      overflow: auto;
     }
-    .out { margin-top: 8px; min-height: 60px; }
-    .status { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
-    .ok { color: var(--ok); }
-    .err { color: #ff7b72; }
-    .small { font-size: 0.82rem; color: var(--muted); }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 920px) {
+      .answers { grid-template-columns: 1fr; }
+    }
+
+    .answer {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+    }
+    .answer h3 {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .answer .body {
+      flex: 1;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.92rem;
+      color: #d7dde8;
+      line-height: 1.55;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Margots</h1>
-    <p class="sub">Browser app. Your keys stay in this browser only. Results from each backend stay separate.</p>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Margots</h1>
+        <p>Sequence and variant analysis with three independent model backends.</p>
+      </div>
+    </header>
 
-    <div class="card keys">
-      <div class="row">
-        <div>
-          <label>OpenAI key</label>
-          <input id="k_openai" type="password" placeholder="sk-..." />
+    <div class="layout">
+      <aside>
+        <div class="panel" style="margin-bottom:14px">
+          <h2>API keys</h2>
+          <div class="field keys">
+            <label>OpenAI</label>
+            <input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" />
+          </div>
+          <div class="field keys">
+            <label>Anthropic</label>
+            <input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" />
+          </div>
+          <div class="field keys">
+            <label>xAI</label>
+            <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
+          </div>
+          <p class="hint">Stored only in this browser (localStorage).</p>
         </div>
-        <div>
-          <label>Anthropic key</label>
-          <input id="k_anthropic" type="password" placeholder="sk-ant-..." />
+
+        <div class="panel">
+          <h2>Input</h2>
+          <div class="tabs">
+            <button class="tab active" data-mode="sequence">Sequence</button>
+            <button class="tab" data-mode="variant">Variant</button>
+            <button class="tab" data-mode="free">Free</button>
+          </div>
+
+          <div id="panel_sequence">
+            <div class="field">
+              <label>Sequence</label>
+              <textarea id="seq" placeholder="DNA, RNA, or protein"></textarea>
+            </div>
+            <div class="field">
+              <label>Question (optional)</label>
+              <input id="seq_q" placeholder="What stands out?" />
+            </div>
+          </div>
+
+          <div id="panel_variant" hidden>
+            <div class="field">
+              <label>Variant</label>
+              <textarea id="variant" placeholder="e.g. BRCA1 c.5266dupC"></textarea>
+            </div>
+          </div>
+
+          <div id="panel_free" hidden>
+            <div class="field">
+              <label>Context</label>
+              <textarea id="ctx" placeholder="Paste notes or summary"></textarea>
+            </div>
+            <div class="field">
+              <label>Question</label>
+              <input id="free_q" placeholder="What should be checked?" />
+            </div>
+          </div>
+
+          <button id="run">Run analysis</button>
+          <div class="status" id="status"></div>
         </div>
-        <div>
-          <label>xAI key</label>
-          <input id="k_xai" type="password" placeholder="xai-..." />
+      </aside>
+
+      <main class="results">
+        <div class="panel facts">
+          <h2>Local measurements</h2>
+          <pre id="facts">No run yet.</pre>
         </div>
-      </div>
-      <p class="small" style="margin:10px 0 0">Keys are saved in localStorage on this device. They are never sent anywhere except the official provider APIs.</p>
-    </div>
 
-    <div class="card" style="margin-top:14px">
-      <div class="tabs">
-        <button class="tab active" data-mode="sequence">Sequence</button>
-        <button class="tab" data-mode="variant">Variant</button>
-        <button class="tab" data-mode="free">Free</button>
-      </div>
-
-      <div id="panel_sequence">
-        <label>Sequence (DNA / RNA / protein)</label>
-        <textarea id="seq" placeholder="ATGC... or MVLSPADKTNVKAAWG..."></textarea>
-        <label style="margin-top:10px">Question (optional)</label>
-        <input id="seq_q" placeholder="What stands out in this sequence?" />
-      </div>
-
-      <div id="panel_variant" hidden>
-        <label>Variant description</label>
-        <textarea id="variant" placeholder="BRCA1 c.5266dupC or chr17:43044295 G>A"></textarea>
-      </div>
-
-      <div id="panel_free" hidden>
-        <label>Context</label>
-        <textarea id="ctx" placeholder="Paste data summary, methods, notes..."></textarea>
-        <label style="margin-top:10px">Question</label>
-        <input id="free_q" placeholder="What should be checked next?" />
-      </div>
-
-      <button id="run" style="margin-top:12px">Run analysis</button>
-      <div class="status" id="status"></div>
-    </div>
-
-    <div class="card" style="margin-top:14px">
-      <h3 style="margin:0 0 8px; font-size:1rem">Local measurements</h3>
-      <pre id="facts">No run yet.</pre>
-    </div>
-
-    <div class="grid" style="margin-top:14px">
-      <div class="card">
-        <h3 style="margin:0; font-size:1rem">strict</h3>
-        <div class="out" id="out_strict">—</div>
-      </div>
-      <div class="card">
-        <h3 style="margin:0; font-size:1rem">context</h3>
-        <div class="out" id="out_context">—</div>
-      </div>
-      <div class="card">
-        <h3 style="margin:0; font-size:1rem">skeptic</h3>
-        <div class="out" id="out_skeptic">—</div>
-      </div>
+        <div class="answers">
+          <div class="answer">
+            <h3>Strict</h3>
+            <div class="body" id="out_strict">—</div>
+          </div>
+          <div class="answer">
+            <h3>Context</h3>
+            <div class="body" id="out_context">—</div>
+          </div>
+          <div class="answer">
+            <h3>Skeptic</h3>
+            <div class="body" id="out_skeptic">—</div>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 
@@ -186,15 +346,13 @@ const els = {
 
 let mode = 'sequence';
 
-// restore keys
 ['openai','anthropic','xai'].forEach(k => {
   const v = localStorage.getItem('margots_' + k);
   if (v) els['k_' + k].value = v;
 });
 ['k_openai','k_anthropic','k_xai'].forEach(id => {
   els[id].addEventListener('change', () => {
-    const key = id.replace('k_', '');
-    localStorage.setItem('margots_' + key, els[id].value.trim());
+    localStorage.setItem('margots_' + id.replace('k_', ''), els[id].value.trim());
   });
 });
 
@@ -202,7 +360,7 @@ els.modeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     mode = btn.dataset.mode;
     els.modeBtns.forEach(b => b.classList.toggle('active', b === btn));
-    Object.entries(els.panels).forEach(([m, el]) => el.hidden = m !== mode);
+    Object.entries(els.panels).forEach(([m, el]) => { el.hidden = m !== mode; });
   });
 });
 
@@ -217,7 +375,11 @@ function seqFacts(raw) {
   if (/^[ACGTN]+$/.test(s)) kind = 'dna';
   else if (/^[ACGU]+$/.test(s)) kind = 'rna';
 
-  const facts = { kind, length: s.length, preview: s.slice(0, 180) + (s.length > 180 ? '...' : '') };
+  const facts = {
+    kind,
+    length: s.length,
+    preview: s.slice(0, 180) + (s.length > 180 ? '...' : '')
+  };
 
   if (kind === 'dna' || kind === 'rna') {
     const bases = {};
@@ -290,11 +452,9 @@ function buildPayload() {
       user: `Variant description:\n${text}\n\nComment on possible molecular effect and what still needs external database checks.`
     };
   }
-  const ctx = els.ctx.value.trim();
-  const q = els.free_q.value.trim();
   return {
     facts: {},
-    user: `Context:\n${ctx}\n\nQuestion:\n${q}`
+    user: `Context:\n${els.ctx.value.trim()}\n\nQuestion:\n${els.free_q.value.trim()}`
   };
 }
 
@@ -324,9 +484,7 @@ els.run.addEventListener('click', async () => {
         .then(t => { els.out_strict.textContent = t; })
         .catch(e => { els.out_strict.textContent = 'Error: ' + e.message; })
     );
-  } else {
-    els.out_strict.textContent = 'No Anthropic key';
-  }
+  } else els.out_strict.textContent = 'No Anthropic key';
 
   if (openai) {
     jobs.push(
@@ -334,9 +492,7 @@ els.run.addEventListener('click', async () => {
         .then(t => { els.out_context.textContent = t; })
         .catch(e => { els.out_context.textContent = 'Error: ' + e.message; })
     );
-  } else {
-    els.out_context.textContent = 'No OpenAI key';
-  }
+  } else els.out_context.textContent = 'No OpenAI key';
 
   if (xai) {
     jobs.push(
@@ -344,9 +500,7 @@ els.run.addEventListener('click', async () => {
         .then(t => { els.out_skeptic.textContent = t; })
         .catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; })
     );
-  } else {
-    els.out_skeptic.textContent = 'No xAI key';
-  }
+  } else els.out_skeptic.textContent = 'No xAI key';
 
   await Promise.all(jobs);
   els.run.disabled = false;
