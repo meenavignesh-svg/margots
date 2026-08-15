@@ -1,201 +1,106 @@
 """
-BioOmni AI - Ultimate Bioinformatics Analysis Platform
-Main Streamlit Application
+Margots — Biological reasoning lattice
 """
 
 import streamlit as st
 import pandas as pd
-from core.llm_engine import BioOmniLLM
-from core.bio_analyzer import BioAnalyzer
-import os
+from core.llm_engine import Lattice
+from core.bio_analyzer import Analyzer, Classical
 
 st.set_page_config(
-    page_title="BioOmni AI",
-    page_icon="🧬",
+    page_title="Margots",
+    page_icon="⬡",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# Custom CSS
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 2.8rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #00c6ff, #0072ff, #00c853);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.2rem;
-    }
-    .sub-header {
-        font-size: 1.1rem;
-        color: #666;
-        margin-bottom: 2rem;
-    }
-    .stButton>button {
-        width: 100%;
-        border-radius: 8px;
-        height: 3em;
-        font-weight: 600;
-    }
+    .block-container { padding-top: 1.5rem; }
+    h1 { font-weight: 700; letter-spacing: -0.03em; }
+    .core-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; }
 </style>
 """, unsafe_allow_html=True)
 
+
 @st.cache_resource
-def load_engine():
-    return BioOmniLLM()
+def boot():
+    return Lattice()
+
+
+def render_result(result):
+    st.subheader("Classical facts")
+    st.json(result.classical_facts)
+
+    if result.unresolved_conflicts:
+        st.warning("  ·  ".join(result.unresolved_conflicts))
+
+    st.subheader("Core outputs under selective pressure")
+    for claim in result.surviving_claims:
+        with st.expander(f"{claim.core.value.upper()} core", expanded=True):
+            st.markdown(claim.statement)
+
+    if result.raw_core_outputs:
+        with st.expander("Raw lattice dump"):
+            st.json(result.raw_core_outputs)
+
 
 def main():
-    st.markdown('<div class="main-header">🧬 BioOmni AI</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Multi-LLM Bioinformatics Analysis Engine • OpenAI + Anthropic + xAI</div>', unsafe_allow_html=True)
+    st.title("Margots")
+    st.caption("Biological reasoning lattice · three cores · selective pressure · no averaging")
 
-    llm = load_engine()
-    analyzer = BioAnalyzer(llm)
+    lattice = boot()
+    analyzer = Analyzer(lattice)
 
-    # Sidebar
     with st.sidebar:
-        st.header("⚙️ Configuration")
-        available = llm.available_providers()
-
-        if not available:
-            st.error("No API keys detected. Add keys to `.env` file.")
-            st.code("OPENAI_API_KEY=...\nANTHROPIC_API_KEY=...\nXAI_API_KEY=...")
+        st.markdown("**Active cores**")
+        roles = lattice.active_roles
+        if not roles:
+            st.error("No keys loaded. Place OPENAI_API_KEY, ANTHROPIC_API_KEY, XAI_API_KEY in `.env`")
             st.stop()
-
-        st.success(f"Active providers: {', '.join(available)}")
-
-        provider = st.selectbox(
-            "LLM Provider",
-            options=["auto"] + available,
-            help="auto picks the best available model"
-        )
+        for r in roles:
+            st.markdown(f"- `{r}`")
 
         st.divider()
-        st.markdown("**Analysis Mode**")
         mode = st.radio(
-            "Select task",
-            [
-                "Sequence Analysis",
-                "Expression / Omics Data",
-                "Variant Interpretation",
-                "Free-form Analysis",
-                "Multi-Model Consensus"
-            ],
-            label_visibility="collapsed"
+            "Mode",
+            ["Sequence", "Expression table", "Variant", "Free analysis"],
+            label_visibility="collapsed",
         )
 
-    # Main content
-    if mode == "Sequence Analysis":
-        st.subheader("🔬 Sequence Analysis")
-        seq = st.text_area("Paste DNA / RNA / Protein sequence", height=150,
-                           placeholder="ATGCGTA... or MVLSPADKTNVKAAWG...")
-        question = st.text_input("Optional specific question",
-                                 placeholder="e.g. Does this look like a kinase domain?")
+    if mode == "Sequence":
+        seq = st.text_area("Sequence", height=160, placeholder="DNA / RNA / protein")
+        q = st.text_input("Question (optional)")
+        if st.button("Run lattice", type="primary") and seq.strip():
+            with st.spinner("Classical measurement → core reasoning → selection"):
+                result = analyzer.sequence(seq, q or None)
+            render_result(result)
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Run Classical Analysis", type="secondary"):
-                if seq.strip():
-                    with st.spinner("Computing..."):
-                        stats = analyzer.analyze_sequence(seq)
-                        st.json(stats)
-                else:
-                    st.warning("Please enter a sequence.")
+    elif mode == "Expression table":
+        file = st.file_uploader("CSV / TSV", type=["csv", "tsv", "txt"])
+        q = st.text_area("Question (optional)")
+        if file and st.button("Run lattice", type="primary"):
+            df = pd.read_csv(file, sep="\t" if file.name.endswith((".tsv", ".txt")) else ",")
+            st.dataframe(df.head(8))
+            with st.spinner("Classical measurement → core reasoning → selection"):
+                result = analyzer.expression(df, q or None)
+            render_result(result)
 
-        with col2:
-            if st.button("Run Full AI Interpretation", type="primary"):
-                if seq.strip():
-                    with st.spinner("BioOmni is thinking deeply..."):
-                        result = analyzer.interpret_sequence(seq, question, provider)
-                        if "error" in result:
-                            st.error(result["error"])
-                        else:
-                            st.markdown(f"**Model:** `{result.get('provider')} / {result.get('model')}`")
-                            st.markdown(result["content"])
-                else:
-                    st.warning("Please enter a sequence.")
+    elif mode == "Variant":
+        text = st.text_area("Variant description", height=120)
+        if st.button("Run lattice", type="primary") and text.strip():
+            with st.spinner("Core reasoning → selection"):
+                result = analyzer.variant(text)
+            render_result(result)
 
-    elif mode == "Expression / Omics Data":
-        st.subheader("📊 Expression & Omics Analysis")
-        uploaded = st.file_uploader("Upload CSV / TSV", type=["csv", "tsv", "txt"])
-        question = st.text_area("What would you like to analyze?",
-                                placeholder="Perform differential expression insights, check for batch effects, suggest clustering...")
+    elif mode == "Free analysis":
+        ctx = st.text_area("Context", height=140)
+        q = st.text_area("Question", height=80)
+        if st.button("Run lattice", type="primary") and ctx.strip() and q.strip():
+            with st.spinner("Core reasoning → selection"):
+                result = analyzer.free(ctx, q)
+            render_result(result)
 
-        if uploaded and st.button("Analyze Dataset", type="primary"):
-            try:
-                if uploaded.name.endswith(".tsv") or uploaded.name.endswith(".txt"):
-                    df = pd.read_csv(uploaded, sep="\t")
-                else:
-                    df = pd.read_csv(uploaded)
-
-                st.write("Preview:", df.head())
-                with st.spinner("Running deep analysis across models..."):
-                    result = analyzer.analyze_expression_data(df, question, provider)
-                    st.subheader("Statistical Summary")
-                    st.json(result["stats"])
-                    st.subheader("AI Interpretation")
-                    llm_res = result["llm_analysis"]
-                    if "error" in llm_res:
-                        st.error(llm_res["error"])
-                    else:
-                        st.markdown(f"**Model:** `{llm_res.get('provider')}`")
-                        st.markdown(llm_res["content"])
-            except Exception as e:
-                st.error(f"Failed to read file: {e}")
-
-    elif mode == "Variant Interpretation":
-        st.subheader("🧬 Variant Interpretation")
-        variant = st.text_area("Variant information",
-                               height=120,
-                               placeholder="e.g. BRCA1 c.5266dupC (p.Gln1756Profs*74) or chr17:43044295:G>A ...")
-        if st.button("Interpret Variant", type="primary"):
-            if variant.strip():
-                with st.spinner("Consulting clinical knowledge..."):
-                    result = analyzer.interpret_variant(variant, provider)
-                    if "error" in result:
-                        st.error(result["error"])
-                    else:
-                        st.markdown(f"**Model:** `{result.get('provider')}`")
-                        st.markdown(result["content"])
-            else:
-                st.warning("Enter variant details.")
-
-    elif mode == "Free-form Analysis":
-        st.subheader("🧠 Free-form Bioinformatics Analysis")
-        context = st.text_area("Data / Context", height=150,
-                               placeholder="Describe your data, paste summary statistics, methods, etc.")
-        question = st.text_area("Analysis question", height=100)
-        if st.button("Run Analysis", type="primary"):
-            if context.strip() and question.strip():
-                with st.spinner("BioOmni analyzing..."):
-                    result = analyzer.free_analysis(context, question, provider)
-                    if "error" in result:
-                        st.error(result["error"])
-                    else:
-                        st.markdown(f"**Model:** `{result.get('provider')}`")
-                        st.markdown(result["content"])
-            else:
-                st.warning("Both context and question are required.")
-
-    elif mode == "Multi-Model Consensus":
-        st.subheader("🤝 Multi-Model Consensus")
-        st.info("Runs the same prompt across all available models (OpenAI + Anthropic + xAI) for higher confidence answers.")
-        prompt = st.text_area("Your bioinformatics question or data + question", height=200)
-        if st.button("Get Consensus", type="primary"):
-            if prompt.strip():
-                with st.spinner("Querying all models in parallel..."):
-                    results = analyzer.multi_model_consensus(prompt)
-                    for provider, res in results.items():
-                        with st.expander(f"{provider.upper()} response", expanded=True):
-                            if "error" in res:
-                                st.error(res["error"])
-                            else:
-                                st.markdown(res["content"])
-            else:
-                st.warning("Enter a prompt.")
-
-    st.divider()
-    st.caption("BioOmni AI • Margots Project • Powered by three frontier models")
 
 if __name__ == "__main__":
     main()
