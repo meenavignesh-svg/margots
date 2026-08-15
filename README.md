@@ -4,6 +4,8 @@ Bioinformatics analysis tool that runs the same question through three different
 
 It also does basic sequence stats and table summaries with Biopython / pandas before anything is sent to a model.
 
+**Site:** https://meenavignesh-svg.github.io/margots/
+
 ## Setup
 
 ```bash
