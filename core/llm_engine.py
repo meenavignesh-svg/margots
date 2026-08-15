@@ -1,213 +1,118 @@
-"""
-Margots Lattice — Reasoning Cores
-
-Three cores. Different selection pressures. No averaging.
-"""
-
-from __future__ import annotations
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 from enum import Enum
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
-class CoreRole(Enum):
-    PRECISION = "precision"      # statistical + structural rigor
-    CONTEXT = "context"          # systems biology + pattern recognition
-    DIVERGENCE = "divergence"    # alternative explanations + edge cases
+class Role(Enum):
+    STRICT = "strict"
+    CONTEXT = "context"
+    SKEPTIC = "skeptic"
+
+
+PROMPTS = {
+    Role.STRICT: (
+        "Stick to what the numbers and sequence features actually support. "
+        "Do not speculate. If something is unclear, say so. "
+        "Prefer short, testable statements over narrative."
+    ),
+    Role.CONTEXT: (
+        "Interpret the data in a biological context. "
+        "Mention relevant pathways, typical functions, or known patterns when they fit. "
+        "Still flag when you are going beyond the given measurements."
+    ),
+    Role.SKEPTIC: (
+        "Look for alternative explanations and weak points. "
+        "What else could produce these numbers? What assumptions are being made? "
+        "List things that would change the interpretation if they were true."
+    ),
+}
 
 
 @dataclass
-class Claim:
-    statement: str
-    confidence: float                  # 0.0 – 1.0
-    core: CoreRole
-    evidence: List[str] = field(default_factory=list)
-    vulnerabilities: List[str] = field(default_factory=list)
+class Result:
+    facts: Dict[str, Any]
+    outputs: Dict[str, str]          # role -> raw text
+    errors: Dict[str, str] = field(default_factory=dict)
 
 
-@dataclass
-class LatticeResult:
-    surviving_claims: List[Claim]
-    eliminated: List[Claim]
-    unresolved_conflicts: List[str]
-    classical_facts: Dict[str, Any]
-    raw_core_outputs: Dict[str, str]
+class Engine:
+    def __init__(self):
+        self.clients = {}
+        self.models = {}
+        self._init()
 
+    def _init(self):
+        # strict -> anthropic
+        key = os.getenv("ANTHROPIC_API_KEY")
+        if key:
+            from anthropic import Anthropic
+            self.clients[Role.STRICT] = Anthropic(api_key=key)
+            self.models[Role.STRICT] = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
 
-class ReasoningCore:
-    """One specialized reasoning surface."""
+        # context -> openai
+        key = os.getenv("OPENAI_API_KEY")
+        if key:
+            from openai import OpenAI
+            self.clients[Role.CONTEXT] = OpenAI(api_key=key)
+            self.models[Role.CONTEXT] = os.getenv("OPENAI_MODEL", "gpt-4o")
 
-    ROLE_INSTRUCTIONS = {
-        CoreRole.PRECISION: (
-            "You operate under extreme statistical and structural rigor. "
-            "Reject any claim that lacks quantitative support or clear mechanistic basis. "
-            "Prefer under-interpretation over speculation. "
-            "Flag every assumption. Output only claims you can defend with method or measurement."
-        ),
-        CoreRole.CONTEXT: (
-            "You operate as a systems biologist. "
-            "Place every observation inside pathways, compartments, evolutionary constraints, and known biology. "
-            "Draw on patterns across organisms and literature. "
-            "Prefer coherent biological narratives, but mark where narrative outruns evidence."
-        ),
-        CoreRole.DIVERGENCE: (
-            "You are adversarial. Your job is to generate the strongest alternative explanations "
-            "and to expose hidden assumptions in the other cores. "
-            "Never agree by default. Propose competing hypotheses and list conditions that would falsify the dominant view."
-        ),
-    }
+        # skeptic -> xai
+        key = os.getenv("XAI_API_KEY")
+        if key:
+            from openai import OpenAI
+            self.clients[Role.SKEPTIC] = OpenAI(api_key=key, base_url="https://api.x.ai/v1")
+            self.models[Role.SKEPTIC] = os.getenv("XAI_MODEL", "grok-3")
 
-    def __init__(self, role: CoreRole, client, model: str, provider_name: str):
-        self.role = role
-        self.client = client
-        self.model = model
-        self.provider_name = provider_name
+    def available(self) -> List[str]:
+        return [r.value for r in self.clients]
 
-    def reason(self, payload: str, classical_facts: Dict[str, Any]) -> str:
-        system = self.ROLE_INSTRUCTIONS[self.role]
-        user = (
-            f"Classical computational facts (these are ground truth, not suggestions):\n"
-            f"{classical_facts}\n\n"
-            f"Analysis payload:\n{payload}\n\n"
-            f"Produce structured claims. For every claim state: "
-            f"(1) the claim, (2) confidence 0-1, (3) supporting evidence, (4) known vulnerabilities."
-        )
+    def _call(self, role: Role, user_content: str) -> str:
+        client = self.clients[role]
+        model = self.models[role]
+        system = PROMPTS[role]
 
-        if self.provider_name == "anthropic":
-            resp = self.client.messages.create(
-                model=self.model,
+        if role == Role.STRICT:
+            # anthropic path
+            resp = client.messages.create(
+                model=model,
                 max_tokens=4096,
-                temperature=0.25 if self.role != CoreRole.DIVERGENCE else 0.55,
+                temperature=0.2,
                 system=system,
-                messages=[{"role": "user", "content": user}],
+                messages=[{"role": "user", "content": user_content}],
             )
             return resp.content[0].text
 
-        # OpenAI-compatible (OpenAI + xAI)
-        resp = self.client.chat.completions.create(
-            model=self.model,
-            temperature=0.25 if self.role != CoreRole.DIVERGENCE else 0.55,
+        # openai-compatible
+        resp = client.chat.completions.create(
+            model=model,
+            temperature=0.2 if role != Role.SKEPTIC else 0.5,
             max_tokens=4096,
             messages=[
                 {"role": "system", "content": system},
-                {"role": "user", "content": user},
+                {"role": "user", "content": user_content},
             ],
         )
         return resp.choices[0].message.content
 
+    def run(self, payload: str, facts: Dict[str, Any] | None = None) -> Result:
+        facts = facts or {}
+        outputs = {}
+        errors = {}
 
-class Lattice:
-    """
-    The reasoning lattice.
-
-    Precision, Context, and Divergence cores run independently.
-    Their claims are then placed under selective pressure.
-    Only claims that survive cross-examination remain.
-    """
-
-    def __init__(self):
-        self.cores: Dict[CoreRole, ReasoningCore] = {}
-        self._boot()
-
-    def _boot(self):
-        openai_key = os.getenv("OPENAI_API_KEY")
-        anthropic_key = os.getenv("ANTHROPIC_API_KEY")
-        xai_key = os.getenv("XAI_API_KEY")
-
-        # Map roles to providers deliberately
-        # Precision  → Anthropic (strong at careful reasoning)
-        # Context    → OpenAI
-        # Divergence → xAI
-        if anthropic_key:
-            from anthropic import Anthropic
-            self.cores[CoreRole.PRECISION] = ReasoningCore(
-                CoreRole.PRECISION,
-                Anthropic(api_key=anthropic_key),
-                os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
-                "anthropic",
-            )
-
-        if openai_key:
-            from openai import OpenAI
-            self.cores[CoreRole.CONTEXT] = ReasoningCore(
-                CoreRole.CONTEXT,
-                OpenAI(api_key=openai_key),
-                os.getenv("OPENAI_MODEL", "gpt-4o"),
-                "openai",
-            )
-
-        if xai_key:
-            from openai import OpenAI
-            self.cores[CoreRole.DIVERGENCE] = ReasoningCore(
-                CoreRole.DIVERGENCE,
-                OpenAI(api_key=xai_key, base_url="https://api.x.ai/v1"),
-                os.getenv("XAI_MODEL", "grok-3"),
-                "xai",
-            )
-
-    @property
-    def active_roles(self) -> List[str]:
-        return [r.value for r in self.cores]
-
-    def run(self, payload: str, classical_facts: Dict[str, Any] | None = None) -> LatticeResult:
-        classical_facts = classical_facts or {}
-        raw: Dict[str, str] = {}
-
-        # Stage 1 — independent reasoning under different pressures
-        for role, core in self.cores.items():
-            try:
-                raw[role.value] = core.reason(payload, classical_facts)
-            except Exception as e:
-                raw[role.value] = f"[core failure] {e}"
-
-        # Stage 2 — selective pressure (cross-examination)
-        surviving, eliminated, conflicts = self._select(raw, classical_facts)
-
-        return LatticeResult(
-            surviving_claims=surviving,
-            eliminated=eliminated,
-            unresolved_conflicts=conflicts,
-            classical_facts=classical_facts,
-            raw_core_outputs=raw,
+        user_msg = (
+            f"Measured facts:\n{facts}\n\n"
+            f"Request:\n{payload}\n\n"
+            f"Respond with clear statements. Separate evidence from interpretation."
         )
 
-    def _select(
-        self, raw: Dict[str, str], classical_facts: Dict[str, Any]
-    ) -> tuple[List[Claim], List[Claim], List[str]]:
-        """
-        Crude but deliberate selection layer.
-        In a later iteration this becomes a formal claim graph.
-        For now: surface disagreements explicitly rather than smoothing them.
-        """
-        surviving: List[Claim] = []
-        eliminated: List[Claim] = []
-        conflicts: List[str] = []
+        for role in list(self.clients):
+            try:
+                outputs[role.value] = self._call(role, user_msg)
+            except Exception as e:
+                errors[role.value] = str(e)
 
-        # Placeholder structured extraction — the important part is that
-        # we refuse to collapse the three voices into one polite paragraph.
-        for role_name, text in raw.items():
-            if text.startswith("[core failure]"):
-                continue
-            # Keep the full output as a high-level claim for transparency
-            surviving.append(
-                Claim(
-                    statement=text,
-                    confidence=0.7,
-                    core=CoreRole(role_name),
-                    evidence=["see raw core output"],
-                    vulnerabilities=["not yet formally adjudicated"],
-                )
-            )
-
-        if len(raw) >= 2:
-            conflicts.append(
-                "Multiple cores produced independent analyses. "
-                "Do not treat any single core as authoritative. "
-                "Cross-compare the raw outputs below."
-            )
-
-        return surviving, eliminated, conflicts
+        return Result(facts=facts, outputs=outputs, errors=errors)
