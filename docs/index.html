@@ -47,12 +47,12 @@
     @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
     .dna-stage {
       position: absolute; left: 50%; top: 46%; width: 280px; height: 560px;
-      transform: translate(-50%, -50%); perspective: 1000px; opacity: 0.55;
+      transform: translate(-50%, -50%); perspective: 1000px; opacity: 0.45;
       filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35));
     }
     .dna { position: absolute; inset: 0; transform-style: preserve-3d; animation: dna-spin 8s linear infinite; }
     body.working .dna { animation-duration: 2.4s; }
-    body.working .dna-stage { opacity: 0.85; filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55)); }
+    body.working .dna-stage, body.speaking .dna-stage { opacity: 0.75; }
     @keyframes dna-spin {
       from { transform: rotateY(0deg) rotateZ(-8deg); }
       to { transform: rotateY(360deg) rotateZ(-8deg); }
@@ -157,7 +157,7 @@
     .ok { color: var(--ok); } .err { color: var(--err); }
     #run, #agent_send {
       border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018;
-      border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; min-width: 120px;
+      border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; min-width: 100px;
       box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
     }
     #run:disabled, #agent_send:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -175,23 +175,98 @@
     @media (max-width: 860px) { .answers { grid-template-columns: 1fr; } }
     .answer {
       background: rgba(2, 8, 16, 0.55); border: 1px solid var(--line); border-radius: 16px;
-      padding: 14px; min-height: 180px; position: relative; overflow: hidden;
+      padding: 14px; min-height: 180px;
     }
-    .answer .badge { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; }
     .answer h3 {
       margin: 0 0 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan);
     }
     .answer .body {
       white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; color: #d7e6f5; line-height: 1.55;
     }
-    .speak-btn {
-      margin-top: 10px; border: 1px solid var(--line-strong); background: transparent; color: var(--cyan);
-      border-radius: 999px; padding: 6px 12px; font-size: 0.78rem; font-weight: 650; cursor: pointer;
-    }
 
-    /* agent chat */
+    /* holographic talking agent */
+    .agent-stage {
+      display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 14px;
+    }
+    .holo {
+      position: relative;
+      width: 160px; height: 160px;
+      display: grid; place-items: center;
+    }
+    .holo-core {
+      width: 72px; height: 72px; border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, #e0f7ff 0%, #67e8f9 25%, #0ea5e9 60%, #0369a1 100%);
+      box-shadow:
+        0 0 20px rgba(34, 211, 238, 0.55),
+        0 0 50px rgba(14, 165, 233, 0.35),
+        inset 0 0 20px rgba(255,255,255,0.35);
+      animation: float 3.6s ease-in-out infinite;
+      position: relative; z-index: 2;
+    }
+    .holo-ring {
+      position: absolute; border-radius: 50%; border: 1px solid rgba(103, 232, 249, 0.45);
+      animation: spin 8s linear infinite;
+    }
+    .holo-ring.a { width: 100px; height: 100px; }
+    .holo-ring.b { width: 130px; height: 130px; border-style: dashed; animation-direction: reverse; animation-duration: 12s; opacity: 0.6; }
+    .holo-ring.c { width: 156px; height: 156px; opacity: 0.35; animation-duration: 18s; }
+    .holo-beam {
+      position: absolute; bottom: -18px; width: 90px; height: 40px;
+      background: linear-gradient(180deg, rgba(34,211,238,0.25), transparent);
+      filter: blur(6px); border-radius: 50%;
+    }
+    .wave {
+      display: flex; align-items: flex-end; gap: 4px; height: 28px; opacity: 0.35;
+    }
+    .wave span {
+      width: 4px; border-radius: 4px; background: #67e8f9;
+      height: 8px; animation: none;
+    }
+    body.speaking .holo-core {
+      animation: talk-pulse 0.35s ease-in-out infinite alternate;
+      box-shadow:
+        0 0 28px rgba(34, 211, 238, 0.85),
+        0 0 70px rgba(14, 165, 233, 0.55),
+        inset 0 0 24px rgba(255,255,255,0.45);
+    }
+    body.speaking .holo-ring { border-color: rgba(103, 232, 249, 0.9); }
+    body.speaking .wave { opacity: 1; }
+    body.speaking .wave span {
+      animation: bar 0.5s ease-in-out infinite alternate;
+    }
+    body.speaking .wave span:nth-child(2) { animation-delay: 0.08s; }
+    body.speaking .wave span:nth-child(3) { animation-delay: 0.16s; }
+    body.speaking .wave span:nth-child(4) { animation-delay: 0.04s; }
+    body.speaking .wave span:nth-child(5) { animation-delay: 0.2s; }
+    body.speaking .wave span:nth-child(6) { animation-delay: 0.12s; }
+    body.speaking .wave span:nth-child(7) { animation-delay: 0.24s; }
+    body.working .holo-core { animation: think 1s ease-in-out infinite; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes talk-pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+    @keyframes think {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.05); filter: brightness(1.25); }
+    }
+    @keyframes bar {
+      from { height: 6px; }
+      to { height: 26px; }
+    }
+    .agent-status {
+      font-size: 0.82rem; color: var(--muted); min-height: 1.2em; text-align: center;
+    }
+    body.speaking .agent-status { color: var(--cyan); }
+    body.working .agent-status { color: #7dd3fc; }
+
     .chat {
-      display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow: auto;
+      display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow: auto;
       padding: 10px; background: rgba(2, 8, 16, 0.45); border-radius: 12px; border: 1px solid var(--line);
       margin-bottom: 12px;
     }
@@ -199,19 +274,14 @@
       max-width: 92%; padding: 10px 12px; border-radius: 14px; font-size: 0.92rem; line-height: 1.45;
       white-space: pre-wrap; word-break: break-word;
     }
-    .bubble.user {
-      align-self: flex-end; background: rgba(56, 189, 248, 0.18); border: 1px solid var(--line);
+    .bubble.user { align-self: flex-end; background: rgba(56, 189, 248, 0.18); border: 1px solid var(--line); }
+    .bubble.agent { align-self: flex-start; background: rgba(8, 28, 42, 0.9); border: 1px solid var(--line-strong); }
+    .bubble .who {
+      display: block; font-size: 0.72rem; color: var(--cyan); margin-bottom: 4px;
+      font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
     }
-    .bubble.agent {
-      align-self: flex-start; background: rgba(8, 28, 42, 0.9); border: 1px solid var(--line-strong);
-    }
-    .bubble .who { display: block; font-size: 0.72rem; color: var(--cyan); margin-bottom: 4px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
     .agent-row { display: flex; gap: 8px; align-items: center; }
     .agent-row input { flex: 1; }
-    .toggle-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.85rem; color: var(--muted);
-    }
-    .toggle-row input { width: auto; }
 
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(2, 6, 13, 0.72); display: none;
@@ -234,7 +304,7 @@
       border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018;
       border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer;
     }
-    @media (max-width: 720px) { .dna-stage { width: 200px; height: 420px; opacity: 0.35; } }
+    @media (max-width: 720px) { .dna-stage { width: 200px; height: 420px; opacity: 0.3; } }
   </style>
 </head>
 <body>
@@ -260,7 +330,7 @@
   <div class="shell">
     <div class="hero">
       <h1>Analysis that works alongside you</h1>
-      <p>Run three backends side by side, or talk to the agent. It can reply by voice using your API key.</p>
+      <p>Three backends side by side, or talk with the hologram agent. It answers by voice.</p>
     </div>
 
     <div class="stage">
@@ -296,17 +366,28 @@
               <input id="file" type="file" />
             </div>
             <div class="file-meta" id="file_meta">No file selected.</div>
-            <div class="field" style="margin-top:12px"><label>Question (optional)</label><input id="upload_q" placeholder="What should be analyzed in this file?" /></div>
+            <div class="field" style="margin-top:12px"><label>Question (optional)</label><input id="upload_q" placeholder="What should be analyzed?" /></div>
           </div>
 
           <div id="panel_agent" hidden>
-            <label class="toggle-row"><input type="checkbox" id="voice_on" checked /> Agent talks out loud</label>
+            <div class="agent-stage">
+              <div class="holo" aria-hidden="true">
+                <div class="holo-ring a"></div>
+                <div class="holo-ring b"></div>
+                <div class="holo-ring c"></div>
+                <div class="holo-core"></div>
+                <div class="holo-beam"></div>
+              </div>
+              <div class="wave" id="wave">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="agent-status" id="agent_status">Idle · waiting for your question</div>
+            </div>
             <div class="chat" id="chat"></div>
             <div class="agent-row">
-              <input id="agent_q" placeholder="Ask the agent anything about your data or biology…" />
+              <input id="agent_q" placeholder="Speak to the agent…" />
               <button id="agent_send" type="button">Send</button>
             </div>
-            <p class="hint" style="text-align:left;margin-top:8px">Uses your OpenAI key first (chat + TTS). Falls back to xAI or Anthropic for text, and browser speech if TTS is unavailable.</p>
           </div>
 
           <div class="actions" id="run_actions">
@@ -325,31 +406,19 @@
         <div class="section" id="answers_section">
           <h2>Answers</h2>
           <div class="answers">
-            <div class="answer">
-              <h3>Strict</h3>
-              <div class="body" id="out_strict">—</div>
-              <button type="button" class="speak-btn" data-speak="out_strict">Speak</button>
-            </div>
-            <div class="answer">
-              <h3>Context</h3>
-              <div class="body" id="out_context">—</div>
-              <button type="button" class="speak-btn" data-speak="out_context">Speak</button>
-            </div>
-            <div class="answer">
-              <h3>Skeptic</h3>
-              <div class="body" id="out_skeptic">—</div>
-              <button type="button" class="speak-btn" data-speak="out_skeptic">Speak</button>
-            </div>
+            <div class="answer"><h3>Strict</h3><div class="body" id="out_strict">—</div></div>
+            <div class="answer"><h3>Context</h3><div class="body" id="out_context">—</div></div>
+            <div class="answer"><h3>Skeptic</h3><div class="body" id="out_skeptic">—</div></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal-backdrop" id="keys_modal" aria-hidden="true">
+  <div class="modal-backdrop" id="keys_modal">
     <div class="modal" role="dialog">
       <h2>API keys</h2>
-      <p>Stored only in this browser. OpenAI key enables chat voice (TTS).</p>
+      <p>Stored only in this browser. OpenAI key enables voice TTS for the agent.</p>
       <div class="field"><label>OpenAI</label><input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" /></div>
       <div class="field"><label>Anthropic</label><input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" /></div>
       <div class="field"><label>xAI</label><input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" /></div>
@@ -362,7 +431,7 @@
 
 <script>
 const MAX_CHARS = 120000;
-const AGENT_SYSTEM = "You are Margots, a bioinformatics analysis agent. Be precise, concise, and practical. Prefer measurable claims. If unsure, say what data is missing. Speak in clear short paragraphs suitable for being read aloud.";
+const AGENT_SYSTEM = "You are Margots, a bioinformatics analysis agent. Be precise, concise, and practical. Prefer measurable claims. If unsure, say what data is missing. Keep answers short enough to be spoken aloud.";
 const PROMPTS = {
   strict: "Stick to measurable features in the provided data. Avoid speculation. If evidence is weak, say so.",
   context: "Interpret in biological or scientific context when relevant. Mark uncertainty clearly.",
@@ -428,7 +497,7 @@ const els = {
   chat: document.getElementById('chat'),
   agent_q: document.getElementById('agent_q'),
   agent_send: document.getElementById('agent_send'),
-  voice_on: document.getElementById('voice_on')
+  agent_status: document.getElementById('agent_status')
 };
 
 let mode = 'sequence';
@@ -567,10 +636,7 @@ async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
   const r = await fetch(baseUrl + '/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({
-      model, temperature: 0.2, max_tokens: 1800,
-      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
-    })
+    body: JSON.stringify({ model, temperature: 0.2, max_tokens: 1800, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
@@ -579,14 +645,8 @@ async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
 async function callAnthropic(apiKey, system, user) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json', 'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system,
-      messages: [{ role: 'user', content: user }]
-    })
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system, messages: [{ role: 'user', content: user }] })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
@@ -603,8 +663,7 @@ async function callChatMessages(messages) {
       body: JSON.stringify({ model: 'gpt-4o', temperature: 0.4, max_tokens: 1200, messages })
     });
     if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    return data.choices?.[0]?.message?.content || '';
+    return (await r.json()).choices?.[0]?.message?.content || '';
   }
   if (xai) {
     const r = await fetch('https://api.x.ai/v1/chat/completions', {
@@ -613,35 +672,36 @@ async function callChatMessages(messages) {
       body: JSON.stringify({ model: 'grok-3', temperature: 0.4, max_tokens: 1200, messages })
     });
     if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    return data.choices?.[0]?.message?.content || '';
+    return (await r.json()).choices?.[0]?.message?.content || '';
   }
   if (anthropic) {
     const system = messages.find(m => m.role === 'system')?.content || AGENT_SYSTEM;
     const userMsgs = messages.filter(m => m.role !== 'system').map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }));
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json', 'x-api-key': anthropic,
-        'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': anthropic, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, temperature: 0.4, system, messages: userMsgs })
     });
     if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    return data.content?.[0]?.text || '';
+    return (await r.json()).content?.[0]?.text || '';
   }
   throw new Error('No API key set');
 }
 
+function setSpeaking(on) {
+  document.body.classList.toggle('speaking', on);
+  if (on) els.agent_status.textContent = 'Speaking…';
+}
 function stopSpeech() {
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (window.speechSynthesis) window.speechSynthesis.cancel();
+  setSpeaking(false);
 }
 async function speak(text) {
   stopSpeech();
   const clean = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 1800);
   if (!clean) return;
+  setSpeaking(true);
   const openai = (localStorage.getItem('margots_openai') || '').trim();
   if (openai) {
     try {
@@ -654,8 +714,9 @@ async function speak(text) {
         const blob = await r.blob();
         const url = URL.createObjectURL(blob);
         currentAudio = new Audio(url);
-        currentAudio.play();
-        currentAudio.onended = () => { URL.revokeObjectURL(url); currentAudio = null; };
+        currentAudio.onended = () => { URL.revokeObjectURL(url); currentAudio = null; setSpeaking(false); els.agent_status.textContent = 'Idle · waiting for your question'; };
+        currentAudio.onerror = () => { setSpeaking(false); };
+        await currentAudio.play();
         return;
       }
     } catch (_) {}
@@ -663,17 +724,13 @@ async function speak(text) {
   if (window.speechSynthesis) {
     const u = new SpeechSynthesisUtterance(clean);
     u.rate = 1.02;
+    u.onend = () => { setSpeaking(false); els.agent_status.textContent = 'Idle · waiting for your question'; };
+    u.onerror = () => setSpeaking(false);
     window.speechSynthesis.speak(u);
+    return;
   }
+  setSpeaking(false);
 }
-
-document.querySelectorAll('.speak-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const id = btn.dataset.speak;
-    const text = document.getElementById(id)?.textContent || '';
-    speak(text);
-  });
-});
 
 function addBubble(role, text) {
   const div = document.createElement('div');
@@ -700,22 +757,23 @@ async function agentSend() {
   agentHistory.push({ role: 'user', content: q });
   els.agent_send.disabled = true;
   document.body.classList.add('working');
+  els.agent_status.textContent = 'Thinking…';
 
   try {
     const reply = await callChatMessages(agentHistory);
     agentHistory.push({ role: 'assistant', content: reply });
     addBubble('agent', reply);
-    if (els.voice_on.checked) await speak(reply);
+    document.body.classList.remove('working');
+    await speak(reply);
   } catch (e) {
     addBubble('agent', 'Error: ' + e.message);
+    els.agent_status.textContent = 'Error';
+    document.body.classList.remove('working');
   }
-  document.body.classList.remove('working');
   els.agent_send.disabled = false;
 }
 els.agent_send.addEventListener('click', agentSend);
-els.agent_q.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); agentSend(); }
-});
+els.agent_q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); agentSend(); } });
 
 function buildPayload() {
   if (mode === 'sequence') {
