@@ -7,120 +7,351 @@
   <style>
     :root {
       --bg: #0f1115;
-      --card: #1a1d24;
-      --text: #e6e8ec;
+      --panel: #171a21;
+      --text: #e8eaed;
       --muted: #9aa3b2;
-      --accent: #5b9cff;
-      --border: #2a2f3a;
+      --line: #2a303c;
+      --accent: #6aa1ff;
+      --ok: #3dd68c;
+      --warn: #f0b429;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.55;
+      line-height: 1.5;
     }
-    .wrap {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 48px 20px 80px;
-    }
-    h1 {
-      font-size: 2rem;
-      margin: 0 0 8px;
-      letter-spacing: -0.02em;
-    }
-    .sub {
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 28px 16px 60px; }
+    h1 { margin: 0 0 4px; font-size: 1.7rem; letter-spacing: -0.02em; }
+    .sub { color: var(--muted); margin-bottom: 22px; }
+    .grid { display: grid; gap: 14px; }
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: var(--panel);
+      border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 20px 22px;
-      margin-bottom: 18px;
+      padding: 16px;
     }
-    h2 {
-      font-size: 1.05rem;
-      margin: 0 0 10px;
-    }
-    p, li { color: var(--text); }
-    .muted { color: var(--muted); }
-    code, pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.9rem;
-    }
-    pre {
-      background: #0c0e12;
-      border: 1px solid var(--border);
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    input, textarea, select, button {
+      width: 100%;
       border-radius: 8px;
-      padding: 14px 16px;
-      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: #0e1117;
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    ul { padding-left: 1.2rem; }
-    .row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+    textarea { min-height: 120px; resize: vertical; }
+    button {
+      background: var(--accent);
+      color: #061018;
+      border: none;
+      font-weight: 650;
+      cursor: pointer;
     }
-    .pill {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.85rem;
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
+    .keys input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tab {
+      width: auto;
+      background: transparent;
       color: var(--muted);
+      border: 1px solid var(--line);
     }
+    .tab.active { color: var(--text); border-color: var(--accent); }
+    pre, .out {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0c0f14;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.86rem;
+    }
+    .out { margin-top: 8px; min-height: 60px; }
+    .status { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+    .ok { color: var(--ok); }
+    .err { color: #ff7b72; }
+    .small { font-size: 0.82rem; color: var(--muted); }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Margots</h1>
-    <p class="sub">Bioinformatics analysis with three separate model backends. Results are shown side by side, not merged.</p>
+    <p class="sub">Browser app. Your keys stay in this browser only. Results from each backend stay separate.</p>
 
-    <div class="card">
-      <h2>What it does</h2>
-      <ul>
-        <li>Sequence stats (GC%, composition, translation attempt, basic protein parameters)</li>
-        <li>Expression / table summaries from CSV or TSV</li>
-        <li>Variant text review</li>
-        <li>Free-form analysis</li>
-      </ul>
-      <p class="muted">Classical measurements run first. Each backend gets a different instruction set (strict / contextual / skeptical).</p>
-    </div>
-
-    <div class="card">
-      <h2>Run locally</h2>
-      <pre>git clone https://github.com/meenavignesh-svg/margots.git
-cd margots
-pip install -r requirements.txt
-cp .env.example .env
-# add your keys to .env
-streamlit run app.py</pre>
-    </div>
-
-    <div class="card">
-      <h2>Required keys</h2>
-      <pre>OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-XAI_API_KEY=</pre>
-      <p class="muted">Any combination works. Missing backends are simply skipped.</p>
-    </div>
-
-    <div class="card">
-      <h2>Repo</h2>
-      <p><a href="https://github.com/meenavignesh-svg/margots">github.com/meenavignesh-svg/margots</a></p>
+    <div class="card keys">
       <div class="row">
-        <span class="pill">Python</span>
-        <span class="pill">Streamlit</span>
-        <span class="pill">Biopython</span>
-        <span class="pill">pandas</span>
+        <div>
+          <label>OpenAI key</label>
+          <input id="k_openai" type="password" placeholder="sk-..." />
+        </div>
+        <div>
+          <label>Anthropic key</label>
+          <input id="k_anthropic" type="password" placeholder="sk-ant-..." />
+        </div>
+        <div>
+          <label>xAI key</label>
+          <input id="k_xai" type="password" placeholder="xai-..." />
+        </div>
+      </div>
+      <p class="small" style="margin:10px 0 0">Keys are saved in localStorage on this device. They are never sent anywhere except the official provider APIs.</p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="tabs">
+        <button class="tab active" data-mode="sequence">Sequence</button>
+        <button class="tab" data-mode="variant">Variant</button>
+        <button class="tab" data-mode="free">Free</button>
+      </div>
+
+      <div id="panel_sequence">
+        <label>Sequence (DNA / RNA / protein)</label>
+        <textarea id="seq" placeholder="ATGC... or MVLSPADKTNVKAAWG..."></textarea>
+        <label style="margin-top:10px">Question (optional)</label>
+        <input id="seq_q" placeholder="What stands out in this sequence?" />
+      </div>
+
+      <div id="panel_variant" hidden>
+        <label>Variant description</label>
+        <textarea id="variant" placeholder="BRCA1 c.5266dupC or chr17:43044295 G>A"></textarea>
+      </div>
+
+      <div id="panel_free" hidden>
+        <label>Context</label>
+        <textarea id="ctx" placeholder="Paste data summary, methods, notes..."></textarea>
+        <label style="margin-top:10px">Question</label>
+        <input id="free_q" placeholder="What should be checked next?" />
+      </div>
+
+      <button id="run" style="margin-top:12px">Run analysis</button>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3 style="margin:0 0 8px; font-size:1rem">Local measurements</h3>
+      <pre id="facts">No run yet.</pre>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="card">
+        <h3 style="margin:0; font-size:1rem">strict</h3>
+        <div class="out" id="out_strict">—</div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0; font-size:1rem">context</h3>
+        <div class="out" id="out_context">—</div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0; font-size:1rem">skeptic</h3>
+        <div class="out" id="out_skeptic">—</div>
       </div>
     </div>
   </div>
+
+<script>
+const PROMPTS = {
+  strict: "Stick to measurable sequence/table features. Avoid speculation. If evidence is weak, say so.",
+  context: "Interpret in biological context. Mention plausible functions or patterns only when supported by the given data. Mark uncertainty.",
+  skeptic: "Challenge the obvious reading. Offer alternatives and list what would falsify the main interpretation."
+};
+
+const els = {
+  modeBtns: [...document.querySelectorAll('.tab')],
+  panels: {
+    sequence: document.getElementById('panel_sequence'),
+    variant: document.getElementById('panel_variant'),
+    free: document.getElementById('panel_free')
+  },
+  k_openai: document.getElementById('k_openai'),
+  k_anthropic: document.getElementById('k_anthropic'),
+  k_xai: document.getElementById('k_xai'),
+  seq: document.getElementById('seq'),
+  seq_q: document.getElementById('seq_q'),
+  variant: document.getElementById('variant'),
+  ctx: document.getElementById('ctx'),
+  free_q: document.getElementById('free_q'),
+  run: document.getElementById('run'),
+  status: document.getElementById('status'),
+  facts: document.getElementById('facts'),
+  out_strict: document.getElementById('out_strict'),
+  out_context: document.getElementById('out_context'),
+  out_skeptic: document.getElementById('out_skeptic')
+};
+
+let mode = 'sequence';
+
+// restore keys
+['openai','anthropic','xai'].forEach(k => {
+  const v = localStorage.getItem('margots_' + k);
+  if (v) els['k_' + k].value = v;
+});
+['k_openai','k_anthropic','k_xai'].forEach(id => {
+  els[id].addEventListener('change', () => {
+    const key = id.replace('k_', '');
+    localStorage.setItem('margots_' + key, els[id].value.trim());
+  });
+});
+
+els.modeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    mode = btn.dataset.mode;
+    els.modeBtns.forEach(b => b.classList.toggle('active', b === btn));
+    Object.entries(els.panels).forEach(([m, el]) => el.hidden = m !== mode);
+  });
+});
+
+function cleanSeq(s) {
+  return s.replace(/\s+/g, '').toUpperCase();
+}
+
+function seqFacts(raw) {
+  const s = cleanSeq(raw);
+  if (!s) return { error: 'empty sequence' };
+  let kind = 'protein';
+  if (/^[ACGTN]+$/.test(s)) kind = 'dna';
+  else if (/^[ACGU]+$/.test(s)) kind = 'rna';
+
+  const facts = { kind, length: s.length, preview: s.slice(0, 180) + (s.length > 180 ? '...' : '') };
+
+  if (kind === 'dna' || kind === 'rna') {
+    const bases = {};
+    for (const ch of s) bases[ch] = (bases[ch] || 0) + 1;
+    facts.counts = bases;
+    const gc = ((bases.G || 0) + (bases.C || 0)) / s.length * 100;
+    facts.gc_percent = Math.round(gc * 100) / 100;
+  }
+  return facts;
+}
+
+async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
+  const r = await fetch(baseUrl + '/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.2,
+      max_tokens: 1800,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user }
+      ]
+    })
+  });
+  if (!r.ok) throw new Error(await r.text());
+  const data = await r.json();
+  return data.choices?.[0]?.message?.content || JSON.stringify(data);
+}
+
+async function callAnthropic(apiKey, system, user) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1800,
+      temperature: 0.2,
+      system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  if (!r.ok) throw new Error(await r.text());
+  const data = await r.json();
+  return data.content?.[0]?.text || JSON.stringify(data);
+}
+
+function buildPayload() {
+  if (mode === 'sequence') {
+    const seq = els.seq.value.trim();
+    const facts = seqFacts(seq);
+    const q = els.seq_q.value.trim() || 'What can be reliably said about this sequence?';
+    return {
+      facts,
+      user: `Measured facts:\n${JSON.stringify(facts, null, 2)}\n\nQuestion: ${q}\n\nSequence (truncated):\n${cleanSeq(seq).slice(0, 3500)}`
+    };
+  }
+  if (mode === 'variant') {
+    const text = els.variant.value.trim();
+    return {
+      facts: { source: 'user text only' },
+      user: `Variant description:\n${text}\n\nComment on possible molecular effect and what still needs external database checks.`
+    };
+  }
+  const ctx = els.ctx.value.trim();
+  const q = els.free_q.value.trim();
+  return {
+    facts: {},
+    user: `Context:\n${ctx}\n\nQuestion:\n${q}`
+  };
+}
+
+els.run.addEventListener('click', async () => {
+  const openai = els.k_openai.value.trim();
+  const anthropic = els.k_anthropic.value.trim();
+  const xai = els.k_xai.value.trim();
+
+  if (!openai && !anthropic && !xai) {
+    els.status.innerHTML = '<span class="err">Add at least one API key.</span>';
+    return;
+  }
+
+  const { facts, user } = buildPayload();
+  els.facts.textContent = JSON.stringify(facts, null, 2);
+  els.out_strict.textContent = '…';
+  els.out_context.textContent = '…';
+  els.out_skeptic.textContent = '…';
+  els.run.disabled = true;
+  els.status.textContent = 'Running…';
+
+  const jobs = [];
+
+  if (anthropic) {
+    jobs.push(
+      callAnthropic(anthropic, PROMPTS.strict, user)
+        .then(t => { els.out_strict.textContent = t; })
+        .catch(e => { els.out_strict.textContent = 'Error: ' + e.message; })
+    );
+  } else {
+    els.out_strict.textContent = 'No Anthropic key';
+  }
+
+  if (openai) {
+    jobs.push(
+      callOpenAICompatible('https://api.openai.com/v1', openai, 'gpt-4o', PROMPTS.context, user)
+        .then(t => { els.out_context.textContent = t; })
+        .catch(e => { els.out_context.textContent = 'Error: ' + e.message; })
+    );
+  } else {
+    els.out_context.textContent = 'No OpenAI key';
+  }
+
+  if (xai) {
+    jobs.push(
+      callOpenAICompatible('https://api.x.ai/v1', xai, 'grok-3', PROMPTS.skeptic, user)
+        .then(t => { els.out_skeptic.textContent = t; })
+        .catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; })
+    );
+  } else {
+    els.out_skeptic.textContent = 'No xAI key';
+  }
+
+  await Promise.all(jobs);
+  els.run.disabled = false;
+  els.status.innerHTML = '<span class="ok">Done</span>';
+});
+</script>
 </body>
 </html>
