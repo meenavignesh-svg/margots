@@ -18,7 +18,6 @@
       --err: #dc2626;
       --shadow: 0 10px 30px rgba(28, 25, 23, 0.06);
     }
-
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body {
@@ -30,13 +29,13 @@
       line-height: 1.5;
       overflow-x: hidden;
     }
-
     .topbar {
       max-width: 1080px;
       margin: 0 auto;
       padding: 18px 20px 0;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
       position: relative;
       z-index: 2;
@@ -64,6 +63,27 @@
       padding: 3px 8px;
       font-weight: 600;
     }
+    .keys-btn {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 650;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .keys-btn:hover { background: var(--soft); }
+    .keys-btn .dot-live {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d6d3d1;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .keys-btn .dot-live.on { background: var(--ok); }
 
     .shell {
       max-width: 920px;
@@ -72,12 +92,7 @@
       position: relative;
       z-index: 1;
     }
-
-    .hero {
-      text-align: center;
-      padding: 10px 8px 8px;
-      position: relative;
-    }
+    .hero { text-align: center; padding: 10px 8px 8px; position: relative; }
     .hero h1 {
       margin: 0;
       font-size: clamp(1.8rem, 4vw, 2.55rem);
@@ -95,7 +110,6 @@
       z-index: 2;
     }
 
-    /* floating scene */
     .scene {
       position: relative;
       height: 150px;
@@ -113,7 +127,6 @@
     .c3 { left: 50%; bottom: 10px; transform: translateX(-50%); animation-delay: 0.9s; }
     .c4 { right: 22%; bottom: 30px; animation-delay: 0.2s; }
     .c5 { right: 4%; bottom: 6px; animation-delay: 0.7s; }
-
     @keyframes floaty {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
@@ -151,14 +164,12 @@
       font-weight: 600;
     }
     .stage-body { padding: 22px 20px 20px; }
-
     .composer {
       background: #fff;
       border: 1px solid var(--line-strong);
       border-radius: 18px;
       padding: 14px;
     }
-
     .tabs {
       display: flex;
       gap: 8px;
@@ -180,7 +191,6 @@
       color: #fff;
       border-color: var(--black);
     }
-
     label {
       display: block;
       font-size: 0.8rem;
@@ -189,7 +199,6 @@
       font-weight: 600;
     }
     .field { margin-bottom: 12px; }
-
     input, textarea {
       width: 100%;
       border: 1px solid var(--line);
@@ -206,7 +215,6 @@
       box-shadow: 0 0 0 4px rgba(28,25,23,0.04);
     }
     textarea { min-height: 110px; resize: vertical; }
-
     .drop {
       border: 1.5px dashed var(--line-strong);
       border-radius: 14px;
@@ -215,7 +223,6 @@
       text-align: center;
       color: var(--muted);
       cursor: pointer;
-      transition: 0.15s ease;
     }
     .drop.drag {
       border-color: var(--black);
@@ -224,12 +231,7 @@
     }
     .drop strong { color: var(--text); }
     .drop input { display: none; }
-    .file-meta {
-      margin-top: 8px;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
+    .file-meta { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
     .actions {
       display: flex;
       justify-content: space-between;
@@ -241,7 +243,6 @@
     .status { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
     .ok { color: var(--ok); }
     .err { color: var(--err); }
-
     #run {
       border: none;
       background: var(--black);
@@ -253,25 +254,12 @@
       min-width: 120px;
     }
     #run:disabled { opacity: 0.55; cursor: not-allowed; }
-
-    .keys {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    @media (max-width: 760px) { .keys { grid-template-columns: 1fr; } }
-    .keys input {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.82rem;
-    }
     .hint {
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 0.78rem;
       color: var(--muted);
       text-align: center;
     }
-
     .section { margin-top: 16px; }
     .section h2 {
       margin: 0 0 10px;
@@ -280,7 +268,6 @@
       letter-spacing: 0.06em;
       color: var(--muted);
     }
-
     .facts {
       background: #fcfbfa;
       border: 1px solid var(--line);
@@ -294,7 +281,6 @@
       max-height: 180px;
       overflow: auto;
     }
-
     .answers {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -316,7 +302,6 @@
       right: 10px;
       width: 36px;
       height: 36px;
-      opacity: 0.95;
     }
     .answer h3 {
       margin: 0 0 8px;
@@ -333,6 +318,66 @@
       line-height: 1.55;
     }
 
+    /* modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 25, 23, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(440px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(28,25,23,0.18);
+      padding: 18px;
+    }
+    .modal h2 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+    .modal p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .modal .keys-fields .field { margin-bottom: 12px; }
+    .modal input {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.84rem;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .btn-secondary {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .btn-primary {
+      border: none;
+      background: var(--black);
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     @media (max-width: 640px) {
       .scene { height: 110px; }
       .char svg { transform: scale(0.82); transform-origin: bottom center; }
@@ -346,6 +391,9 @@
       <span>Margots</span>
       <span class="pill">beta</span>
     </div>
+    <button class="keys-btn" id="open_keys" type="button">
+      <span class="dot-live" id="keys_dot"></span>API keys
+    </button>
   </div>
 
   <div class="shell">
@@ -355,83 +403,59 @@
     </div>
 
     <div class="scene" aria-hidden="true">
-      <!-- purple round -->
       <div class="char c1">
         <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
           <ellipse cx="36" cy="78" rx="22" ry="5" fill="rgba(28,25,23,0.08)"/>
           <path d="M14 34c0-14 10-26 22-26s22 12 22 26v22c0 8-6 14-14 14H28c-8 0-14-6-14-14V34z" fill="#c4b5fd"/>
-          <path d="M18 36c2-12 10-22 18-22 7 0 14 8 16 18" stroke="#a78bfa" stroke-width="3" stroke-linecap="round" opacity=".55"/>
-          <circle cx="28" cy="40" r="3.2" fill="#1c1917"/>
-          <circle cx="44" cy="40" r="3.2" fill="#1c1917"/>
+          <circle cx="28" cy="40" r="3.2" fill="#1c1917"/><circle cx="44" cy="40" r="3.2" fill="#1c1917"/>
           <path d="M30 50c2.5 3 9.5 3 12 0" stroke="#1c1917" stroke-width="2.4" stroke-linecap="round"/>
-          <rect x="20" y="62" width="10" height="14" rx="4" fill="#a78bfa"/>
-          <rect x="42" y="62" width="10" height="14" rx="4" fill="#a78bfa"/>
+          <rect x="20" y="62" width="10" height="14" rx="4" fill="#a78bfa"/><rect x="42" y="62" width="10" height="14" rx="4" fill="#a78bfa"/>
         </svg>
       </div>
-
-      <!-- cyan cube -->
       <div class="char c2">
         <svg width="70" height="78" viewBox="0 0 70 78" fill="none">
           <ellipse cx="35" cy="73" rx="20" ry="4.5" fill="rgba(28,25,23,0.08)"/>
           <path d="M12 28 L35 16 L58 28 L58 52 L35 64 L12 52 Z" fill="#7dd3fc"/>
           <path d="M35 16 L58 28 L58 52 L35 40 Z" fill="#38bdf8"/>
           <path d="M12 28 L35 40 L35 64 L12 52 Z" fill="#0ea5e9" opacity=".85"/>
-          <circle cx="28" cy="36" r="2.8" fill="#0f172a"/>
-          <circle cx="42" cy="34" r="2.8" fill="#0f172a"/>
+          <circle cx="28" cy="36" r="2.8" fill="#0f172a"/><circle cx="42" cy="34" r="2.8" fill="#0f172a"/>
           <path d="M30 44c2 2.5 8 2.5 10 0" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
       </div>
-
-      <!-- pink petal / berry -->
       <div class="char c3">
         <svg width="86" height="96" viewBox="0 0 86 96" fill="none">
           <ellipse cx="43" cy="90" rx="24" ry="5" fill="rgba(28,25,23,0.08)"/>
           <path d="M43 18c14 0 28 14 28 34 0 18-12 30-28 30S15 70 15 52C15 32 29 18 43 18z" fill="#fda4af"/>
-          <path d="M43 22c10 2 20 12 22 26" stroke="#fb7185" stroke-width="4" stroke-linecap="round" opacity=".5"/>
-          <circle cx="33" cy="48" r="3.4" fill="#1c1917"/>
-          <circle cx="53" cy="48" r="3.4" fill="#1c1917"/>
-          <circle cx="34.2" cy="46.8" r="1.1" fill="#fff"/>
-          <circle cx="54.2" cy="46.8" r="1.1" fill="#fff"/>
+          <circle cx="33" cy="48" r="3.4" fill="#1c1917"/><circle cx="53" cy="48" r="3.4" fill="#1c1917"/>
           <path d="M36 58c3.5 4 10.5 4 14 0" stroke="#1c1917" stroke-width="2.5" stroke-linecap="round"/>
           <path d="M43 14c0 0 2-8 8-10 -8 1-12 6-12 10 0-4-4-9-12-10 6 2 8 10 8 10z" fill="#4ade80"/>
         </svg>
       </div>
-
-      <!-- green triangle -->
       <div class="char c4">
         <svg width="74" height="80" viewBox="0 0 74 80" fill="none">
           <ellipse cx="37" cy="75" rx="20" ry="4.5" fill="rgba(28,25,23,0.08)"/>
           <path d="M37 10 L66 62 L8 62 Z" fill="#86efac"/>
           <path d="M37 10 L66 62 L37 54 Z" fill="#4ade80"/>
-          <circle cx="30" cy="44" r="2.8" fill="#14532d"/>
-          <circle cx="44" cy="44" r="2.8" fill="#14532d"/>
+          <circle cx="30" cy="44" r="2.8" fill="#14532d"/><circle cx="44" cy="44" r="2.8" fill="#14532d"/>
           <path d="M31 53c2.5 2.8 9.5 2.8 12 0" stroke="#14532d" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
       </div>
-
-      <!-- coral rounded square -->
       <div class="char c5">
         <svg width="70" height="82" viewBox="0 0 70 82" fill="none">
           <ellipse cx="35" cy="76" rx="20" ry="4.5" fill="rgba(28,25,23,0.08)"/>
           <rect x="12" y="14" width="46" height="46" rx="14" fill="#fdba74"/>
-          <rect x="18" y="20" width="20" height="12" rx="6" fill="#fb923c" opacity=".45"/>
-          <circle cx="26" cy="36" r="3" fill="#1c1917"/>
-          <circle cx="44" cy="36" r="3" fill="#1c1917"/>
+          <circle cx="26" cy="36" r="3" fill="#1c1917"/><circle cx="44" cy="36" r="3" fill="#1c1917"/>
           <path d="M28 46c2.8 3 11 3 14 0" stroke="#1c1917" stroke-width="2.3" stroke-linecap="round"/>
-          <rect x="22" y="60" width="10" height="12" rx="4" fill="#fb923c"/>
-          <rect x="38" y="60" width="10" height="12" rx="4" fill="#fb923c"/>
+          <rect x="22" y="60" width="10" height="12" rx="4" fill="#fb923c"/><rect x="38" y="60" width="10" height="12" rx="4" fill="#fb923c"/>
         </svg>
       </div>
     </div>
 
     <div class="stage">
       <div class="stage-top">
-        <span class="dot r"></span>
-        <span class="dot y"></span>
-        <span class="dot g"></span>
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="stage-title">Margots workspace</span>
       </div>
-
       <div class="stage-body">
         <div class="composer">
           <div class="tabs">
@@ -489,21 +513,7 @@
           </div>
         </div>
 
-        <div class="keys">
-          <div class="field">
-            <label>OpenAI key</label>
-            <input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" />
-          </div>
-          <div class="field">
-            <label>Anthropic key</label>
-            <input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" />
-          </div>
-          <div class="field">
-            <label>xAI key</label>
-            <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
-          </div>
-        </div>
-        <p class="hint">Keys stay in this browser only (localStorage). Uploaded files are read locally and never stored on a server.</p>
+        <p class="hint">Files are read locally in your browser. Use <strong>API keys</strong> in the top right before running.</p>
 
         <div class="section">
           <h2>Local measurements</h2>
@@ -514,28 +524,44 @@
           <h2>Answers</h2>
           <div class="answers">
             <div class="answer">
-              <div class="badge">
-                <svg viewBox="0 0 36 36" width="36" height="36"><rect width="36" height="36" rx="10" fill="#c4b5fd"/><circle cx="13" cy="16" r="2" fill="#1c1917"/><circle cx="23" cy="16" r="2" fill="#1c1917"/><path d="M14 22c2 2 6 2 8 0" stroke="#1c1917" stroke-width="1.8" stroke-linecap="round"/></svg>
-              </div>
-              <h3>Strict</h3>
-              <div class="body" id="out_strict">—</div>
+              <div class="badge"><svg viewBox="0 0 36 36" width="36" height="36"><rect width="36" height="36" rx="10" fill="#c4b5fd"/><circle cx="13" cy="16" r="2" fill="#1c1917"/><circle cx="23" cy="16" r="2" fill="#1c1917"/><path d="M14 22c2 2 6 2 8 0" stroke="#1c1917" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <h3>Strict</h3><div class="body" id="out_strict">—</div>
             </div>
             <div class="answer">
-              <div class="badge">
-                <svg viewBox="0 0 36 36" width="36" height="36"><path d="M18 4 L32 30 H4 Z" fill="#86efac"/><circle cx="15" cy="20" r="1.8" fill="#14532d"/><circle cx="21" cy="20" r="1.8" fill="#14532d"/><path d="M15 25c1.5 1.6 4.5 1.6 6 0" stroke="#14532d" stroke-width="1.6" stroke-linecap="round"/></svg>
-              </div>
-              <h3>Context</h3>
-              <div class="body" id="out_context">—</div>
+              <div class="badge"><svg viewBox="0 0 36 36" width="36" height="36"><path d="M18 4 L32 30 H4 Z" fill="#86efac"/><circle cx="15" cy="20" r="1.8" fill="#14532d"/><circle cx="21" cy="20" r="1.8" fill="#14532d"/><path d="M15 25c1.5 1.6 4.5 1.6 6 0" stroke="#14532d" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <h3>Context</h3><div class="body" id="out_context">—</div>
             </div>
             <div class="answer">
-              <div class="badge">
-                <svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="14" fill="#fda4af"/><circle cx="13" cy="16" r="2" fill="#1c1917"/><circle cx="23" cy="16" r="2" fill="#1c1917"/><path d="M14 23c2.2 2.4 5.8 2.4 8 0" stroke="#1c1917" stroke-width="1.8" stroke-linecap="round"/></svg>
-              </div>
-              <h3>Skeptic</h3>
-              <div class="body" id="out_skeptic">—</div>
+              <div class="badge"><svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="14" fill="#fda4af"/><circle cx="13" cy="16" r="2" fill="#1c1917"/><circle cx="23" cy="16" r="2" fill="#1c1917"/><path d="M14 23c2.2 2.4 5.8 2.4 8 0" stroke="#1c1917" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <h3>Skeptic</h3><div class="body" id="out_skeptic">—</div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="keys_modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="keys_title">
+      <h2 id="keys_title">API keys</h2>
+      <p>Stored only in this browser (localStorage). Never sent except to the official provider APIs.</p>
+      <div class="keys-fields">
+        <div class="field">
+          <label>OpenAI</label>
+          <input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" />
+        </div>
+        <div class="field">
+          <label>Anthropic</label>
+          <input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" />
+        </div>
+        <div class="field">
+          <label>xAI</label>
+          <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="close_keys">Cancel</button>
+        <button type="button" class="btn-primary" id="save_keys">Save</button>
       </div>
     </div>
   </div>
@@ -573,21 +599,54 @@ const els = {
   facts: document.getElementById('facts'),
   out_strict: document.getElementById('out_strict'),
   out_context: document.getElementById('out_context'),
-  out_skeptic: document.getElementById('out_skeptic')
+  out_skeptic: document.getElementById('out_skeptic'),
+  open_keys: document.getElementById('open_keys'),
+  close_keys: document.getElementById('close_keys'),
+  save_keys: document.getElementById('save_keys'),
+  keys_modal: document.getElementById('keys_modal'),
+  keys_dot: document.getElementById('keys_dot')
 };
 
 let mode = 'sequence';
 let uploaded = null;
 
-['openai','anthropic','xai'].forEach(k => {
-  const v = localStorage.getItem('margots_' + k);
-  if (v) els['k_' + k].value = v;
-});
-['k_openai','k_anthropic','k_xai'].forEach(id => {
-  els[id].addEventListener('change', () => {
-    localStorage.setItem('margots_' + id.replace('k_', ''), els[id].value.trim());
+function loadKeys() {
+  ['openai','anthropic','xai'].forEach(k => {
+    const v = localStorage.getItem('margots_' + k) || '';
+    els['k_' + k].value = v;
   });
-});
+  updateKeysDot();
+}
+
+function saveKeys() {
+  ['openai','anthropic','xai'].forEach(k => {
+    localStorage.setItem('margots_' + k, els['k_' + k].value.trim());
+  });
+  updateKeysDot();
+}
+
+function updateKeysDot() {
+  const any = ['openai','anthropic','xai'].some(k => (localStorage.getItem('margots_' + k) || '').trim());
+  els.keys_dot.classList.toggle('on', any);
+}
+
+function openModal() {
+  loadKeys();
+  els.keys_modal.classList.add('open');
+  els.keys_modal.setAttribute('aria-hidden', 'false');
+}
+function closeModal() {
+  els.keys_modal.classList.remove('open');
+  els.keys_modal.setAttribute('aria-hidden', 'true');
+}
+
+els.open_keys.addEventListener('click', openModal);
+els.close_keys.addEventListener('click', closeModal);
+els.save_keys.addEventListener('click', () => { saveKeys(); closeModal(); });
+els.keys_modal.addEventListener('click', e => { if (e.target === els.keys_modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+loadKeys();
 
 els.modeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -618,7 +677,6 @@ function formatBytes(n) {
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
   return (n / (1024 * 1024)).toFixed(1) + ' MB';
 }
-
 function detectKind(name, text) {
   const lower = (name || '').toLowerCase();
   const head = text.slice(0, 2000);
@@ -630,43 +688,23 @@ function detectKind(name, text) {
   if (lower.endsWith('.json')) return 'json';
   return 'text';
 }
-
 function parseFasta(text) {
-  const seqs = [];
-  let cur = null;
+  const seqs = []; let cur = null;
   for (const line of text.split(/\r?\n/)) {
-    if (line.startsWith('>')) {
-      if (cur) seqs.push(cur);
-      cur = { id: line.slice(1).trim(), seq: '' };
-    } else if (cur) {
-      cur.seq += line.trim();
-    }
+    if (line.startsWith('>')) { if (cur) seqs.push(cur); cur = { id: line.slice(1).trim(), seq: '' }; }
+    else if (cur) cur.seq += line.trim();
   }
   if (cur) seqs.push(cur);
   return seqs;
 }
-
 function tableFacts(text, sep) {
   const lines = text.split(/\r?\n/).filter(Boolean);
   if (!lines.length) return { rows: 0 };
   const header = lines[0].split(sep);
-  return {
-    rows: Math.max(0, lines.length - 1),
-    cols: header.length,
-    header: header.slice(0, 30),
-    preview_rows: lines.slice(0, 6)
-  };
+  return { rows: Math.max(0, lines.length - 1), cols: header.length, header: header.slice(0, 30), preview_rows: lines.slice(0, 6) };
 }
-
 function buildUploadFacts(name, size, type, text, kind) {
-  const facts = {
-    file_name: name,
-    file_size: formatBytes(size),
-    mime: type || 'unknown',
-    detected_kind: kind,
-    chars: text.length,
-    truncated: text.length >= MAX_CHARS
-  };
+  const facts = { file_name: name, file_size: formatBytes(size), mime: type || 'unknown', detected_kind: kind, chars: text.length, truncated: text.length >= MAX_CHARS };
   if (kind === 'fasta') {
     const seqs = parseFasta(text);
     facts.num_sequences = seqs.length;
@@ -690,21 +728,12 @@ function buildUploadFacts(name, size, type, text, kind) {
   }
   return facts;
 }
-
 function handleFile(file) {
-  if (file.size > 8 * 1024 * 1024) {
-    els.file_meta.textContent = 'File too large (max 8 MB for browser use).';
-    uploaded = null;
-    return;
-  }
+  if (file.size > 8 * 1024 * 1024) { els.file_meta.textContent = 'File too large (max 8 MB for browser use).'; uploaded = null; return; }
   const reader = new FileReader();
   reader.onload = () => {
     let text = String(reader.result || '');
-    if (text.includes('\u0000')) {
-      els.file_meta.textContent = `Loaded ${file.name}, but it looks binary. Only text-readable content is supported.`;
-      uploaded = null;
-      return;
-    }
+    if (text.includes('\u0000')) { els.file_meta.textContent = `Loaded ${file.name}, but it looks binary. Only text-readable content is supported.`; uploaded = null; return; }
     if (text.length > MAX_CHARS) text = text.slice(0, MAX_CHARS);
     const kind = detectKind(file.name, text);
     const facts = buildUploadFacts(file.name, file.size, file.type, text, kind);
@@ -712,15 +741,10 @@ function handleFile(file) {
     els.file_meta.textContent = `${file.name} · ${formatBytes(file.size)} · detected as ${kind}`;
     els.facts.textContent = JSON.stringify(facts, null, 2);
   };
-  reader.onerror = () => {
-    els.file_meta.textContent = 'Could not read file.';
-    uploaded = null;
-  };
+  reader.onerror = () => { els.file_meta.textContent = 'Could not read file.'; uploaded = null; };
   reader.readAsText(file);
 }
-
 function cleanSeq(s) { return s.replace(/\s+/g, '').toUpperCase(); }
-
 function seqFacts(raw) {
   const s = cleanSeq(raw);
   if (!s) return { error: 'empty sequence' };
@@ -736,84 +760,56 @@ function seqFacts(raw) {
   }
   return facts;
 }
-
 async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
   const r = await fetch(baseUrl + '/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({
-      model, temperature: 0.2, max_tokens: 1800,
-      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
-    })
+    body: JSON.stringify({ model, temperature: 0.2, max_tokens: 1800, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
   return data.choices?.[0]?.message?.content || JSON.stringify(data);
 }
-
 async function callAnthropic(apiKey, system, user) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system,
-      messages: [{ role: 'user', content: user }]
-    })
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system, messages: [{ role: 'user', content: user }] })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
   return data.content?.[0]?.text || JSON.stringify(data);
 }
-
 function buildPayload() {
   if (mode === 'sequence') {
     const seq = els.seq.value.trim();
     const facts = seqFacts(seq);
     const q = els.seq_q.value.trim() || 'What can be reliably said about this sequence?';
-    return {
-      facts,
-      user: `Measured facts:\n${JSON.stringify(facts, null, 2)}\n\nQuestion: ${q}\n\nSequence (truncated):\n${cleanSeq(seq).slice(0, 3500)}`
-    };
+    return { facts, user: `Measured facts:\n${JSON.stringify(facts, null, 2)}\n\nQuestion: ${q}\n\nSequence (truncated):\n${cleanSeq(seq).slice(0, 3500)}` };
   }
   if (mode === 'variant') {
-    return {
-      facts: { source: 'user text only' },
-      user: `Variant description:\n${els.variant.value.trim()}\n\nComment on possible molecular effect and what still needs external database checks.`
-    };
+    return { facts: { source: 'user text only' }, user: `Variant description:\n${els.variant.value.trim()}\n\nComment on possible molecular effect and what still needs external database checks.` };
   }
   if (mode === 'upload') {
     if (!uploaded) return { facts: { error: 'no file' }, user: 'No file uploaded.' };
     const q = els.upload_q.value.trim() || 'Analyze this file and report the strongest defensible findings.';
-    return {
-      facts: uploaded.facts,
-      user: `File analysis request.\nQuestion: ${q}\n\nMeasured facts:\n${JSON.stringify(uploaded.facts, null, 2)}\n\nFile content (truncated):\n${uploaded.text.slice(0, 20000)}`
-    };
+    return { facts: uploaded.facts, user: `File analysis request.\nQuestion: ${q}\n\nMeasured facts:\n${JSON.stringify(uploaded.facts, null, 2)}\n\nFile content (truncated):\n${uploaded.text.slice(0, 20000)}` };
   }
-  return {
-    facts: {},
-    user: `Context:\n${els.ctx.value.trim()}\n\nQuestion:\n${els.free_q.value.trim()}`
-  };
+  return { facts: {}, user: `Context:\n${els.ctx.value.trim()}\n\nQuestion:\n${els.free_q.value.trim()}` };
 }
-
 els.run.addEventListener('click', async () => {
-  const openai = els.k_openai.value.trim();
-  const anthropic = els.k_anthropic.value.trim();
-  const xai = els.k_xai.value.trim();
-
+  const openai = (localStorage.getItem('margots_openai') || '').trim();
+  const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
+  const xai = (localStorage.getItem('margots_xai') || '').trim();
   if (!openai && !anthropic && !xai) {
-    els.status.innerHTML = '<span class="err">Add at least one API key.</span>';
+    els.status.innerHTML = '<span class="err">Add API keys first (top right).</span>';
+    openModal();
     return;
   }
   if (mode === 'upload' && !uploaded) {
     els.status.innerHTML = '<span class="err">Upload a file first.</span>';
     return;
   }
-
   const { facts, user } = buildPayload();
   els.facts.textContent = JSON.stringify(facts, null, 2);
   els.out_strict.textContent = '…';
@@ -821,26 +817,13 @@ els.run.addEventListener('click', async () => {
   els.out_skeptic.textContent = '…';
   els.run.disabled = true;
   els.status.textContent = 'Running…';
-
   const jobs = [];
-  if (anthropic) {
-    jobs.push(callAnthropic(anthropic, PROMPTS.strict, user)
-      .then(t => { els.out_strict.textContent = t; })
-      .catch(e => { els.out_strict.textContent = 'Error: ' + e.message; }));
-  } else els.out_strict.textContent = 'No Anthropic key';
-
-  if (openai) {
-    jobs.push(callOpenAICompatible('https://api.openai.com/v1', openai, 'gpt-4o', PROMPTS.context, user)
-      .then(t => { els.out_context.textContent = t; })
-      .catch(e => { els.out_context.textContent = 'Error: ' + e.message; }));
-  } else els.out_context.textContent = 'No OpenAI key';
-
-  if (xai) {
-    jobs.push(callOpenAICompatible('https://api.x.ai/v1', xai, 'grok-3', PROMPTS.skeptic, user)
-      .then(t => { els.out_skeptic.textContent = t; })
-      .catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; }));
-  } else els.out_skeptic.textContent = 'No xAI key';
-
+  if (anthropic) jobs.push(callAnthropic(anthropic, PROMPTS.strict, user).then(t => { els.out_strict.textContent = t; }).catch(e => { els.out_strict.textContent = 'Error: ' + e.message; }));
+  else els.out_strict.textContent = 'No Anthropic key';
+  if (openai) jobs.push(callOpenAICompatible('https://api.openai.com/v1', openai, 'gpt-4o', PROMPTS.context, user).then(t => { els.out_context.textContent = t; }).catch(e => { els.out_context.textContent = 'Error: ' + e.message; }));
+  else els.out_context.textContent = 'No OpenAI key';
+  if (xai) jobs.push(callOpenAICompatible('https://api.x.ai/v1', xai, 'grok-3', PROMPTS.skeptic, user).then(t => { els.out_skeptic.textContent = t; }).catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; }));
+  else els.out_skeptic.textContent = 'No xAI key';
   await Promise.all(jobs);
   els.run.disabled = false;
   els.status.innerHTML = '<span class="ok">Done</span>';
