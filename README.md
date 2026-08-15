@@ -1,36 +1,38 @@
 # Margots
 
-Bioinformatics analysis tool that runs the same question through three different model backends and keeps the results separate so you can compare them.
+Browser-based bioinformatics analysis workspace. Local measurements run in-page; the same question is sent to three independent free-tier model backends so you can compare answers side by side.
 
 **Live app:** https://meenavignesh-svg.github.io/margots/
 
-Paste your own API keys in the browser (stored only in localStorage). Local sequence measurements run in-page; model calls go straight to the providers.
+## Features
 
-## Local (Python) setup
+- **Sequence** — DNA / RNA / protein paste with GC%, composition, length
+- **Variant** — free-text variant notes
+- **Free** — any scientific context + question
+- **Upload** — FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, JSON, TXT, and other text formats (read locally in the browser)
+- **Agent** — chat with a holographic agent that replies by voice
+- Three parallel answers: **Strict · Gemini**, **Context · Groq**, **Skeptic · OpenRouter**
 
-```bash
-pip install -r requirements.txt
-cp .env.example .env
-```
+## API keys (free tiers)
 
-Fill in the three keys in `.env`:
+Keys are entered in the app (top right) and stored only in `localStorage`.
 
-```
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-XAI_API_KEY=
-```
+| Slot | Provider | Get a key |
+|------|----------|-----------|
+| Strict | Google Gemini | https://aistudio.google.com/apikey |
+| Context | Groq | https://console.groq.com/keys |
+| Skeptic | OpenRouter | https://openrouter.ai/keys |
 
-Then:
+No credit card is required for the basic free tiers of these providers. Rate limits apply per account.
 
-```bash
-streamlit run app.py
-```
+## Hosting
 
-## Notes
+Static site on GitHub Pages from the `docs/` folder.
 
-- Sequence mode: GC%, composition, translation attempt, protein params when relevant
-- Expression mode (Python app): accepts CSV/TSV, shows basic describe + null counts
-- Variant and free-text modes pass the text through
-- Each backend gets a different system prompt (strict / contextual / skeptical)
-- Results are shown side by side, not merged
+Source of the app: `docs/index.html`
+
+## Privacy
+
+- Uploaded files are parsed in the browser; they are not uploaded to a Margots server
+- Model calls go directly from your browser to the provider APIs using your keys
+- Keys never leave your machine except as Authorization headers to those APIs
