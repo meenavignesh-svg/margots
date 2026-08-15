@@ -7,7 +7,6 @@
   <style>
     :root {
       --bg: #f6f1ea;
-      --bg2: #fbf8f4;
       --surface: #ffffff;
       --text: #1c1917;
       --muted: #78716c;
@@ -18,7 +17,6 @@
       --ok: #16a34a;
       --err: #dc2626;
       --shadow: 0 10px 30px rgba(28, 25, 23, 0.06);
-      --radius: 18px;
     }
 
     * { box-sizing: border-box; }
@@ -38,8 +36,7 @@
       padding: 18px 20px 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
     .brand {
       display: flex;
@@ -80,11 +77,10 @@
       font-size: clamp(1.8rem, 4vw, 2.6rem);
       letter-spacing: -0.04em;
       font-weight: 700;
-      color: #1c1917;
     }
     .hero p {
       margin: 10px auto 0;
-      max-width: 520px;
+      max-width: 540px;
       color: var(--muted);
       font-size: 1.02rem;
     }
@@ -96,7 +92,6 @@
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-
     .stage-top {
       display: flex;
       align-items: center;
@@ -105,12 +100,7 @@
       border-bottom: 1px solid var(--line);
       background: #fcfaf8;
     }
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #d6d3d1;
-    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #d6d3d1; }
     .dot.r { background: #ff5f57; }
     .dot.y { background: #febc2e; }
     .dot.g { background: #28c840; }
@@ -120,7 +110,6 @@
       color: var(--muted);
       font-weight: 600;
     }
-
     .stage-body { padding: 22px 20px 20px; }
 
     .composer {
@@ -128,7 +117,6 @@
       border: 1px solid var(--line-strong);
       border-radius: 18px;
       padding: 14px;
-      box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
     }
 
     .tabs {
@@ -161,7 +149,6 @@
       font-weight: 600;
     }
     .field { margin-bottom: 12px; }
-    .field:last-child { margin-bottom: 0; }
 
     input, textarea {
       width: 100%;
@@ -169,7 +156,7 @@
       background: #fcfbfa;
       color: var(--text);
       border-radius: 12px;
-      padding: 12px 12px;
+      padding: 12px;
       font: inherit;
     }
     input:focus, textarea:focus {
@@ -180,6 +167,29 @@
     }
     textarea { min-height: 110px; resize: vertical; }
 
+    .drop {
+      border: 1.5px dashed var(--line-strong);
+      border-radius: 14px;
+      background: #fcfbfa;
+      padding: 22px 14px;
+      text-align: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+    .drop.drag {
+      border-color: var(--black);
+      background: #f5f1ec;
+      color: var(--text);
+    }
+    .drop strong { color: var(--text); }
+    .drop input { display: none; }
+    .file-meta {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
     .actions {
       display: flex;
       justify-content: space-between;
@@ -188,11 +198,7 @@
       margin-top: 12px;
       flex-wrap: wrap;
     }
-    .status {
-      font-size: 0.85rem;
-      color: var(--muted);
-      min-height: 1.2em;
-    }
+    .status { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
     .ok { color: var(--ok); }
     .err { color: var(--err); }
 
@@ -206,7 +212,6 @@
       cursor: pointer;
       min-width: 120px;
     }
-    #run:hover { filter: brightness(1.08); }
     #run:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .keys {
@@ -215,9 +220,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
-    @media (max-width: 760px) {
-      .keys { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 760px) { .keys { grid-template-columns: 1fr; } }
     .keys input {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.82rem;
@@ -229,9 +232,7 @@
       text-align: center;
     }
 
-    .section {
-      margin-top: 16px;
-    }
+    .section { margin-top: 16px; }
     .section h2 {
       margin: 0 0 10px;
       font-size: 0.78rem;
@@ -250,7 +251,7 @@
       white-space: pre-wrap;
       word-break: break-word;
       color: #44403c;
-      max-height: 160px;
+      max-height: 180px;
       overflow: auto;
     }
 
@@ -259,9 +260,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
-    @media (max-width: 860px) {
-      .answers { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 860px) { .answers { grid-template-columns: 1fr; } }
     .answer {
       background: #fcfbfa;
       border: 1px solid var(--line);
@@ -297,7 +296,7 @@
   <div class="shell">
     <div class="hero">
       <h1>Analysis that works alongside you</h1>
-      <p>Run the same bioinformatics question through three backends. Local measurements first, answers side by side.</p>
+      <p>Paste text or upload almost any file. Local measurements first, then three independent backends.</p>
     </div>
 
     <div class="stage">
@@ -314,6 +313,7 @@
             <button class="tab active" data-mode="sequence">Sequence</button>
             <button class="tab" data-mode="variant">Variant</button>
             <button class="tab" data-mode="free">Free</button>
+            <button class="tab" data-mode="upload">Upload</button>
           </div>
 
           <div id="panel_sequence">
@@ -345,6 +345,19 @@
             </div>
           </div>
 
+          <div id="panel_upload" hidden>
+            <div class="drop" id="drop">
+              <strong>Drop any file here</strong> or click to browse<br />
+              <span style="font-size:0.82rem">FASTA, CSV, TSV, TXT, JSON, VCF, BED, GFF, MD, log, and other text-based formats</span>
+              <input id="file" type="file" />
+            </div>
+            <div class="file-meta" id="file_meta">No file selected.</div>
+            <div class="field" style="margin-top:12px">
+              <label>Question (optional)</label>
+              <input id="upload_q" placeholder="What should be analyzed in this file?" />
+            </div>
+          </div>
+
           <div class="actions">
             <div class="status" id="status"></div>
             <button id="run">Run</button>
@@ -365,7 +378,7 @@
             <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
           </div>
         </div>
-        <p class="hint">Keys stay in this browser only (localStorage).</p>
+        <p class="hint">Keys stay in this browser only (localStorage). Uploaded files are read locally and never stored on a server.</p>
 
         <div class="section">
           <h2>Local measurements</h2>
@@ -375,18 +388,9 @@
         <div class="section">
           <h2>Answers</h2>
           <div class="answers">
-            <div class="answer">
-              <h3>Strict</h3>
-              <div class="body" id="out_strict">—</div>
-            </div>
-            <div class="answer">
-              <h3>Context</h3>
-              <div class="body" id="out_context">—</div>
-            </div>
-            <div class="answer">
-              <h3>Skeptic</h3>
-              <div class="body" id="out_skeptic">—</div>
-            </div>
+            <div class="answer"><h3>Strict</h3><div class="body" id="out_strict">—</div></div>
+            <div class="answer"><h3>Context</h3><div class="body" id="out_context">—</div></div>
+            <div class="answer"><h3>Skeptic</h3><div class="body" id="out_skeptic">—</div></div>
           </div>
         </div>
       </div>
@@ -394,9 +398,10 @@
   </div>
 
 <script>
+const MAX_CHARS = 120000;
 const PROMPTS = {
-  strict: "Stick to measurable sequence/table features. Avoid speculation. If evidence is weak, say so.",
-  context: "Interpret in biological context. Mention plausible functions or patterns only when supported by the given data. Mark uncertainty.",
+  strict: "Stick to measurable features in the provided data. Avoid speculation. If evidence is weak, say so.",
+  context: "Interpret in biological or scientific context when relevant. Mark uncertainty clearly.",
   skeptic: "Challenge the obvious reading. Offer alternatives and list what would falsify the main interpretation."
 };
 
@@ -405,7 +410,8 @@ const els = {
   panels: {
     sequence: document.getElementById('panel_sequence'),
     variant: document.getElementById('panel_variant'),
-    free: document.getElementById('panel_free')
+    free: document.getElementById('panel_free'),
+    upload: document.getElementById('panel_upload')
   },
   k_openai: document.getElementById('k_openai'),
   k_anthropic: document.getElementById('k_anthropic'),
@@ -415,6 +421,10 @@ const els = {
   variant: document.getElementById('variant'),
   ctx: document.getElementById('ctx'),
   free_q: document.getElementById('free_q'),
+  upload_q: document.getElementById('upload_q'),
+  drop: document.getElementById('drop'),
+  file: document.getElementById('file'),
+  file_meta: document.getElementById('file_meta'),
   run: document.getElementById('run'),
   status: document.getElementById('status'),
   facts: document.getElementById('facts'),
@@ -424,6 +434,7 @@ const els = {
 };
 
 let mode = 'sequence';
+let uploaded = null; // { name, size, type, text, kind, facts }
 
 ['openai','anthropic','xai'].forEach(k => {
   const v = localStorage.getItem('margots_' + k);
@@ -443,6 +454,143 @@ els.modeBtns.forEach(btn => {
   });
 });
 
+els.drop.addEventListener('click', () => els.file.click());
+['dragenter','dragover'].forEach(ev => {
+  els.drop.addEventListener(ev, e => {
+    e.preventDefault();
+    els.drop.classList.add('drag');
+  });
+});
+['dragleave','drop'].forEach(ev => {
+  els.drop.addEventListener(ev, e => {
+    e.preventDefault();
+    els.drop.classList.remove('drag');
+  });
+});
+els.drop.addEventListener('drop', e => {
+  const f = e.dataTransfer.files?.[0];
+  if (f) handleFile(f);
+});
+els.file.addEventListener('change', () => {
+  const f = els.file.files?.[0];
+  if (f) handleFile(f);
+});
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function detectKind(name, text) {
+  const lower = (name || '').toLowerCase();
+  const head = text.slice(0, 2000);
+  if (lower.endsWith('.fasta') || lower.endsWith('.fa') || lower.endsWith('.fna') || lower.endsWith('.faa') || head.startsWith('>')) return 'fasta';
+  if (lower.endsWith('.fastq') || lower.endsWith('.fq') || head.startsWith('@')) return 'fastq';
+  if (lower.endsWith('.vcf') || head.startsWith('##fileformat=VCF')) return 'vcf';
+  if (lower.endsWith('.csv')) return 'csv';
+  if (lower.endsWith('.tsv') || lower.endsWith('.bed') || lower.endsWith('.gtf') || lower.endsWith('.gff') || lower.endsWith('.gff3')) return 'tsv';
+  if (lower.endsWith('.json')) return 'json';
+  return 'text';
+}
+
+function parseFasta(text) {
+  const seqs = [];
+  let cur = null;
+  for (const line of text.split(/\r?\n/)) {
+    if (line.startsWith('>')) {
+      if (cur) seqs.push(cur);
+      cur = { id: line.slice(1).trim(), seq: '' };
+    } else if (cur) {
+      cur.seq += line.trim();
+    }
+  }
+  if (cur) seqs.push(cur);
+  return seqs;
+}
+
+function tableFacts(text, sep) {
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  if (!lines.length) return { rows: 0 };
+  const header = lines[0].split(sep);
+  return {
+    rows: Math.max(0, lines.length - 1),
+    cols: header.length,
+    header: header.slice(0, 30),
+    preview_rows: lines.slice(0, 6)
+  };
+}
+
+function buildUploadFacts(name, size, type, text, kind) {
+  const facts = {
+    file_name: name,
+    file_size: formatBytes(size),
+    mime: type || 'unknown',
+    detected_kind: kind,
+    chars: text.length,
+    truncated: text.length >= MAX_CHARS
+  };
+
+  if (kind === 'fasta') {
+    const seqs = parseFasta(text);
+    facts.num_sequences = seqs.length;
+    facts.ids = seqs.slice(0, 10).map(s => s.id);
+    if (seqs[0]) {
+      const s = seqs[0].seq.toUpperCase().replace(/\s+/g, '');
+      facts.first_length = s.length;
+      facts.first_preview = s.slice(0, 120) + (s.length > 120 ? '...' : '');
+    }
+  } else if (kind === 'csv') {
+    Object.assign(facts, tableFacts(text, ','));
+  } else if (kind === 'tsv') {
+    Object.assign(facts, tableFacts(text, '\t'));
+  } else if (kind === 'json') {
+    try {
+      const obj = JSON.parse(text);
+      facts.json_type = Array.isArray(obj) ? 'array' : typeof obj;
+      if (Array.isArray(obj)) facts.json_length = obj.length;
+      else if (obj && typeof obj === 'object') facts.json_keys = Object.keys(obj).slice(0, 40);
+    } catch {
+      facts.json_parse_error = true;
+    }
+  } else if (kind === 'vcf') {
+    const dataLines = text.split(/\r?\n/).filter(l => l && !l.startsWith('#'));
+    facts.variant_lines_preview = dataLines.length;
+  }
+
+  return facts;
+}
+
+function handleFile(file) {
+  if (file.size > 8 * 1024 * 1024) {
+    els.file_meta.textContent = 'File too large (max 8 MB for browser use).';
+    uploaded = null;
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    let text = String(reader.result || '');
+    // strip NULs / obvious binary noise
+    if (text.includes('\u0000')) {
+      els.file_meta.textContent = `Loaded ${file.name}, but it looks binary. Only text-readable content is supported.`;
+      uploaded = null;
+      return;
+    }
+    if (text.length > MAX_CHARS) text = text.slice(0, MAX_CHARS);
+    const kind = detectKind(file.name, text);
+    const facts = buildUploadFacts(file.name, file.size, file.type, text, kind);
+    uploaded = { name: file.name, size: file.size, type: file.type, text, kind, facts };
+    els.file_meta.textContent = `${file.name} · ${formatBytes(file.size)} · detected as ${kind}`;
+    els.facts.textContent = JSON.stringify(facts, null, 2);
+  };
+  reader.onerror = () => {
+    els.file_meta.textContent = 'Could not read file.';
+    uploaded = null;
+  };
+  reader.readAsText(file);
+}
+
 function cleanSeq(s) {
   return s.replace(/\s+/g, '').toUpperCase();
 }
@@ -453,13 +601,11 @@ function seqFacts(raw) {
   let kind = 'protein';
   if (/^[ACGTN]+$/.test(s)) kind = 'dna';
   else if (/^[ACGU]+$/.test(s)) kind = 'rna';
-
   const facts = {
     kind,
     length: s.length,
     preview: s.slice(0, 180) + (s.length > 180 ? '...' : '')
   };
-
   if (kind === 'dna' || kind === 'rna') {
     const bases = {};
     for (const ch of s) bases[ch] = (bases[ch] || 0) + 1;
@@ -530,6 +676,14 @@ function buildPayload() {
       user: `Variant description:\n${els.variant.value.trim()}\n\nComment on possible molecular effect and what still needs external database checks.`
     };
   }
+  if (mode === 'upload') {
+    if (!uploaded) return { facts: { error: 'no file' }, user: 'No file uploaded.' };
+    const q = els.upload_q.value.trim() || 'Analyze this file and report the strongest defensible findings.';
+    return {
+      facts: uploaded.facts,
+      user: `File analysis request.\nQuestion: ${q}\n\nMeasured facts:\n${JSON.stringify(uploaded.facts, null, 2)}\n\nFile content (truncated):\n${uploaded.text.slice(0, 20000)}`
+    };
+  }
   return {
     facts: {},
     user: `Context:\n${els.ctx.value.trim()}\n\nQuestion:\n${els.free_q.value.trim()}`
@@ -543,6 +697,10 @@ els.run.addEventListener('click', async () => {
 
   if (!openai && !anthropic && !xai) {
     els.status.innerHTML = '<span class="err">Add at least one API key.</span>';
+    return;
+  }
+  if (mode === 'upload' && !uploaded) {
+    els.status.innerHTML = '<span class="err">Upload a file first.</span>';
     return;
   }
 
