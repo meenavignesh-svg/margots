@@ -29,6 +29,79 @@
       line-height: 1.5;
       overflow-x: hidden;
     }
+
+    /* background DNA */
+    .dna-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .dna-stage {
+      position: absolute;
+      right: -40px;
+      top: 50%;
+      width: 220px;
+      height: 520px;
+      transform: translateY(-50%);
+      perspective: 900px;
+      opacity: 0.28;
+    }
+    .dna-stage.left {
+      left: -50px;
+      right: auto;
+      opacity: 0.16;
+      transform: translateY(-50%) scale(0.85);
+    }
+    .dna {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      animation: dna-spin 18s linear infinite;
+    }
+    body.working .dna {
+      animation-duration: 3.2s;
+    }
+    body.working .dna-stage {
+      opacity: 0.42;
+    }
+    body.working .dna-stage.left {
+      opacity: 0.26;
+    }
+    @keyframes dna-spin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+    .pair {
+      position: absolute;
+      left: 50%;
+      width: 120px;
+      height: 4px;
+      margin-left: -60px;
+      transform-style: preserve-3d;
+    }
+    .pair .rung {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 3px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #fb7185, #e7e5e4 35%, #e7e5e4 65%, #38bdf8);
+      transform: translateZ(0);
+    }
+    .pair .base {
+      position: absolute;
+      top: -6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(28,25,23,0.12);
+    }
+    .pair .base.a { left: -4px; background: #f43f5e; }
+    .pair .base.b { right: -4px; background: #0ea5e9; }
+    .pair .base.c { left: -4px; background: #22c55e; }
+    .pair .base.d { right: -4px; background: #f59e0b; }
+
     .topbar {
       max-width: 1080px;
       margin: 0 auto;
@@ -92,58 +165,27 @@
       position: relative;
       z-index: 1;
     }
-    .hero { text-align: center; padding: 10px 8px 8px; position: relative; }
+    .hero { text-align: center; padding: 18px 8px 16px; }
     .hero h1 {
       margin: 0;
       font-size: clamp(1.8rem, 4vw, 2.55rem);
       letter-spacing: -0.04em;
       font-weight: 700;
-      position: relative;
-      z-index: 2;
     }
     .hero p {
       margin: 10px auto 0;
       max-width: 540px;
       color: var(--muted);
       font-size: 1.02rem;
-      position: relative;
-      z-index: 2;
-    }
-
-    .scene {
-      position: relative;
-      height: 150px;
-      margin: 6px auto 8px;
-      max-width: 680px;
-    }
-    .char {
-      position: absolute;
-      filter: drop-shadow(0 14px 18px rgba(28,25,23,0.12));
-      animation: floaty 4.8s ease-in-out infinite;
-    }
-    .char svg { display: block; }
-    .c1 { left: 4%; bottom: 8px; animation-delay: 0s; }
-    .c2 { left: 22%; bottom: 28px; animation-delay: 0.4s; }
-    .c3 { left: 50%; bottom: 10px; transform: translateX(-50%); animation-delay: 0.9s; }
-    .c4 { right: 22%; bottom: 30px; animation-delay: 0.2s; }
-    .c5 { right: 4%; bottom: 6px; animation-delay: 0.7s; }
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    .c3 { animation-name: floaty-center; }
-    @keyframes floaty-center {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-10px); }
     }
 
     .stage {
-      background: var(--surface);
+      background: rgba(255,255,255,0.92);
       border: 1px solid var(--line);
       border-radius: 24px;
       box-shadow: var(--shadow);
       overflow: hidden;
-      position: relative;
+      backdrop-filter: blur(6px);
     }
     .stage-top {
       display: flex;
@@ -318,7 +360,6 @@
       line-height: 1.55;
     }
 
-    /* modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -338,16 +379,8 @@
       box-shadow: 0 20px 50px rgba(28,25,23,0.18);
       padding: 18px;
     }
-    .modal h2 {
-      margin: 0 0 6px;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
-    }
-    .modal p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
+    .modal h2 { margin: 0 0 6px; font-size: 1.1rem; letter-spacing: -0.02em; }
+    .modal p { margin: 0 0 14px; color: var(--muted); font-size: 0.88rem; }
     .modal .keys-fields .field { margin-bottom: 12px; }
     .modal input {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -378,13 +411,18 @@
       cursor: pointer;
     }
 
-    @media (max-width: 640px) {
-      .scene { height: 110px; }
-      .char svg { transform: scale(0.82); transform-origin: bottom center; }
+    @media (max-width: 720px) {
+      .dna-stage { opacity: 0.14; right: -80px; }
+      .dna-stage.left { display: none; }
     }
   </style>
 </head>
 <body>
+  <div class="dna-bg" aria-hidden="true">
+    <div class="dna-stage" id="dna_right"></div>
+    <div class="dna-stage left" id="dna_left"></div>
+  </div>
+
   <div class="topbar">
     <div class="brand">
       <div class="mark"></div>
@@ -400,55 +438,6 @@
     <div class="hero">
       <h1>Analysis that works alongside you</h1>
       <p>Paste text or upload almost any file. Local measurements first, then three independent backends.</p>
-    </div>
-
-    <div class="scene" aria-hidden="true">
-      <div class="char c1">
-        <svg width="72" height="84" viewBox="0 0 72 84" fill="none">
-          <ellipse cx="36" cy="78" rx="22" ry="5" fill="rgba(28,25,23,0.08)"/>
-          <path d="M14 34c0-14 10-26 22-26s22 12 22 26v22c0 8-6 14-14 14H28c-8 0-14-6-14-14V34z" fill="#c4b5fd"/>
-          <circle cx="28" cy="40" r="3.2" fill="#1c1917"/><circle cx="44" cy="40" r="3.2" fill="#1c1917"/>
-          <path d="M30 50c2.5 3 9.5 3 12 0" stroke="#1c1917" stroke-width="2.4" stroke-linecap="round"/>
-          <rect x="20" y="62" width="10" height="14" rx="4" fill="#a78bfa"/><rect x="42" y="62" width="10" height="14" rx="4" fill="#a78bfa"/>
-        </svg>
-      </div>
-      <div class="char c2">
-        <svg width="70" height="78" viewBox="0 0 70 78" fill="none">
-          <ellipse cx="35" cy="73" rx="20" ry="4.5" fill="rgba(28,25,23,0.08)"/>
-          <path d="M12 28 L35 16 L58 28 L58 52 L35 64 L12 52 Z" fill="#7dd3fc"/>
-          <path d="M35 16 L58 28 L58 52 L35 40 Z" fill="#38bdf8"/>
-          <path d="M12 28 L35 40 L35 64 L12 52 Z" fill="#0ea5e9" opacity=".85"/>
-          <circle cx="28" cy="36" r="2.8" fill="#0f172a"/><circle cx="42" cy="34" r="2.8" fill="#0f172a"/>
-          <path d="M30 44c2 2.5 8 2.5 10 0" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="char c3">
-        <svg width="86" height="96" viewBox="0 0 86 96" fill="none">
-          <ellipse cx="43" cy="90" rx="24" ry="5" fill="rgba(28,25,23,0.08)"/>
-          <path d="M43 18c14 0 28 14 28 34 0 18-12 30-28 30S15 70 15 52C15 32 29 18 43 18z" fill="#fda4af"/>
-          <circle cx="33" cy="48" r="3.4" fill="#1c1917"/><circle cx="53" cy="48" r="3.4" fill="#1c1917"/>
-          <path d="M36 58c3.5 4 10.5 4 14 0" stroke="#1c1917" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M43 14c0 0 2-8 8-10 -8 1-12 6-12 10 0-4-4-9-12-10 6 2 8 10 8 10z" fill="#4ade80"/>
-        </svg>
-      </div>
-      <div class="char c4">
-        <svg width="74" height="80" viewBox="0 0 74 80" fill="none">
-          <ellipse cx="37" cy="75" rx="20" ry="4.5" fill="rgba(28,25,23,0.08)"/>
-          <path d="M37 10 L66 62 L8 62 Z" fill="#86efac"/>
-          <path d="M37 10 L66 62 L37 54 Z" fill="#4ade80"/>
-          <circle cx="30" cy="44" r="2.8" fill="#14532d"/><circle cx="44" cy="44" r="2.8" fill="#14532d"/>
-          <path d="M31 53c2.5 2.8 9.5 2.8 12 0" stroke="#14532d" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="char c5">
-        <svg width="70" height="82" viewBox="0 0 70 82" fill="none">
-          <ellipse cx="35" cy="76" rx="20" ry="4.5" fill="rgba(28,25,23,0.08)"/>
-          <rect x="12" y="14" width="46" height="46" rx="14" fill="#fdba74"/>
-          <circle cx="26" cy="36" r="3" fill="#1c1917"/><circle cx="44" cy="36" r="3" fill="#1c1917"/>
-          <path d="M28 46c2.8 3 11 3 14 0" stroke="#1c1917" stroke-width="2.3" stroke-linecap="round"/>
-          <rect x="22" y="60" width="10" height="12" rx="4" fill="#fb923c"/><rect x="38" y="60" width="10" height="12" rx="4" fill="#fb923c"/>
-        </svg>
-      </div>
     </div>
 
     <div class="stage">
@@ -574,6 +563,34 @@ const PROMPTS = {
   skeptic: "Challenge the obvious reading. Offer alternatives and list what would falsify the main interpretation."
 };
 
+function buildHelix(container) {
+  const dna = document.createElement('div');
+  dna.className = 'dna';
+  const pairs = 18;
+  for (let i = 0; i < pairs; i++) {
+    const pair = document.createElement('div');
+    pair.className = 'pair';
+    const y = 18 + i * 26;
+    const rot = i * 28;
+    pair.style.top = y + 'px';
+    pair.style.transform = `rotateY(${rot}deg) translateZ(0)`;
+    const rung = document.createElement('div');
+    rung.className = 'rung';
+    const a = document.createElement('div');
+    const b = document.createElement('div');
+    if (i % 2 === 0) { a.className = 'base a'; b.className = 'base b'; }
+    else { a.className = 'base c'; b.className = 'base d'; }
+    pair.appendChild(rung);
+    pair.appendChild(a);
+    pair.appendChild(b);
+    dna.appendChild(pair);
+  }
+  container.appendChild(dna);
+}
+
+buildHelix(document.getElementById('dna_right'));
+buildHelix(document.getElementById('dna_left'));
+
 const els = {
   modeBtns: [...document.querySelectorAll('.tab')],
   panels: {
@@ -612,24 +629,20 @@ let uploaded = null;
 
 function loadKeys() {
   ['openai','anthropic','xai'].forEach(k => {
-    const v = localStorage.getItem('margots_' + k) || '';
-    els['k_' + k].value = v;
+    els['k_' + k].value = localStorage.getItem('margots_' + k) || '';
   });
   updateKeysDot();
 }
-
 function saveKeys() {
   ['openai','anthropic','xai'].forEach(k => {
     localStorage.setItem('margots_' + k, els['k_' + k].value.trim());
   });
   updateKeysDot();
 }
-
 function updateKeysDot() {
   const any = ['openai','anthropic','xai'].some(k => (localStorage.getItem('margots_' + k) || '').trim());
   els.keys_dot.classList.toggle('on', any);
 }
-
 function openModal() {
   loadKeys();
   els.keys_modal.classList.add('open');
@@ -639,13 +652,11 @@ function closeModal() {
   els.keys_modal.classList.remove('open');
   els.keys_modal.setAttribute('aria-hidden', 'true');
 }
-
 els.open_keys.addEventListener('click', openModal);
 els.close_keys.addEventListener('click', closeModal);
 els.save_keys.addEventListener('click', () => { saveKeys(); closeModal(); });
 els.keys_modal.addEventListener('click', e => { if (e.target === els.keys_modal) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
 loadKeys();
 
 els.modeBtns.forEach(btn => {
@@ -817,6 +828,7 @@ els.run.addEventListener('click', async () => {
   els.out_skeptic.textContent = '…';
   els.run.disabled = true;
   els.status.textContent = 'Running…';
+  document.body.classList.add('working');
   const jobs = [];
   if (anthropic) jobs.push(callAnthropic(anthropic, PROMPTS.strict, user).then(t => { els.out_strict.textContent = t; }).catch(e => { els.out_strict.textContent = 'Error: ' + e.message; }));
   else els.out_strict.textContent = 'No Anthropic key';
@@ -825,6 +837,7 @@ els.run.addEventListener('click', async () => {
   if (xai) jobs.push(callOpenAICompatible('https://api.x.ai/v1', xai, 'grok-3', PROMPTS.skeptic, user).then(t => { els.out_skeptic.textContent = t; }).catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; }));
   else els.out_skeptic.textContent = 'No xAI key';
   await Promise.all(jobs);
+  document.body.classList.remove('working');
   els.run.disabled = false;
   els.status.innerHTML = '<span class="ok">Done</span>';
 });
