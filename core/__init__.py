@@ -1,4 +1,4 @@
-from .llm_engine import Lattice, LatticeResult, Claim, CoreRole
-from .bio_analyzer import Analyzer, Classical
+from .llm_engine import Engine, Result, Role
+from .bio_analyzer import Analyzer, seq_stats, table_stats
 
-__all__ = ["Lattice", "LatticeResult", "Claim", "CoreRole", "Analyzer", "Classical"]
+__all__ = ["Engine", "Result", "Role", "Analyzer", "seq_stats", "table_stats"]
