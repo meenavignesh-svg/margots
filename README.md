@@ -1,55 +1,43 @@
-# BioOmni AI
+# Margots
 
-**The Ultimate Multi-LLM Bioinformatics Data Analysis Engine**
+A biological reasoning lattice.
 
-BioOmni AI is a production-grade platform that can perform virtually any bioinformatics data analysis task by combining classical computational biology tools with three frontier large language models.
+Margots does not wrap language models around bioinformatics tasks.  
+It treats every analysis as a process of hypothesis generation, selective pressure, and refinement — the same logic evolution uses.
 
-## Supported Analysis Types
+Three independent reasoning cores operate under different selection criteria:
 
-- Sequence analysis (DNA, RNA, protein)
-- Multiple sequence alignment interpretation
-- Variant effect prediction & clinical interpretation
-- Differential expression analysis
-- Pathway & enrichment analysis
-- Structural biology insights
-- Single-cell data interpretation
-- Metagenomics summary
-- Custom multi-omics integration
-- Literature-aware hypothesis generation
+- **Precision core** — statistical and structural rigor
+- **Context core** — biological systems and literature patterns
+- **Divergence core** — alternative explanations and edge cases
 
-## Architecture
-
-BioOmni uses **three API keys** simultaneously:
-
-1. **OpenAI** (GPT-4o / o-series)
-2. **Anthropic** (Claude 4 / Sonnet)
-3. **xAI** (Grok)
-
-The system can route queries intelligently, run parallel analyses, or create consensus answers across models for higher reliability.
-
-## Quick Start
-
-```bash
-git clone https://github.com/meenavignesh-svg/margots.git
-cd margots
-pip install -r requirements.txt
-cp .env.example .env
-# Add your three API keys to .env
-streamlit run app.py
-```
-
-## Environment Variables
-
-```env
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-XAI_API_KEY=xai-...
-```
-
-## Philosophy
-
-Built as the greatest bioinformatics AI analysis tool possible — combining rigorous scientific computation with the reasoning power of multiple frontier models.
+Their outputs are not averaged. They are placed under selective pressure. Only claims that survive cross-examination are retained.
 
 ---
 
-**Margots Project** • Built by Meena Vignesh M. + Grok
+### What it actually does
+
+- Decomposes a biological question into testable atomic claims
+- Runs classical sequence / statistical computation first (no model involved)
+- Forces each core to defend or abandon its position
+- Surfaces unresolved conflicts instead of hiding them
+- Returns structured biological assertions with explicit confidence boundaries
+
+This is not a chatbot with Biopython.  
+It is a reasoning engine that happens to operate on biological data.
+
+---
+
+### Setup
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# supply the three keys
+streamlit run app.py
+```
+
+---
+
+Margots rejects the default pattern of “prompt → answer”.  
+It only keeps what can survive disagreement.
