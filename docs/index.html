@@ -8,16 +8,13 @@
     :root {
       --bg: #050b14;
       --panel: rgba(8, 18, 32, 0.78);
-      --panel-solid: #0b1624;
       --text: #e8f3ff;
       --muted: #8aa0b8;
       --line: rgba(56, 189, 248, 0.22);
       --line-strong: rgba(56, 189, 248, 0.4);
       --cyan: #38bdf8;
-      --cyan2: #22d3ee;
       --ok: #34d399;
       --err: #fb7185;
-      --black: #031018;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
@@ -26,27 +23,14 @@
       color: var(--text);
       background:
         radial-gradient(ellipse 80% 60% at 50% 40%, rgba(14, 116, 144, 0.18), transparent 60%),
-        radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.08), transparent 40%),
         linear-gradient(180deg, #02060d 0%, #050b14 50%, #07101c 100%);
       line-height: 1.5;
       overflow-x: hidden;
     }
-
-    /* JARVIS DNA hologram */
-    .dna-bg {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
+    .dna-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
     .hud-ring {
-      position: absolute;
-      left: 50%;
-      top: 48%;
-      border: 1px solid rgba(56, 189, 248, 0.18);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
+      position: absolute; left: 50%; top: 48%; border: 1px solid rgba(56, 189, 248, 0.18);
+      border-radius: 50%; transform: translate(-50%, -50%);
     }
     .hud-ring.r1 { width: min(70vw, 520px); height: min(70vw, 520px); animation: ring 24s linear infinite; }
     .hud-ring.r2 { width: min(90vw, 680px); height: min(90vw, 680px); border-style: dashed; opacity: 0.5; animation: ring 40s linear infinite reverse; }
@@ -56,67 +40,34 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
     .scan {
-      position: absolute;
-      left: 0; right: 0;
-      height: 120px;
+      position: absolute; left: 0; right: 0; height: 120px;
       background: linear-gradient(180deg, transparent, rgba(56,189,248,0.06), transparent);
       animation: scan 6s ease-in-out infinite;
     }
-    @keyframes scan {
-      0% { top: -10%; }
-      100% { top: 110%; }
-    }
-
+    @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
     .dna-stage {
-      position: absolute;
-      left: 50%;
-      top: 46%;
-      width: 280px;
-      height: 560px;
-      transform: translate(-50%, -50%);
-      perspective: 1000px;
-      opacity: 0.55;
+      position: absolute; left: 50%; top: 46%; width: 280px; height: 560px;
+      transform: translate(-50%, -50%); perspective: 1000px; opacity: 0.55;
       filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35));
     }
-    .dna {
-      position: absolute;
-      inset: 0;
-      transform-style: preserve-3d;
-      animation: dna-spin 8s linear infinite;
-    }
-    body.working .dna {
-      animation-duration: 2.4s;
-    }
-    body.working .dna-stage {
-      opacity: 0.85;
-      filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55));
-    }
+    .dna { position: absolute; inset: 0; transform-style: preserve-3d; animation: dna-spin 8s linear infinite; }
+    body.working .dna { animation-duration: 2.4s; }
+    body.working .dna-stage { opacity: 0.85; filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55)); }
     @keyframes dna-spin {
       from { transform: rotateY(0deg) rotateZ(-8deg); }
       to { transform: rotateY(360deg) rotateZ(-8deg); }
     }
     .pair {
-      position: absolute;
-      left: 50%;
-      width: 140px;
-      height: 4px;
-      margin-left: -70px;
+      position: absolute; left: 50%; width: 140px; height: 4px; margin-left: -70px;
       transform-style: preserve-3d;
     }
     .pair .rung {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 2px;
-      border-radius: 2px;
+      position: absolute; left: 0; right: 0; top: 0; height: 2px; border-radius: 2px;
       background: linear-gradient(90deg, rgba(34,211,238,0.95), rgba(148,163,184,0.35), rgba(56,189,248,0.95));
       box-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
     }
     .pair .base {
-      position: absolute;
-      top: -5px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
+      position: absolute; top: -5px; width: 12px; height: 12px; border-radius: 50%;
       box-shadow: 0 0 12px currentColor;
     }
     .pair .base.a { left: -3px; background: #22d3ee; color: #22d3ee; }
@@ -125,318 +76,165 @@
     .pair .base.d { right: -3px; background: #0ea5e9; color: #0ea5e9; }
 
     .topbar {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 18px 20px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      position: relative;
-      z-index: 2;
+      max-width: 1080px; margin: 0 auto; padding: 18px 20px 0;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; position: relative; z-index: 2;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; }
     .mark {
-      width: 22px;
-      height: 22px;
-      border-radius: 7px;
+      width: 22px; height: 22px; border-radius: 7px;
       background: radial-gradient(circle at 30% 30%, #67e8f9, #0284c7);
       box-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
     }
     .pill {
-      font-size: 0.72rem;
-      border: 1px solid var(--line-strong);
-      background: rgba(8,18,32,0.7);
-      color: var(--cyan);
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-weight: 600;
+      font-size: 0.72rem; border: 1px solid var(--line-strong); background: rgba(8,18,32,0.7);
+      color: var(--cyan); border-radius: 999px; padding: 3px 8px; font-weight: 600;
     }
     .keys-btn {
-      border: 1px solid var(--line-strong);
-      background: rgba(8,18,32,0.75);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-weight: 650;
-      font-size: 0.88rem;
-      cursor: pointer;
+      border: 1px solid var(--line-strong); background: rgba(8,18,32,0.75); color: var(--text);
+      border-radius: 999px; padding: 8px 14px; font-weight: 650; font-size: 0.88rem; cursor: pointer;
     }
-    .keys-btn:hover { border-color: var(--cyan); }
     .keys-btn .dot-live {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #334155;
-      margin-right: 6px;
-      vertical-align: middle;
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #334155;
+      margin-right: 6px; vertical-align: middle;
     }
     .keys-btn .dot-live.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
 
-    .shell {
-      max-width: 920px;
-      margin: 12px auto 48px;
-      padding: 0 16px;
-      position: relative;
-      z-index: 1;
-    }
+    .shell { max-width: 920px; margin: 12px auto 48px; padding: 0 16px; position: relative; z-index: 1; }
     .hero { text-align: center; padding: 18px 8px 16px; }
     .hero h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 4vw, 2.55rem);
-      letter-spacing: -0.04em;
-      font-weight: 700;
+      margin: 0; font-size: clamp(1.8rem, 4vw, 2.55rem); letter-spacing: -0.04em; font-weight: 700;
       text-shadow: 0 0 24px rgba(56,189,248,0.25);
     }
-    .hero p {
-      margin: 10px auto 0;
-      max-width: 540px;
-      color: var(--muted);
-      font-size: 1.02rem;
-    }
+    .hero p { margin: 10px auto 0; max-width: 540px; color: var(--muted); font-size: 1.02rem; }
 
     .stage {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: 0 0 40px rgba(14, 165, 233, 0.08), inset 0 0 0 1px rgba(255,255,255,0.03);
-      overflow: hidden;
-      backdrop-filter: blur(14px);
+      background: var(--panel); border: 1px solid var(--line); border-radius: 24px;
+      box-shadow: 0 0 40px rgba(14, 165, 233, 0.08); overflow: hidden; backdrop-filter: blur(14px);
     }
     .stage-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(3, 12, 22, 0.55);
+      display: flex; align-items: center; gap: 8px; padding: 12px 14px;
+      border-bottom: 1px solid var(--line); background: rgba(3, 12, 22, 0.55);
     }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; }
-    .dot.r { background: #fb7185; }
-    .dot.y { background: #fbbf24; }
-    .dot.g { background: #34d399; }
-    .stage-title {
-      margin-left: 6px;
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
+    .dot.r { background: #fb7185; } .dot.y { background: #fbbf24; } .dot.g { background: #34d399; }
+    .stage-title { margin-left: 6px; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
     .stage-body { padding: 22px 20px 20px; }
     .composer {
-      background: rgba(3, 12, 22, 0.55);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
+      background: rgba(3, 12, 22, 0.55); border: 1px solid var(--line); border-radius: 18px; padding: 14px;
     }
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .tab {
-      border: 1px solid var(--line);
-      background: transparent;
-      color: var(--muted);
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 0.86rem;
-      font-weight: 600;
-      cursor: pointer;
+      border: 1px solid var(--line); background: transparent; color: var(--muted);
+      border-radius: 999px; padding: 7px 12px; font-size: 0.86rem; font-weight: 600; cursor: pointer;
     }
     .tab.active {
-      color: #031018;
-      background: linear-gradient(90deg, #67e8f9, #38bdf8);
-      border-color: transparent;
+      color: #031018; background: linear-gradient(90deg, #67e8f9, #38bdf8); border-color: transparent;
     }
-    label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin: 0 0 6px;
-      font-weight: 600;
-    }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin: 0 0 6px; font-weight: 600; }
     .field { margin-bottom: 12px; }
     input, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: rgba(2, 8, 16, 0.7);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 12px;
-      font: inherit;
+      width: 100%; border: 1px solid var(--line); background: rgba(2, 8, 16, 0.7);
+      color: var(--text); border-radius: 12px; padding: 12px; font: inherit;
     }
     input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+      outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     }
     textarea { min-height: 110px; resize: vertical; }
     .drop {
-      border: 1.5px dashed var(--line-strong);
-      border-radius: 14px;
-      background: rgba(2, 8, 16, 0.5);
-      padding: 22px 14px;
-      text-align: center;
-      color: var(--muted);
-      cursor: pointer;
+      border: 1.5px dashed var(--line-strong); border-radius: 14px; background: rgba(2, 8, 16, 0.5);
+      padding: 22px 14px; text-align: center; color: var(--muted); cursor: pointer;
     }
-    .drop.drag {
-      border-color: var(--cyan);
-      color: var(--text);
-      box-shadow: 0 0 20px rgba(56,189,248,0.15);
-    }
+    .drop.drag { border-color: var(--cyan); color: var(--text); }
     .drop strong { color: var(--text); }
     .drop input { display: none; }
     .file-meta { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
     .actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      margin-top: 12px; flex-wrap: wrap;
     }
     .status { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
-    .ok { color: var(--ok); }
-    .err { color: var(--err); }
-    #run {
-      border: none;
-      background: linear-gradient(90deg, #22d3ee, #38bdf8);
-      color: #031018;
-      border-radius: 999px;
-      padding: 11px 18px;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 120px;
+    .ok { color: var(--ok); } .err { color: var(--err); }
+    #run, #agent_send {
+      border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018;
+      border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; min-width: 120px;
       box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
     }
-    #run:disabled { opacity: 0.55; cursor: not-allowed; }
-    .hint {
-      margin-top: 12px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-align: center;
-    }
+    #run:disabled, #agent_send:disabled { opacity: 0.55; cursor: not-allowed; }
+    .hint { margin-top: 12px; font-size: 0.78rem; color: var(--muted); text-align: center; }
     .section { margin-top: 16px; }
     .section h2 {
-      margin: 0 0 10px;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
+      margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
     }
     .facts {
-      background: rgba(2, 8, 16, 0.65);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.82rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-      color: #b6c9dc;
-      max-height: 180px;
-      overflow: auto;
+      background: rgba(2, 8, 16, 0.65); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem;
+      white-space: pre-wrap; word-break: break-word; color: #b6c9dc; max-height: 180px; overflow: auto;
     }
-    .answers {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
+    .answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 860px) { .answers { grid-template-columns: 1fr; } }
     .answer {
-      background: rgba(2, 8, 16, 0.55);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      min-height: 180px;
-      position: relative;
-      overflow: hidden;
+      background: rgba(2, 8, 16, 0.55); border: 1px solid var(--line); border-radius: 16px;
+      padding: 14px; min-height: 180px; position: relative; overflow: hidden;
     }
-    .answer .badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 36px;
-      height: 36px;
-    }
+    .answer .badge { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; }
     .answer h3 {
-      margin: 0 0 8px;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--cyan);
+      margin: 0 0 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan);
     }
     .answer .body {
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-size: 0.92rem;
-      color: #d7e6f5;
-      line-height: 1.55;
+      white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; color: #d7e6f5; line-height: 1.55;
+    }
+    .speak-btn {
+      margin-top: 10px; border: 1px solid var(--line-strong); background: transparent; color: var(--cyan);
+      border-radius: 999px; padding: 6px 12px; font-size: 0.78rem; font-weight: 650; cursor: pointer;
     }
 
+    /* agent chat */
+    .chat {
+      display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow: auto;
+      padding: 10px; background: rgba(2, 8, 16, 0.45); border-radius: 12px; border: 1px solid var(--line);
+      margin-bottom: 12px;
+    }
+    .bubble {
+      max-width: 92%; padding: 10px 12px; border-radius: 14px; font-size: 0.92rem; line-height: 1.45;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .bubble.user {
+      align-self: flex-end; background: rgba(56, 189, 248, 0.18); border: 1px solid var(--line);
+    }
+    .bubble.agent {
+      align-self: flex-start; background: rgba(8, 28, 42, 0.9); border: 1px solid var(--line-strong);
+    }
+    .bubble .who { display: block; font-size: 0.72rem; color: var(--cyan); margin-bottom: 4px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .agent-row { display: flex; gap: 8px; align-items: center; }
+    .agent-row input { flex: 1; }
+    .toggle-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.85rem; color: var(--muted);
+    }
+    .toggle-row input { width: auto; }
+
     .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 13, 0.72);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      padding: 16px;
+      position: fixed; inset: 0; background: rgba(2, 6, 13, 0.72); display: none;
+      align-items: center; justify-content: center; z-index: 50; padding: 16px;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
-      width: min(440px, 100%);
-      background: #0b1624;
-      border: 1px solid var(--line-strong);
-      border-radius: 18px;
-      box-shadow: 0 0 40px rgba(34, 211, 238, 0.12);
-      padding: 18px;
+      width: min(440px, 100%); background: #0b1624; border: 1px solid var(--line-strong);
+      border-radius: 18px; box-shadow: 0 0 40px rgba(34, 211, 238, 0.12); padding: 18px;
     }
     .modal h2 { margin: 0 0 6px; font-size: 1.1rem; }
     .modal p { margin: 0 0 14px; color: var(--muted); font-size: 0.88rem; }
-    .modal .keys-fields .field { margin-bottom: 12px; }
-    .modal input {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.84rem;
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
-    }
+    .modal input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.84rem; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
     .btn-secondary {
-      border: 1px solid var(--line-strong);
-      background: transparent;
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 650;
-      cursor: pointer;
+      border: 1px solid var(--line-strong); background: transparent; color: var(--text);
+      border-radius: 999px; padding: 10px 14px; font-weight: 650; cursor: pointer;
     }
     .btn-primary {
-      border: none;
-      background: linear-gradient(90deg, #22d3ee, #38bdf8);
-      color: #031018;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 700;
-      cursor: pointer;
+      border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018;
+      border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer;
     }
-
-    @media (max-width: 720px) {
-      .dna-stage { width: 200px; height: 420px; opacity: 0.35; }
-    }
+    @media (max-width: 720px) { .dna-stage { width: 200px; height: 420px; opacity: 0.35; } }
   </style>
 </head>
 <body>
@@ -462,7 +260,7 @@
   <div class="shell">
     <div class="hero">
       <h1>Analysis that works alongside you</h1>
-      <p>Paste text or upload almost any file. Local measurements first, then three independent backends.</p>
+      <p>Run three backends side by side, or talk to the agent. It can reply by voice using your API key.</p>
     </div>
 
     <div class="stage">
@@ -477,77 +275,70 @@
             <button class="tab" data-mode="variant">Variant</button>
             <button class="tab" data-mode="free">Free</button>
             <button class="tab" data-mode="upload">Upload</button>
+            <button class="tab" data-mode="agent">Agent</button>
           </div>
 
           <div id="panel_sequence">
-            <div class="field">
-              <label>Sequence</label>
-              <textarea id="seq" placeholder="Paste DNA, RNA, or protein sequence"></textarea>
-            </div>
-            <div class="field">
-              <label>Question (optional)</label>
-              <input id="seq_q" placeholder="What should we look for?" />
-            </div>
+            <div class="field"><label>Sequence</label><textarea id="seq" placeholder="Paste DNA, RNA, or protein sequence"></textarea></div>
+            <div class="field"><label>Question (optional)</label><input id="seq_q" placeholder="What should we look for?" /></div>
           </div>
-
           <div id="panel_variant" hidden>
-            <div class="field">
-              <label>Variant</label>
-              <textarea id="variant" placeholder="e.g. BRCA1 c.5266dupC"></textarea>
-            </div>
+            <div class="field"><label>Variant</label><textarea id="variant" placeholder="e.g. BRCA1 c.5266dupC"></textarea></div>
           </div>
-
           <div id="panel_free" hidden>
-            <div class="field">
-              <label>Context</label>
-              <textarea id="ctx" placeholder="Paste notes, summary, or data description"></textarea>
-            </div>
-            <div class="field">
-              <label>Question</label>
-              <input id="free_q" placeholder="What do you want checked?" />
-            </div>
+            <div class="field"><label>Context</label><textarea id="ctx" placeholder="Paste notes, summary, or data description"></textarea></div>
+            <div class="field"><label>Question</label><input id="free_q" placeholder="What do you want checked?" /></div>
           </div>
-
           <div id="panel_upload" hidden>
             <div class="drop" id="drop">
               <strong>Drop any file here</strong> or click to browse<br />
-              <span style="font-size:0.82rem">FASTA, CSV, TSV, TXT, JSON, VCF, BED, GFF, MD, log, and other text-based formats</span>
+              <span style="font-size:0.82rem">FASTA, CSV, TSV, TXT, JSON, VCF, BED, GFF, MD, log</span>
               <input id="file" type="file" />
             </div>
             <div class="file-meta" id="file_meta">No file selected.</div>
-            <div class="field" style="margin-top:12px">
-              <label>Question (optional)</label>
-              <input id="upload_q" placeholder="What should be analyzed in this file?" />
-            </div>
+            <div class="field" style="margin-top:12px"><label>Question (optional)</label><input id="upload_q" placeholder="What should be analyzed in this file?" /></div>
           </div>
 
-          <div class="actions">
+          <div id="panel_agent" hidden>
+            <label class="toggle-row"><input type="checkbox" id="voice_on" checked /> Agent talks out loud</label>
+            <div class="chat" id="chat"></div>
+            <div class="agent-row">
+              <input id="agent_q" placeholder="Ask the agent anything about your data or biology…" />
+              <button id="agent_send" type="button">Send</button>
+            </div>
+            <p class="hint" style="text-align:left;margin-top:8px">Uses your OpenAI key first (chat + TTS). Falls back to xAI or Anthropic for text, and browser speech if TTS is unavailable.</p>
+          </div>
+
+          <div class="actions" id="run_actions">
             <div class="status" id="status"></div>
             <button id="run">Run</button>
           </div>
         </div>
 
-        <p class="hint">Files are read locally in your browser. Use <strong>API keys</strong> in the top right before running.</p>
+        <p class="hint" id="main_hint">Files stay in your browser. Set API keys top-right before running.</p>
 
-        <div class="section">
+        <div class="section" id="facts_section">
           <h2>Local measurements</h2>
           <div class="facts" id="facts">No run yet.</div>
         </div>
 
-        <div class="section">
+        <div class="section" id="answers_section">
           <h2>Answers</h2>
           <div class="answers">
             <div class="answer">
-              <div class="badge"><svg viewBox="0 0 36 36" width="36" height="36"><rect width="36" height="36" rx="10" fill="#164e63"/><circle cx="13" cy="16" r="2" fill="#67e8f9"/><circle cx="23" cy="16" r="2" fill="#67e8f9"/><path d="M14 22c2 2 6 2 8 0" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <h3>Strict</h3><div class="body" id="out_strict">—</div>
+              <h3>Strict</h3>
+              <div class="body" id="out_strict">—</div>
+              <button type="button" class="speak-btn" data-speak="out_strict">Speak</button>
             </div>
             <div class="answer">
-              <div class="badge"><svg viewBox="0 0 36 36" width="36" height="36"><path d="M18 4 L32 30 H4 Z" fill="#0e7490"/><circle cx="15" cy="20" r="1.8" fill="#a5f3fc"/><circle cx="21" cy="20" r="1.8" fill="#a5f3fc"/><path d="M15 25c1.5 1.6 4.5 1.6 6 0" stroke="#a5f3fc" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-              <h3>Context</h3><div class="body" id="out_context">—</div>
+              <h3>Context</h3>
+              <div class="body" id="out_context">—</div>
+              <button type="button" class="speak-btn" data-speak="out_context">Speak</button>
             </div>
             <div class="answer">
-              <div class="badge"><svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="14" fill="#155e75"/><circle cx="13" cy="16" r="2" fill="#67e8f9"/><circle cx="23" cy="16" r="2" fill="#67e8f9"/><path d="M14 23c2.2 2.4 5.8 2.4 8 0" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <h3>Skeptic</h3><div class="body" id="out_skeptic">—</div>
+              <h3>Skeptic</h3>
+              <div class="body" id="out_skeptic">—</div>
+              <button type="button" class="speak-btn" data-speak="out_skeptic">Speak</button>
             </div>
           </div>
         </div>
@@ -556,23 +347,12 @@
   </div>
 
   <div class="modal-backdrop" id="keys_modal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-labelledby="keys_title">
-      <h2 id="keys_title">API keys</h2>
-      <p>Stored only in this browser (localStorage). Never sent except to the official provider APIs.</p>
-      <div class="keys-fields">
-        <div class="field">
-          <label>OpenAI</label>
-          <input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" />
-        </div>
-        <div class="field">
-          <label>Anthropic</label>
-          <input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" />
-        </div>
-        <div class="field">
-          <label>xAI</label>
-          <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
-        </div>
-      </div>
+    <div class="modal" role="dialog">
+      <h2>API keys</h2>
+      <p>Stored only in this browser. OpenAI key enables chat voice (TTS).</p>
+      <div class="field"><label>OpenAI</label><input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" /></div>
+      <div class="field"><label>Anthropic</label><input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" /></div>
+      <div class="field"><label>xAI</label><input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" /></div>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="close_keys">Cancel</button>
         <button type="button" class="btn-primary" id="save_keys">Save</button>
@@ -582,6 +362,7 @@
 
 <script>
 const MAX_CHARS = 120000;
+const AGENT_SYSTEM = "You are Margots, a bioinformatics analysis agent. Be precise, concise, and practical. Prefer measurable claims. If unsure, say what data is missing. Speak in clear short paragraphs suitable for being read aloud.";
 const PROMPTS = {
   strict: "Stick to measurable features in the provided data. Avoid speculation. If evidence is weak, say so.",
   context: "Interpret in biological or scientific context when relevant. Mark uncertainty clearly.",
@@ -591,23 +372,17 @@ const PROMPTS = {
 function buildHelix(container) {
   const dna = document.createElement('div');
   dna.className = 'dna';
-  const pairs = 22;
-  for (let i = 0; i < pairs; i++) {
+  for (let i = 0; i < 22; i++) {
     const pair = document.createElement('div');
     pair.className = 'pair';
-    const y = 12 + i * 24;
-    const rot = i * 26;
-    pair.style.top = y + 'px';
-    pair.style.transform = `rotateY(${rot}deg)`;
-    const rung = document.createElement('div');
-    rung.className = 'rung';
+    pair.style.top = (12 + i * 24) + 'px';
+    pair.style.transform = `rotateY(${i * 26}deg)`;
+    const rung = document.createElement('div'); rung.className = 'rung';
     const a = document.createElement('div');
     const b = document.createElement('div');
     if (i % 2 === 0) { a.className = 'base a'; b.className = 'base b'; }
     else { a.className = 'base c'; b.className = 'base d'; }
-    pair.appendChild(rung);
-    pair.appendChild(a);
-    pair.appendChild(b);
+    pair.append(rung, a, b);
     dna.appendChild(pair);
   }
   container.appendChild(dna);
@@ -620,7 +395,8 @@ const els = {
     sequence: document.getElementById('panel_sequence'),
     variant: document.getElementById('panel_variant'),
     free: document.getElementById('panel_free'),
-    upload: document.getElementById('panel_upload')
+    upload: document.getElementById('panel_upload'),
+    agent: document.getElementById('panel_agent')
   },
   k_openai: document.getElementById('k_openai'),
   k_anthropic: document.getElementById('k_anthropic'),
@@ -635,8 +411,12 @@ const els = {
   file: document.getElementById('file'),
   file_meta: document.getElementById('file_meta'),
   run: document.getElementById('run'),
+  run_actions: document.getElementById('run_actions'),
   status: document.getElementById('status'),
   facts: document.getElementById('facts'),
+  facts_section: document.getElementById('facts_section'),
+  answers_section: document.getElementById('answers_section'),
+  main_hint: document.getElementById('main_hint'),
   out_strict: document.getElementById('out_strict'),
   out_context: document.getElementById('out_context'),
   out_skeptic: document.getElementById('out_skeptic'),
@@ -644,67 +424,56 @@ const els = {
   close_keys: document.getElementById('close_keys'),
   save_keys: document.getElementById('save_keys'),
   keys_modal: document.getElementById('keys_modal'),
-  keys_dot: document.getElementById('keys_dot')
+  keys_dot: document.getElementById('keys_dot'),
+  chat: document.getElementById('chat'),
+  agent_q: document.getElementById('agent_q'),
+  agent_send: document.getElementById('agent_send'),
+  voice_on: document.getElementById('voice_on')
 };
 
 let mode = 'sequence';
 let uploaded = null;
+let agentHistory = [{ role: 'system', content: AGENT_SYSTEM }];
+let currentAudio = null;
 
 function loadKeys() {
-  ['openai','anthropic','xai'].forEach(k => {
-    els['k_' + k].value = localStorage.getItem('margots_' + k) || '';
-  });
+  ['openai','anthropic','xai'].forEach(k => { els['k_' + k].value = localStorage.getItem('margots_' + k) || ''; });
   updateKeysDot();
 }
 function saveKeys() {
-  ['openai','anthropic','xai'].forEach(k => {
-    localStorage.setItem('margots_' + k, els['k_' + k].value.trim());
-  });
+  ['openai','anthropic','xai'].forEach(k => localStorage.setItem('margots_' + k, els['k_' + k].value.trim()));
   updateKeysDot();
 }
 function updateKeysDot() {
   const any = ['openai','anthropic','xai'].some(k => (localStorage.getItem('margots_' + k) || '').trim());
   els.keys_dot.classList.toggle('on', any);
 }
-function openModal() {
-  loadKeys();
-  els.keys_modal.classList.add('open');
-  els.keys_modal.setAttribute('aria-hidden', 'false');
-}
-function closeModal() {
-  els.keys_modal.classList.remove('open');
-  els.keys_modal.setAttribute('aria-hidden', 'true');
-}
-els.open_keys.addEventListener('click', openModal);
-els.close_keys.addEventListener('click', closeModal);
-els.save_keys.addEventListener('click', () => { saveKeys(); closeModal(); });
-els.keys_modal.addEventListener('click', e => { if (e.target === els.keys_modal) closeModal(); });
+function openModal() { loadKeys(); els.keys_modal.classList.add('open'); }
+function closeModal() { els.keys_modal.classList.remove('open'); }
+els.open_keys.onclick = openModal;
+els.close_keys.onclick = closeModal;
+els.save_keys.onclick = () => { saveKeys(); closeModal(); };
+els.keys_modal.onclick = e => { if (e.target === els.keys_modal) closeModal(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 loadKeys();
 
-els.modeBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    mode = btn.dataset.mode;
-    els.modeBtns.forEach(b => b.classList.toggle('active', b === btn));
-    Object.entries(els.panels).forEach(([m, el]) => { el.hidden = m !== mode; });
-  });
-});
+function setMode(m) {
+  mode = m;
+  els.modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  Object.entries(els.panels).forEach(([name, el]) => { el.hidden = name !== m; });
+  const isAgent = m === 'agent';
+  els.run_actions.style.display = isAgent ? 'none' : 'flex';
+  els.facts_section.style.display = isAgent ? 'none' : 'block';
+  els.answers_section.style.display = isAgent ? 'none' : 'block';
+  els.main_hint.style.display = isAgent ? 'none' : 'block';
+}
+els.modeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
 
 els.drop.addEventListener('click', () => els.file.click());
-['dragenter','dragover'].forEach(ev => {
-  els.drop.addEventListener(ev, e => { e.preventDefault(); els.drop.classList.add('drag'); });
-});
-['dragleave','drop'].forEach(ev => {
-  els.drop.addEventListener(ev, e => { e.preventDefault(); els.drop.classList.remove('drag'); });
-});
-els.drop.addEventListener('drop', e => {
-  const f = e.dataTransfer.files?.[0];
-  if (f) handleFile(f);
-});
-els.file.addEventListener('change', () => {
-  const f = els.file.files?.[0];
-  if (f) handleFile(f);
-});
+['dragenter','dragover'].forEach(ev => els.drop.addEventListener(ev, e => { e.preventDefault(); els.drop.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev => els.drop.addEventListener(ev, e => { e.preventDefault(); els.drop.classList.remove('drag'); }));
+els.drop.addEventListener('drop', e => { const f = e.dataTransfer.files?.[0]; if (f) handleFile(f); });
+els.file.addEventListener('change', () => { const f = els.file.files?.[0]; if (f) handleFile(f); });
 
 function formatBytes(n) {
   if (n < 1024) return n + ' B';
@@ -763,11 +532,11 @@ function buildUploadFacts(name, size, type, text, kind) {
   return facts;
 }
 function handleFile(file) {
-  if (file.size > 8 * 1024 * 1024) { els.file_meta.textContent = 'File too large (max 8 MB for browser use).'; uploaded = null; return; }
+  if (file.size > 8 * 1024 * 1024) { els.file_meta.textContent = 'File too large (max 8 MB).'; uploaded = null; return; }
   const reader = new FileReader();
   reader.onload = () => {
     let text = String(reader.result || '');
-    if (text.includes('\u0000')) { els.file_meta.textContent = `Loaded ${file.name}, but it looks binary. Only text-readable content is supported.`; uploaded = null; return; }
+    if (text.includes('\u0000')) { els.file_meta.textContent = 'Binary file not supported.'; uploaded = null; return; }
     if (text.length > MAX_CHARS) text = text.slice(0, MAX_CHARS);
     const kind = detectKind(file.name, text);
     const facts = buildUploadFacts(file.name, file.size, file.type, text, kind);
@@ -775,7 +544,6 @@ function handleFile(file) {
     els.file_meta.textContent = `${file.name} · ${formatBytes(file.size)} · detected as ${kind}`;
     els.facts.textContent = JSON.stringify(facts, null, 2);
   };
-  reader.onerror = () => { els.file_meta.textContent = 'Could not read file.'; uploaded = null; };
   reader.readAsText(file);
 }
 function cleanSeq(s) { return s.replace(/\s+/g, '').toUpperCase(); }
@@ -794,11 +562,15 @@ function seqFacts(raw) {
   }
   return facts;
 }
+
 async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
   const r = await fetch(baseUrl + '/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({ model, temperature: 0.2, max_tokens: 1800, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] })
+    body: JSON.stringify({
+      model, temperature: 0.2, max_tokens: 1800,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
+    })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
@@ -807,13 +579,144 @@ async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
 async function callAnthropic(apiKey, system, user) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system, messages: [{ role: 'user', content: user }] })
+    headers: {
+      'Content-Type': 'application/json', 'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system,
+      messages: [{ role: 'user', content: user }]
+    })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
   return data.content?.[0]?.text || JSON.stringify(data);
 }
+async function callChatMessages(messages) {
+  const openai = (localStorage.getItem('margots_openai') || '').trim();
+  const xai = (localStorage.getItem('margots_xai') || '').trim();
+  const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
+  if (openai) {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + openai },
+      body: JSON.stringify({ model: 'gpt-4o', temperature: 0.4, max_tokens: 1200, messages })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const data = await r.json();
+    return data.choices?.[0]?.message?.content || '';
+  }
+  if (xai) {
+    const r = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + xai },
+      body: JSON.stringify({ model: 'grok-3', temperature: 0.4, max_tokens: 1200, messages })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const data = await r.json();
+    return data.choices?.[0]?.message?.content || '';
+  }
+  if (anthropic) {
+    const system = messages.find(m => m.role === 'system')?.content || AGENT_SYSTEM;
+    const userMsgs = messages.filter(m => m.role !== 'system').map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }));
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', 'x-api-key': anthropic,
+        'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, temperature: 0.4, system, messages: userMsgs })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    const data = await r.json();
+    return data.content?.[0]?.text || '';
+  }
+  throw new Error('No API key set');
+}
+
+function stopSpeech() {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+}
+async function speak(text) {
+  stopSpeech();
+  const clean = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 1800);
+  if (!clean) return;
+  const openai = (localStorage.getItem('margots_openai') || '').trim();
+  if (openai) {
+    try {
+      const r = await fetch('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + openai },
+        body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice: 'alloy', input: clean, format: 'mp3' })
+      });
+      if (r.ok) {
+        const blob = await r.blob();
+        const url = URL.createObjectURL(blob);
+        currentAudio = new Audio(url);
+        currentAudio.play();
+        currentAudio.onended = () => { URL.revokeObjectURL(url); currentAudio = null; };
+        return;
+      }
+    } catch (_) {}
+  }
+  if (window.speechSynthesis) {
+    const u = new SpeechSynthesisUtterance(clean);
+    u.rate = 1.02;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+document.querySelectorAll('.speak-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.speak;
+    const text = document.getElementById(id)?.textContent || '';
+    speak(text);
+  });
+});
+
+function addBubble(role, text) {
+  const div = document.createElement('div');
+  div.className = 'bubble ' + role;
+  const who = document.createElement('span');
+  who.className = 'who';
+  who.textContent = role === 'user' ? 'You' : 'Agent';
+  div.appendChild(who);
+  div.appendChild(document.createTextNode(text));
+  els.chat.appendChild(div);
+  els.chat.scrollTop = els.chat.scrollHeight;
+}
+
+async function agentSend() {
+  const q = els.agent_q.value.trim();
+  if (!q) return;
+  const openai = (localStorage.getItem('margots_openai') || '').trim();
+  const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
+  const xai = (localStorage.getItem('margots_xai') || '').trim();
+  if (!openai && !anthropic && !xai) { openModal(); return; }
+
+  els.agent_q.value = '';
+  addBubble('user', q);
+  agentHistory.push({ role: 'user', content: q });
+  els.agent_send.disabled = true;
+  document.body.classList.add('working');
+
+  try {
+    const reply = await callChatMessages(agentHistory);
+    agentHistory.push({ role: 'assistant', content: reply });
+    addBubble('agent', reply);
+    if (els.voice_on.checked) await speak(reply);
+  } catch (e) {
+    addBubble('agent', 'Error: ' + e.message);
+  }
+  document.body.classList.remove('working');
+  els.agent_send.disabled = false;
+}
+els.agent_send.addEventListener('click', agentSend);
+els.agent_q.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); agentSend(); }
+});
+
 function buildPayload() {
   if (mode === 'sequence') {
     const seq = els.seq.value.trim();
@@ -831,6 +734,7 @@ function buildPayload() {
   }
   return { facts: {}, user: `Context:\n${els.ctx.value.trim()}\n\nQuestion:\n${els.free_q.value.trim()}` };
 }
+
 els.run.addEventListener('click', async () => {
   const openai = (localStorage.getItem('margots_openai') || '').trim();
   const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
