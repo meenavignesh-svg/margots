@@ -1,105 +1,73 @@
-"""
-Margots — Biological reasoning lattice
-"""
-
 import streamlit as st
 import pandas as pd
-from core.llm_engine import Lattice
-from core.bio_analyzer import Analyzer, Classical
+from core.llm_engine import Engine
+from core.bio_analyzer import Analyzer
 
-st.set_page_config(
-    page_title="Margots",
-    page_icon="⬡",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-st.markdown("""
-<style>
-    .block-container { padding-top: 1.5rem; }
-    h1 { font-weight: 700; letter-spacing: -0.03em; }
-    .core-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="Margots", layout="wide")
 
 
 @st.cache_resource
-def boot():
-    return Lattice()
+def get_engine():
+    return Engine()
 
 
-def render_result(result):
-    st.subheader("Classical facts")
-    st.json(result.classical_facts)
+def show(result):
+    st.subheader("Measured facts")
+    st.json(result.facts)
 
-    if result.unresolved_conflicts:
-        st.warning("  ·  ".join(result.unresolved_conflicts))
+    if result.errors:
+        st.error(result.errors)
 
-    st.subheader("Core outputs under selective pressure")
-    for claim in result.surviving_claims:
-        with st.expander(f"{claim.core.value.upper()} core", expanded=True):
-            st.markdown(claim.statement)
-
-    if result.raw_core_outputs:
-        with st.expander("Raw lattice dump"):
-            st.json(result.raw_core_outputs)
+    for role, text in result.outputs.items():
+        with st.expander(role, expanded=True):
+            st.markdown(text)
 
 
 def main():
     st.title("Margots")
-    st.caption("Biological reasoning lattice · three cores · selective pressure · no averaging")
+    st.caption("Sequence / table / variant analysis with three separate model backends")
 
-    lattice = boot()
-    analyzer = Analyzer(lattice)
+    engine = get_engine()
+    analyzer = Analyzer(engine)
 
     with st.sidebar:
-        st.markdown("**Active cores**")
-        roles = lattice.active_roles
-        if not roles:
-            st.error("No keys loaded. Place OPENAI_API_KEY, ANTHROPIC_API_KEY, XAI_API_KEY in `.env`")
+        active = engine.available()
+        if not active:
+            st.error("No API keys found. Check .env")
             st.stop()
-        for r in roles:
-            st.markdown(f"- `{r}`")
+        st.write("Backends:", ", ".join(active))
 
-        st.divider()
-        mode = st.radio(
-            "Mode",
-            ["Sequence", "Expression table", "Variant", "Free analysis"],
-            label_visibility="collapsed",
-        )
+        mode = st.radio("Mode", ["Sequence", "Expression", "Variant", "Free"])
 
     if mode == "Sequence":
-        seq = st.text_area("Sequence", height=160, placeholder="DNA / RNA / protein")
+        seq = st.text_area("Sequence", height=150)
         q = st.text_input("Question (optional)")
-        if st.button("Run lattice", type="primary") and seq.strip():
-            with st.spinner("Classical measurement → core reasoning → selection"):
-                result = analyzer.sequence(seq, q or None)
-            render_result(result)
+        if st.button("Run") and seq.strip():
+            with st.spinner("Running..."):
+                show(analyzer.sequence(seq, q or None))
 
-    elif mode == "Expression table":
-        file = st.file_uploader("CSV / TSV", type=["csv", "tsv", "txt"])
-        q = st.text_area("Question (optional)")
-        if file and st.button("Run lattice", type="primary"):
-            df = pd.read_csv(file, sep="\t" if file.name.endswith((".tsv", ".txt")) else ",")
-            st.dataframe(df.head(8))
-            with st.spinner("Classical measurement → core reasoning → selection"):
-                result = analyzer.expression(df, q or None)
-            render_result(result)
+    elif mode == "Expression":
+        f = st.file_uploader("CSV or TSV", type=["csv", "tsv", "txt"])
+        q = st.text_input("Question (optional)")
+        if f and st.button("Run"):
+            sep = "\t" if f.name.endswith((".tsv", ".txt")) else ","
+            df = pd.read_csv(f, sep=sep)
+            st.dataframe(df.head())
+            with st.spinner("Running..."):
+                show(analyzer.expression(df, q or None))
 
     elif mode == "Variant":
-        text = st.text_area("Variant description", height=120)
-        if st.button("Run lattice", type="primary") and text.strip():
-            with st.spinner("Core reasoning → selection"):
-                result = analyzer.variant(text)
-            render_result(result)
+        text = st.text_area("Variant", height=120)
+        if st.button("Run") and text.strip():
+            with st.spinner("Running..."):
+                show(analyzer.variant(text))
 
-    elif mode == "Free analysis":
-        ctx = st.text_area("Context", height=140)
+    elif mode == "Free":
+        ctx = st.text_area("Context", height=120)
         q = st.text_area("Question", height=80)
-        if st.button("Run lattice", type="primary") and ctx.strip() and q.strip():
-            with st.spinner("Core reasoning → selection"):
-                result = analyzer.free(ctx, q)
-            render_result(result)
+        if st.button("Run") and ctx.strip() and q.strip():
+            with st.spinner("Running..."):
+                show(analyzer.free(ctx, q))
 
 
 if __name__ == "__main__":
