@@ -1,43 +1,34 @@
 # Margots
 
-A biological reasoning lattice.
+Bioinformatics analysis tool that runs the same question through three different model backends and keeps the results separate so you can compare them.
 
-Margots does not wrap language models around bioinformatics tasks.  
-It treats every analysis as a process of hypothesis generation, selective pressure, and refinement — the same logic evolution uses.
+It also does basic sequence stats and table summaries with Biopython / pandas before anything is sent to a model.
 
-Three independent reasoning cores operate under different selection criteria:
-
-- **Precision core** — statistical and structural rigor
-- **Context core** — biological systems and literature patterns
-- **Divergence core** — alternative explanations and edge cases
-
-Their outputs are not averaged. They are placed under selective pressure. Only claims that survive cross-examination are retained.
-
----
-
-### What it actually does
-
-- Decomposes a biological question into testable atomic claims
-- Runs classical sequence / statistical computation first (no model involved)
-- Forces each core to defend or abandon its position
-- Surfaces unresolved conflicts instead of hiding them
-- Returns structured biological assertions with explicit confidence boundaries
-
-This is not a chatbot with Biopython.  
-It is a reasoning engine that happens to operate on biological data.
-
----
-
-### Setup
+## Setup
 
 ```bash
 pip install -r requirements.txt
 cp .env.example .env
-# supply the three keys
+```
+
+Fill in the three keys in `.env`:
+
+```
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+XAI_API_KEY=
+```
+
+Then:
+
+```bash
 streamlit run app.py
 ```
 
----
+## Notes
 
-Margots rejects the default pattern of “prompt → answer”.  
-It only keeps what can survive disagreement.
+- Sequence mode: GC%, composition, translation attempt, protein params when relevant
+- Expression mode: accepts CSV/TSV, shows basic describe + null counts
+- Variant and free-text modes just pass the text through
+- Each backend gets a different system prompt on purpose (strict / contextual / skeptical)
+- Results are shown side by side, not merged
