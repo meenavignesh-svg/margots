@@ -1,0 +1,14 @@
+streamlit>=1.38.0
+openai>=1.40.0
+anthropic>=0.34.0
+pandas>=2.2.0
+biopython>=1.84
+numpy>=1.26.0
+scikit-learn>=1.5.0
+matplotlib>=3.9.0
+seaborn>=0.13.0
+plotly>=5.22.0
+python-dotenv>=1.0.0
+requests>=2.32.0
+tqdm>=4.66.0
+rich>=13.7.0
