@@ -6,15 +6,9 @@
   <title>Margots</title>
   <style>
     :root {
-      --bg: #050b14;
-      --panel: rgba(8, 18, 32, 0.78);
-      --text: #e8f3ff;
-      --muted: #8aa0b8;
-      --line: rgba(56, 189, 248, 0.22);
-      --line-strong: rgba(56, 189, 248, 0.4);
-      --cyan: #38bdf8;
-      --ok: #34d399;
-      --err: #fb7185;
+      --bg: #050b14; --panel: rgba(8, 18, 32, 0.78); --text: #e8f3ff; --muted: #8aa0b8;
+      --line: rgba(56, 189, 248, 0.22); --line-strong: rgba(56, 189, 248, 0.4);
+      --cyan: #38bdf8; --ok: #34d399; --err: #fb7185;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
@@ -24,217 +18,87 @@
       background:
         radial-gradient(ellipse 80% 60% at 50% 40%, rgba(14, 116, 144, 0.18), transparent 60%),
         linear-gradient(180deg, #02060d 0%, #050b14 50%, #07101c 100%);
-      line-height: 1.5;
-      overflow-x: hidden;
+      line-height: 1.5; overflow-x: hidden;
     }
     .dna-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .hud-ring {
-      position: absolute; left: 50%; top: 48%; border: 1px solid rgba(56, 189, 248, 0.18);
-      border-radius: 50%; transform: translate(-50%, -50%);
-    }
+    .hud-ring { position: absolute; left: 50%; top: 48%; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 50%; transform: translate(-50%, -50%); }
     .hud-ring.r1 { width: min(70vw, 520px); height: min(70vw, 520px); animation: ring 24s linear infinite; }
     .hud-ring.r2 { width: min(90vw, 680px); height: min(90vw, 680px); border-style: dashed; opacity: 0.5; animation: ring 40s linear infinite reverse; }
     .hud-ring.r3 { width: min(50vw, 360px); height: min(50vw, 360px); opacity: 0.35; animation: ring 18s linear infinite; }
-    @keyframes ring {
-      from { transform: translate(-50%, -50%) rotate(0deg); }
-      to { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    .scan {
-      position: absolute; left: 0; right: 0; height: 120px;
-      background: linear-gradient(180deg, transparent, rgba(56,189,248,0.06), transparent);
-      animation: scan 6s ease-in-out infinite;
-    }
+    @keyframes ring { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+    .scan { position: absolute; left: 0; right: 0; height: 120px; background: linear-gradient(180deg, transparent, rgba(56,189,248,0.06), transparent); animation: scan 6s ease-in-out infinite; }
     @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
-    .dna-stage {
-      position: absolute; left: 50%; top: 46%; width: 280px; height: 560px;
-      transform: translate(-50%, -50%); perspective: 1000px; opacity: 0.45;
-      filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35));
-    }
+    .dna-stage { position: absolute; left: 50%; top: 46%; width: 280px; height: 560px; transform: translate(-50%, -50%); perspective: 1000px; opacity: 0.45; filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35)); }
     .dna { position: absolute; inset: 0; transform-style: preserve-3d; animation: dna-spin 8s linear infinite; }
     body.working .dna { animation-duration: 2.4s; }
     body.working .dna-stage, body.speaking .dna-stage { opacity: 0.75; }
-    @keyframes dna-spin {
-      from { transform: rotateY(0deg) rotateZ(-8deg); }
-      to { transform: rotateY(360deg) rotateZ(-8deg); }
-    }
-    .pair {
-      position: absolute; left: 50%; width: 140px; height: 4px; margin-left: -70px;
-      transform-style: preserve-3d;
-    }
-    .pair .rung {
-      position: absolute; left: 0; right: 0; top: 0; height: 2px; border-radius: 2px;
-      background: linear-gradient(90deg, rgba(34,211,238,0.95), rgba(148,163,184,0.35), rgba(56,189,248,0.95));
-      box-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
-    }
-    .pair .base {
-      position: absolute; top: -5px; width: 12px; height: 12px; border-radius: 50%;
-      box-shadow: 0 0 12px currentColor;
-    }
+    @keyframes dna-spin { from { transform: rotateY(0deg) rotateZ(-8deg); } to { transform: rotateY(360deg) rotateZ(-8deg); } }
+    .pair { position: absolute; left: 50%; width: 140px; height: 4px; margin-left: -70px; transform-style: preserve-3d; }
+    .pair .rung { position: absolute; left: 0; right: 0; top: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(34,211,238,0.95), rgba(148,163,184,0.35), rgba(56,189,248,0.95)); box-shadow: 0 0 8px rgba(34, 211, 238, 0.45); }
+    .pair .base { position: absolute; top: -5px; width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
     .pair .base.a { left: -3px; background: #22d3ee; color: #22d3ee; }
     .pair .base.b { right: -3px; background: #38bdf8; color: #38bdf8; }
     .pair .base.c { left: -3px; background: #67e8f9; color: #67e8f9; }
     .pair .base.d { right: -3px; background: #0ea5e9; color: #0ea5e9; }
-
-    .topbar {
-      max-width: 1080px; margin: 0 auto; padding: 18px 20px 0;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 10px; position: relative; z-index: 2;
-    }
+    .topbar { max-width: 1080px; margin: 0 auto; padding: 18px 20px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: relative; z-index: 2; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; }
-    .mark {
-      width: 22px; height: 22px; border-radius: 7px;
-      background: radial-gradient(circle at 30% 30%, #67e8f9, #0284c7);
-      box-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
-    }
-    .pill {
-      font-size: 0.72rem; border: 1px solid var(--line-strong); background: rgba(8,18,32,0.7);
-      color: var(--cyan); border-radius: 999px; padding: 3px 8px; font-weight: 600;
-    }
-    .keys-btn {
-      border: 1px solid var(--line-strong); background: rgba(8,18,32,0.75); color: var(--text);
-      border-radius: 999px; padding: 8px 14px; font-weight: 650; font-size: 0.88rem; cursor: pointer;
-    }
-    .keys-btn .dot-live {
-      display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #334155;
-      margin-right: 6px; vertical-align: middle;
-    }
+    .mark { width: 22px; height: 22px; border-radius: 7px; background: radial-gradient(circle at 30% 30%, #67e8f9, #0284c7); box-shadow: 0 0 14px rgba(34, 211, 238, 0.55); }
+    .pill { font-size: 0.72rem; border: 1px solid var(--line-strong); background: rgba(8,18,32,0.7); color: var(--cyan); border-radius: 999px; padding: 3px 8px; font-weight: 600; }
+    .keys-btn { border: 1px solid var(--line-strong); background: rgba(8,18,32,0.75); color: var(--text); border-radius: 999px; padding: 8px 14px; font-weight: 650; font-size: 0.88rem; cursor: pointer; }
+    .keys-btn .dot-live { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #334155; margin-right: 6px; vertical-align: middle; }
     .keys-btn .dot-live.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
-
     .shell { max-width: 920px; margin: 12px auto 48px; padding: 0 16px; position: relative; z-index: 1; }
     .hero { text-align: center; padding: 18px 8px 16px; }
-    .hero h1 {
-      margin: 0; font-size: clamp(1.8rem, 4vw, 2.55rem); letter-spacing: -0.04em; font-weight: 700;
-      text-shadow: 0 0 24px rgba(56,189,248,0.25);
-    }
+    .hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.55rem); letter-spacing: -0.04em; font-weight: 700; text-shadow: 0 0 24px rgba(56,189,248,0.25); }
     .hero p { margin: 10px auto 0; max-width: 540px; color: var(--muted); font-size: 1.02rem; }
-
-    .stage {
-      background: var(--panel); border: 1px solid var(--line); border-radius: 24px;
-      box-shadow: 0 0 40px rgba(14, 165, 233, 0.08); overflow: hidden; backdrop-filter: blur(14px);
-    }
-    .stage-top {
-      display: flex; align-items: center; gap: 8px; padding: 12px 14px;
-      border-bottom: 1px solid var(--line); background: rgba(3, 12, 22, 0.55);
-    }
+    .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 0 40px rgba(14, 165, 233, 0.08); overflow: hidden; backdrop-filter: blur(14px); }
+    .stage-top { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line); background: rgba(3, 12, 22, 0.55); }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; }
     .dot.r { background: #fb7185; } .dot.y { background: #fbbf24; } .dot.g { background: #34d399; }
     .stage-title { margin-left: 6px; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
     .stage-body { padding: 22px 20px 20px; }
-    .composer {
-      background: rgba(3, 12, 22, 0.55); border: 1px solid var(--line); border-radius: 18px; padding: 14px;
-    }
+    .composer { background: rgba(3, 12, 22, 0.55); border: 1px solid var(--line); border-radius: 18px; padding: 14px; }
     .tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-    .tab {
-      border: 1px solid var(--line); background: transparent; color: var(--muted);
-      border-radius: 999px; padding: 7px 12px; font-size: 0.86rem; font-weight: 600; cursor: pointer;
-    }
-    .tab.active {
-      color: #031018; background: linear-gradient(90deg, #67e8f9, #38bdf8); border-color: transparent;
-    }
+    .tab { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 7px 12px; font-size: 0.86rem; font-weight: 600; cursor: pointer; }
+    .tab.active { color: #031018; background: linear-gradient(90deg, #67e8f9, #38bdf8); border-color: transparent; }
     label { display: block; font-size: 0.8rem; color: var(--muted); margin: 0 0 6px; font-weight: 600; }
     .field { margin-bottom: 12px; }
-    input, textarea {
-      width: 100%; border: 1px solid var(--line); background: rgba(2, 8, 16, 0.7);
-      color: var(--text); border-radius: 12px; padding: 12px; font: inherit;
-    }
-    input:focus, textarea:focus {
-      outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
-    }
+    input, textarea { width: 100%; border: 1px solid var(--line); background: rgba(2, 8, 16, 0.7); color: var(--text); border-radius: 12px; padding: 12px; font: inherit; }
+    input:focus, textarea:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
     textarea { min-height: 110px; resize: vertical; }
-    .drop {
-      border: 1.5px dashed var(--line-strong); border-radius: 14px; background: rgba(2, 8, 16, 0.5);
-      padding: 22px 14px; text-align: center; color: var(--muted); cursor: pointer;
-    }
+    .drop { border: 1.5px dashed var(--line-strong); border-radius: 14px; background: rgba(2, 8, 16, 0.5); padding: 22px 14px; text-align: center; color: var(--muted); cursor: pointer; }
     .drop.drag { border-color: var(--cyan); color: var(--text); }
     .drop strong { color: var(--text); }
     .drop input { display: none; }
     .file-meta { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
-    .actions {
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      margin-top: 12px; flex-wrap: wrap;
-    }
+    .actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
     .status { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
     .ok { color: var(--ok); } .err { color: var(--err); }
-    #run, #agent_send {
-      border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018;
-      border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; min-width: 100px;
-      box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
-    }
+    #run, #agent_send { border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018; border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; min-width: 100px; box-shadow: 0 0 18px rgba(34, 211, 238, 0.35); }
     #run:disabled, #agent_send:disabled { opacity: 0.55; cursor: not-allowed; }
     .hint { margin-top: 12px; font-size: 0.78rem; color: var(--muted); text-align: center; }
     .section { margin-top: 16px; }
-    .section h2 {
-      margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
-    }
-    .facts {
-      background: rgba(2, 8, 16, 0.65); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem;
-      white-space: pre-wrap; word-break: break-word; color: #b6c9dc; max-height: 180px; overflow: auto;
-    }
+    .section h2 { margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .facts { background: rgba(2, 8, 16, 0.65); border: 1px solid var(--line); border-radius: 14px; padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; white-space: pre-wrap; word-break: break-word; color: #b6c9dc; max-height: 180px; overflow: auto; }
     .answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 860px) { .answers { grid-template-columns: 1fr; } }
-    .answer {
-      background: rgba(2, 8, 16, 0.55); border: 1px solid var(--line); border-radius: 16px;
-      padding: 14px; min-height: 180px;
-    }
-    .answer h3 {
-      margin: 0 0 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan);
-    }
-    .answer .body {
-      white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; color: #d7e6f5; line-height: 1.55;
-    }
-
-    /* holographic talking agent */
-    .agent-stage {
-      display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 14px;
-    }
-    .holo {
-      position: relative;
-      width: 160px; height: 160px;
-      display: grid; place-items: center;
-    }
-    .holo-core {
-      width: 72px; height: 72px; border-radius: 50%;
-      background:
-        radial-gradient(circle at 35% 30%, #e0f7ff 0%, #67e8f9 25%, #0ea5e9 60%, #0369a1 100%);
-      box-shadow:
-        0 0 20px rgba(34, 211, 238, 0.55),
-        0 0 50px rgba(14, 165, 233, 0.35),
-        inset 0 0 20px rgba(255,255,255,0.35);
-      animation: float 3.6s ease-in-out infinite;
-      position: relative; z-index: 2;
-    }
-    .holo-ring {
-      position: absolute; border-radius: 50%; border: 1px solid rgba(103, 232, 249, 0.45);
-      animation: spin 8s linear infinite;
-    }
+    .answer { background: rgba(2, 8, 16, 0.55); border: 1px solid var(--line); border-radius: 16px; padding: 14px; min-height: 180px; }
+    .answer h3 { margin: 0 0 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan); }
+    .answer .body { white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; color: #d7e6f5; line-height: 1.55; }
+    .agent-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .holo { position: relative; width: 160px; height: 160px; display: grid; place-items: center; }
+    .holo-core { width: 72px; height: 72px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e0f7ff 0%, #67e8f9 25%, #0ea5e9 60%, #0369a1 100%); box-shadow: 0 0 20px rgba(34, 211, 238, 0.55), 0 0 50px rgba(14, 165, 233, 0.35), inset 0 0 20px rgba(255,255,255,0.35); animation: float 3.6s ease-in-out infinite; position: relative; z-index: 2; }
+    .holo-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(103, 232, 249, 0.45); animation: spin 8s linear infinite; }
     .holo-ring.a { width: 100px; height: 100px; }
     .holo-ring.b { width: 130px; height: 130px; border-style: dashed; animation-direction: reverse; animation-duration: 12s; opacity: 0.6; }
     .holo-ring.c { width: 156px; height: 156px; opacity: 0.35; animation-duration: 18s; }
-    .holo-beam {
-      position: absolute; bottom: -18px; width: 90px; height: 40px;
-      background: linear-gradient(180deg, rgba(34,211,238,0.25), transparent);
-      filter: blur(6px); border-radius: 50%;
-    }
-    .wave {
-      display: flex; align-items: flex-end; gap: 4px; height: 28px; opacity: 0.35;
-    }
-    .wave span {
-      width: 4px; border-radius: 4px; background: #67e8f9;
-      height: 8px; animation: none;
-    }
-    body.speaking .holo-core {
-      animation: talk-pulse 0.35s ease-in-out infinite alternate;
-      box-shadow:
-        0 0 28px rgba(34, 211, 238, 0.85),
-        0 0 70px rgba(14, 165, 233, 0.55),
-        inset 0 0 24px rgba(255,255,255,0.45);
-    }
+    .holo-beam { position: absolute; bottom: -18px; width: 90px; height: 40px; background: linear-gradient(180deg, rgba(34,211,238,0.25), transparent); filter: blur(6px); border-radius: 50%; }
+    .wave { display: flex; align-items: flex-end; gap: 4px; height: 28px; opacity: 0.35; }
+    .wave span { width: 4px; border-radius: 4px; background: #67e8f9; height: 8px; }
+    body.speaking .holo-core { animation: talk-pulse 0.35s ease-in-out infinite alternate; box-shadow: 0 0 28px rgba(34, 211, 238, 0.85), 0 0 70px rgba(14, 165, 233, 0.55), inset 0 0 24px rgba(255,255,255,0.45); }
     body.speaking .holo-ring { border-color: rgba(103, 232, 249, 0.9); }
     body.speaking .wave { opacity: 1; }
-    body.speaking .wave span {
-      animation: bar 0.5s ease-in-out infinite alternate;
-    }
+    body.speaking .wave span { animation: bar 0.5s ease-in-out infinite alternate; }
     body.speaking .wave span:nth-child(2) { animation-delay: 0.08s; }
     body.speaking .wave span:nth-child(3) { animation-delay: 0.16s; }
     body.speaking .wave span:nth-child(4) { animation-delay: 0.04s; }
@@ -242,97 +106,48 @@
     body.speaking .wave span:nth-child(6) { animation-delay: 0.12s; }
     body.speaking .wave span:nth-child(7) { animation-delay: 0.24s; }
     body.working .holo-core { animation: think 1s ease-in-out infinite; }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes talk-pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.08); }
-    }
-    @keyframes think {
-      0%, 100% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.05); filter: brightness(1.25); }
-    }
-    @keyframes bar {
-      from { height: 6px; }
-      to { height: 26px; }
-    }
-    .agent-status {
-      font-size: 0.82rem; color: var(--muted); min-height: 1.2em; text-align: center;
-    }
+    @keyframes talk-pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+    @keyframes think { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.05); filter: brightness(1.25); } }
+    @keyframes bar { from { height: 6px; } to { height: 26px; } }
+    .agent-status { font-size: 0.82rem; color: var(--muted); min-height: 1.2em; text-align: center; }
     body.speaking .agent-status { color: var(--cyan); }
     body.working .agent-status { color: #7dd3fc; }
-
-    .chat {
-      display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow: auto;
-      padding: 10px; background: rgba(2, 8, 16, 0.45); border-radius: 12px; border: 1px solid var(--line);
-      margin-bottom: 12px;
-    }
-    .bubble {
-      max-width: 92%; padding: 10px 12px; border-radius: 14px; font-size: 0.92rem; line-height: 1.45;
-      white-space: pre-wrap; word-break: break-word;
-    }
+    .chat { display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow: auto; padding: 10px; background: rgba(2, 8, 16, 0.45); border-radius: 12px; border: 1px solid var(--line); margin-bottom: 12px; }
+    .bubble { max-width: 92%; padding: 10px 12px; border-radius: 14px; font-size: 0.92rem; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
     .bubble.user { align-self: flex-end; background: rgba(56, 189, 248, 0.18); border: 1px solid var(--line); }
     .bubble.agent { align-self: flex-start; background: rgba(8, 28, 42, 0.9); border: 1px solid var(--line-strong); }
-    .bubble .who {
-      display: block; font-size: 0.72rem; color: var(--cyan); margin-bottom: 4px;
-      font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-    }
+    .bubble .who { display: block; font-size: 0.72rem; color: var(--cyan); margin-bottom: 4px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
     .agent-row { display: flex; gap: 8px; align-items: center; }
     .agent-row input { flex: 1; }
-
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(2, 6, 13, 0.72); display: none;
-      align-items: center; justify-content: center; z-index: 50; padding: 16px;
-    }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 13, 0.72); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
     .modal-backdrop.open { display: flex; }
-    .modal {
-      width: min(440px, 100%); background: #0b1624; border: 1px solid var(--line-strong);
-      border-radius: 18px; box-shadow: 0 0 40px rgba(34, 211, 238, 0.12); padding: 18px;
-    }
+    .modal { width: min(460px, 100%); background: #0b1624; border: 1px solid var(--line-strong); border-radius: 18px; box-shadow: 0 0 40px rgba(34, 211, 238, 0.12); padding: 18px; }
     .modal h2 { margin: 0 0 6px; font-size: 1.1rem; }
     .modal p { margin: 0 0 14px; color: var(--muted); font-size: 0.88rem; }
+    .modal a { color: var(--cyan); }
     .modal input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.84rem; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-    .btn-secondary {
-      border: 1px solid var(--line-strong); background: transparent; color: var(--text);
-      border-radius: 999px; padding: 10px 14px; font-weight: 650; cursor: pointer;
-    }
-    .btn-primary {
-      border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018;
-      border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer;
-    }
+    .btn-secondary { border: 1px solid var(--line-strong); background: transparent; color: var(--text); border-radius: 999px; padding: 10px 14px; font-weight: 650; cursor: pointer; }
+    .btn-primary { border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018; border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
     @media (max-width: 720px) { .dna-stage { width: 200px; height: 420px; opacity: 0.3; } }
   </style>
 </head>
 <body>
   <div class="dna-bg" aria-hidden="true">
-    <div class="hud-ring r1"></div>
-    <div class="hud-ring r2"></div>
-    <div class="hud-ring r3"></div>
-    <div class="scan"></div>
-    <div class="dna-stage" id="dna_main"></div>
+    <div class="hud-ring r1"></div><div class="hud-ring r2"></div><div class="hud-ring r3"></div>
+    <div class="scan"></div><div class="dna-stage" id="dna_main"></div>
   </div>
-
   <div class="topbar">
-    <div class="brand">
-      <div class="mark"></div>
-      <span>Margots</span>
-      <span class="pill">beta</span>
-    </div>
-    <button class="keys-btn" id="open_keys" type="button">
-      <span class="dot-live" id="keys_dot"></span>API keys
-    </button>
+    <div class="brand"><div class="mark"></div><span>Margots</span><span class="pill">beta</span></div>
+    <button class="keys-btn" id="open_keys" type="button"><span class="dot-live" id="keys_dot"></span>API keys</button>
   </div>
-
   <div class="shell">
     <div class="hero">
       <h1>Analysis that works alongside you</h1>
-      <p>Three backends side by side, or talk with the hologram agent. It answers by voice.</p>
+      <p>Three free-tier backends side by side, or talk with the hologram agent.</p>
     </div>
-
     <div class="stage">
       <div class="stage-top">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
@@ -347,7 +162,6 @@
             <button class="tab" data-mode="upload">Upload</button>
             <button class="tab" data-mode="agent">Agent</button>
           </div>
-
           <div id="panel_sequence">
             <div class="field"><label>Sequence</label><textarea id="seq" placeholder="Paste DNA, RNA, or protein sequence"></textarea></div>
             <div class="field"><label>Question (optional)</label><input id="seq_q" placeholder="What should we look for?" /></div>
@@ -368,19 +182,13 @@
             <div class="file-meta" id="file_meta">No file selected.</div>
             <div class="field" style="margin-top:12px"><label>Question (optional)</label><input id="upload_q" placeholder="What should be analyzed?" /></div>
           </div>
-
           <div id="panel_agent" hidden>
             <div class="agent-stage">
               <div class="holo" aria-hidden="true">
-                <div class="holo-ring a"></div>
-                <div class="holo-ring b"></div>
-                <div class="holo-ring c"></div>
-                <div class="holo-core"></div>
-                <div class="holo-beam"></div>
+                <div class="holo-ring a"></div><div class="holo-ring b"></div><div class="holo-ring c"></div>
+                <div class="holo-core"></div><div class="holo-beam"></div>
               </div>
-              <div class="wave" id="wave">
-                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
+              <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
               <div class="agent-status" id="agent_status">Idle · waiting for your question</div>
             </div>
             <div class="chat" id="chat"></div>
@@ -389,26 +197,22 @@
               <button id="agent_send" type="button">Send</button>
             </div>
           </div>
-
           <div class="actions" id="run_actions">
             <div class="status" id="status"></div>
             <button id="run">Run</button>
           </div>
         </div>
-
-        <p class="hint" id="main_hint">Files stay in your browser. Set API keys top-right before running.</p>
-
+        <p class="hint" id="main_hint">Uses free-tier APIs: Gemini, Groq, OpenRouter. Keys stay in your browser.</p>
         <div class="section" id="facts_section">
           <h2>Local measurements</h2>
           <div class="facts" id="facts">No run yet.</div>
         </div>
-
         <div class="section" id="answers_section">
           <h2>Answers</h2>
           <div class="answers">
-            <div class="answer"><h3>Strict</h3><div class="body" id="out_strict">—</div></div>
-            <div class="answer"><h3>Context</h3><div class="body" id="out_context">—</div></div>
-            <div class="answer"><h3>Skeptic</h3><div class="body" id="out_skeptic">—</div></div>
+            <div class="answer"><h3>Strict · Gemini</h3><div class="body" id="out_strict">—</div></div>
+            <div class="answer"><h3>Context · Groq</h3><div class="body" id="out_context">—</div></div>
+            <div class="answer"><h3>Skeptic · OpenRouter</h3><div class="body" id="out_skeptic">—</div></div>
           </div>
         </div>
       </div>
@@ -417,11 +221,20 @@
 
   <div class="modal-backdrop" id="keys_modal">
     <div class="modal" role="dialog">
-      <h2>API keys</h2>
-      <p>Stored only in this browser. OpenAI key enables voice TTS for the agent.</p>
-      <div class="field"><label>OpenAI</label><input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" /></div>
-      <div class="field"><label>Anthropic</label><input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" /></div>
-      <div class="field"><label>xAI</label><input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" /></div>
+      <h2>Free-tier API keys</h2>
+      <p>No credit card needed for these. Stored only in this browser.</p>
+      <div class="field">
+        <label>Google Gemini · <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">get key</a></label>
+        <input id="k_gemini" type="password" placeholder="AIza…" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Groq · <a href="https://console.groq.com/keys" target="_blank" rel="noopener">get key</a></label>
+        <input id="k_groq" type="password" placeholder="gsk_…" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>OpenRouter · <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">get key</a></label>
+        <input id="k_openrouter" type="password" placeholder="sk-or-…" autocomplete="off" />
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="close_keys">Cancel</button>
         <button type="button" class="btn-primary" id="save_keys">Save</button>
@@ -431,6 +244,7 @@
 
 <script>
 const MAX_CHARS = 120000;
+const KEYS = ['gemini','groq','openrouter'];
 const AGENT_SYSTEM = "You are Margots, a bioinformatics analysis agent. Be precise, concise, and practical. Prefer measurable claims. If unsure, say what data is missing. Keep answers short enough to be spoken aloud.";
 const PROMPTS = {
   strict: "Stick to measurable features in the provided data. Avoid speculation. If evidence is weak, say so.",
@@ -439,20 +253,16 @@ const PROMPTS = {
 };
 
 function buildHelix(container) {
-  const dna = document.createElement('div');
-  dna.className = 'dna';
+  const dna = document.createElement('div'); dna.className = 'dna';
   for (let i = 0; i < 22; i++) {
-    const pair = document.createElement('div');
-    pair.className = 'pair';
+    const pair = document.createElement('div'); pair.className = 'pair';
     pair.style.top = (12 + i * 24) + 'px';
     pair.style.transform = `rotateY(${i * 26}deg)`;
     const rung = document.createElement('div'); rung.className = 'rung';
-    const a = document.createElement('div');
-    const b = document.createElement('div');
+    const a = document.createElement('div'); const b = document.createElement('div');
     if (i % 2 === 0) { a.className = 'base a'; b.className = 'base b'; }
     else { a.className = 'base c'; b.className = 'base d'; }
-    pair.append(rung, a, b);
-    dna.appendChild(pair);
+    pair.append(rung, a, b); dna.appendChild(pair);
   }
   container.appendChild(dna);
 }
@@ -467,55 +277,39 @@ const els = {
     upload: document.getElementById('panel_upload'),
     agent: document.getElementById('panel_agent')
   },
-  k_openai: document.getElementById('k_openai'),
-  k_anthropic: document.getElementById('k_anthropic'),
-  k_xai: document.getElementById('k_xai'),
-  seq: document.getElementById('seq'),
-  seq_q: document.getElementById('seq_q'),
-  variant: document.getElementById('variant'),
-  ctx: document.getElementById('ctx'),
-  free_q: document.getElementById('free_q'),
-  upload_q: document.getElementById('upload_q'),
-  drop: document.getElementById('drop'),
-  file: document.getElementById('file'),
-  file_meta: document.getElementById('file_meta'),
-  run: document.getElementById('run'),
-  run_actions: document.getElementById('run_actions'),
-  status: document.getElementById('status'),
-  facts: document.getElementById('facts'),
-  facts_section: document.getElementById('facts_section'),
-  answers_section: document.getElementById('answers_section'),
-  main_hint: document.getElementById('main_hint'),
-  out_strict: document.getElementById('out_strict'),
-  out_context: document.getElementById('out_context'),
-  out_skeptic: document.getElementById('out_skeptic'),
-  open_keys: document.getElementById('open_keys'),
-  close_keys: document.getElementById('close_keys'),
-  save_keys: document.getElementById('save_keys'),
-  keys_modal: document.getElementById('keys_modal'),
-  keys_dot: document.getElementById('keys_dot'),
-  chat: document.getElementById('chat'),
-  agent_q: document.getElementById('agent_q'),
-  agent_send: document.getElementById('agent_send'),
-  agent_status: document.getElementById('agent_status')
+  k_gemini: document.getElementById('k_gemini'),
+  k_groq: document.getElementById('k_groq'),
+  k_openrouter: document.getElementById('k_openrouter'),
+  seq: document.getElementById('seq'), seq_q: document.getElementById('seq_q'),
+  variant: document.getElementById('variant'), ctx: document.getElementById('ctx'), free_q: document.getElementById('free_q'),
+  upload_q: document.getElementById('upload_q'), drop: document.getElementById('drop'), file: document.getElementById('file'),
+  file_meta: document.getElementById('file_meta'), run: document.getElementById('run'),
+  run_actions: document.getElementById('run_actions'), status: document.getElementById('status'),
+  facts: document.getElementById('facts'), facts_section: document.getElementById('facts_section'),
+  answers_section: document.getElementById('answers_section'), main_hint: document.getElementById('main_hint'),
+  out_strict: document.getElementById('out_strict'), out_context: document.getElementById('out_context'),
+  out_skeptic: document.getElementById('out_skeptic'), open_keys: document.getElementById('open_keys'),
+  close_keys: document.getElementById('close_keys'), save_keys: document.getElementById('save_keys'),
+  keys_modal: document.getElementById('keys_modal'), keys_dot: document.getElementById('keys_dot'),
+  chat: document.getElementById('chat'), agent_q: document.getElementById('agent_q'),
+  agent_send: document.getElementById('agent_send'), agent_status: document.getElementById('agent_status')
 };
 
 let mode = 'sequence';
 let uploaded = null;
 let agentHistory = [{ role: 'system', content: AGENT_SYSTEM }];
-let currentAudio = null;
 
+function getKey(name) { return (localStorage.getItem('margots_' + name) || '').trim(); }
 function loadKeys() {
-  ['openai','anthropic','xai'].forEach(k => { els['k_' + k].value = localStorage.getItem('margots_' + k) || ''; });
+  KEYS.forEach(k => { els['k_' + k].value = getKey(k); });
   updateKeysDot();
 }
 function saveKeys() {
-  ['openai','anthropic','xai'].forEach(k => localStorage.setItem('margots_' + k, els['k_' + k].value.trim()));
+  KEYS.forEach(k => localStorage.setItem('margots_' + k, els['k_' + k].value.trim()));
   updateKeysDot();
 }
 function updateKeysDot() {
-  const any = ['openai','anthropic','xai'].some(k => (localStorage.getItem('margots_' + k) || '').trim());
-  els.keys_dot.classList.toggle('on', any);
+  els.keys_dot.classList.toggle('on', KEYS.some(k => getKey(k)));
 }
 function openModal() { loadKeys(); els.keys_modal.classList.add('open'); }
 function closeModal() { els.keys_modal.classList.remove('open'); }
@@ -550,8 +344,7 @@ function formatBytes(n) {
   return (n / (1024 * 1024)).toFixed(1) + ' MB';
 }
 function detectKind(name, text) {
-  const lower = (name || '').toLowerCase();
-  const head = text.slice(0, 2000);
+  const lower = (name || '').toLowerCase(); const head = text.slice(0, 2000);
   if (lower.endsWith('.fasta') || lower.endsWith('.fa') || lower.endsWith('.fna') || lower.endsWith('.faa') || head.startsWith('>')) return 'fasta';
   if (lower.endsWith('.fastq') || lower.endsWith('.fq') || head.startsWith('@')) return 'fastq';
   if (lower.endsWith('.vcf') || head.startsWith('##fileformat=VCF')) return 'vcf';
@@ -566,8 +359,7 @@ function parseFasta(text) {
     if (line.startsWith('>')) { if (cur) seqs.push(cur); cur = { id: line.slice(1).trim(), seq: '' }; }
     else if (cur) cur.seq += line.trim();
   }
-  if (cur) seqs.push(cur);
-  return seqs;
+  if (cur) seqs.push(cur); return seqs;
 }
 function tableFacts(text, sep) {
   const lines = text.split(/\r?\n/).filter(Boolean);
@@ -579,8 +371,7 @@ function buildUploadFacts(name, size, type, text, kind) {
   const facts = { file_name: name, file_size: formatBytes(size), mime: type || 'unknown', detected_kind: kind, chars: text.length, truncated: text.length >= MAX_CHARS };
   if (kind === 'fasta') {
     const seqs = parseFasta(text);
-    facts.num_sequences = seqs.length;
-    facts.ids = seqs.slice(0, 10).map(s => s.id);
+    facts.num_sequences = seqs.length; facts.ids = seqs.slice(0, 10).map(s => s.id);
     if (seqs[0]) {
       const s = seqs[0].seq.toUpperCase().replace(/\s+/g, '');
       facts.first_length = s.length;
@@ -632,58 +423,69 @@ function seqFacts(raw) {
   return facts;
 }
 
-async function callOpenAICompatible(baseUrl, apiKey, model, system, user) {
-  const r = await fetch(baseUrl + '/chat/completions', {
+async function callGemini(apiKey, system, user) {
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const r = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({ model, temperature: 0.2, max_tokens: 1800, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: 1800 }
+    })
+  });
+  if (!r.ok) throw new Error(await r.text());
+  const data = await r.json();
+  return data.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('') || JSON.stringify(data);
+}
+
+async function callOpenAICompatible(baseUrl, apiKey, model, system, user, extraHeaders) {
+  const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey, ...(extraHeaders || {}) };
+  const r = await fetch(baseUrl + '/chat/completions', {
+    method: 'POST', headers,
+    body: JSON.stringify({
+      model, temperature: 0.2, max_tokens: 1800,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
+    })
   });
   if (!r.ok) throw new Error(await r.text());
   const data = await r.json();
   return data.choices?.[0]?.message?.content || JSON.stringify(data);
 }
-async function callAnthropic(apiKey, system, user) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1800, temperature: 0.2, system, messages: [{ role: 'user', content: user }] })
-  });
-  if (!r.ok) throw new Error(await r.text());
-  const data = await r.json();
-  return data.content?.[0]?.text || JSON.stringify(data);
-}
+
 async function callChatMessages(messages) {
-  const openai = (localStorage.getItem('margots_openai') || '').trim();
-  const xai = (localStorage.getItem('margots_xai') || '').trim();
-  const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
-  if (openai) {
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + openai },
-      body: JSON.stringify({ model: 'gpt-4o', temperature: 0.4, max_tokens: 1200, messages })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json()).choices?.[0]?.message?.content || '';
-  }
-  if (xai) {
-    const r = await fetch('https://api.x.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + xai },
-      body: JSON.stringify({ model: 'grok-3', temperature: 0.4, max_tokens: 1200, messages })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json()).choices?.[0]?.message?.content || '';
-  }
-  if (anthropic) {
+  const gemini = getKey('gemini');
+  const groq = getKey('groq');
+  const openrouter = getKey('openrouter');
+  if (gemini) {
     const system = messages.find(m => m.role === 'system')?.content || AGENT_SYSTEM;
-    const userMsgs = messages.filter(m => m.role !== 'system').map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }));
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const rest = messages.filter(m => m.role !== 'system');
+    const text = rest.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+    return callGemini(gemini, system, text);
+  }
+  if (groq) {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': anthropic, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, temperature: 0.4, system, messages: userMsgs })
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groq },
+      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', temperature: 0.4, max_tokens: 1200, messages })
     });
     if (!r.ok) throw new Error(await r.text());
-    return (await r.json()).content?.[0]?.text || '';
+    return (await r.json()).choices?.[0]?.message?.content || '';
+  }
+  if (openrouter) {
+    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + openrouter,
+        'HTTP-Referer': location.origin,
+        'X-Title': 'Margots'
+      },
+      body: JSON.stringify({ model: 'meta-llama/llama-3.3-70b-instruct:free', temperature: 0.4, max_tokens: 1200, messages })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return (await r.json()).choices?.[0]?.message?.content || '';
   }
   throw new Error('No API key set');
 }
@@ -693,50 +495,25 @@ function setSpeaking(on) {
   if (on) els.agent_status.textContent = 'Speaking…';
 }
 function stopSpeech() {
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   setSpeaking(false);
 }
 async function speak(text) {
   stopSpeech();
   const clean = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 1800);
-  if (!clean) return;
+  if (!clean || !window.speechSynthesis) return;
   setSpeaking(true);
-  const openai = (localStorage.getItem('margots_openai') || '').trim();
-  if (openai) {
-    try {
-      const r = await fetch('https://api.openai.com/v1/audio/speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + openai },
-        body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice: 'alloy', input: clean, format: 'mp3' })
-      });
-      if (r.ok) {
-        const blob = await r.blob();
-        const url = URL.createObjectURL(blob);
-        currentAudio = new Audio(url);
-        currentAudio.onended = () => { URL.revokeObjectURL(url); currentAudio = null; setSpeaking(false); els.agent_status.textContent = 'Idle · waiting for your question'; };
-        currentAudio.onerror = () => { setSpeaking(false); };
-        await currentAudio.play();
-        return;
-      }
-    } catch (_) {}
-  }
-  if (window.speechSynthesis) {
-    const u = new SpeechSynthesisUtterance(clean);
-    u.rate = 1.02;
-    u.onend = () => { setSpeaking(false); els.agent_status.textContent = 'Idle · waiting for your question'; };
-    u.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(u);
-    return;
-  }
-  setSpeaking(false);
+  const u = new SpeechSynthesisUtterance(clean);
+  u.rate = 1.02;
+  u.onend = () => { setSpeaking(false); els.agent_status.textContent = 'Idle · waiting for your question'; };
+  u.onerror = () => setSpeaking(false);
+  window.speechSynthesis.speak(u);
 }
 
 function addBubble(role, text) {
   const div = document.createElement('div');
   div.className = 'bubble ' + role;
-  const who = document.createElement('span');
-  who.className = 'who';
+  const who = document.createElement('span'); who.className = 'who';
   who.textContent = role === 'user' ? 'You' : 'Agent';
   div.appendChild(who);
   div.appendChild(document.createTextNode(text));
@@ -747,18 +524,13 @@ function addBubble(role, text) {
 async function agentSend() {
   const q = els.agent_q.value.trim();
   if (!q) return;
-  const openai = (localStorage.getItem('margots_openai') || '').trim();
-  const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
-  const xai = (localStorage.getItem('margots_xai') || '').trim();
-  if (!openai && !anthropic && !xai) { openModal(); return; }
-
+  if (!KEYS.some(k => getKey(k))) { openModal(); return; }
   els.agent_q.value = '';
   addBubble('user', q);
   agentHistory.push({ role: 'user', content: q });
   els.agent_send.disabled = true;
   document.body.classList.add('working');
   els.agent_status.textContent = 'Thinking…';
-
   try {
     const reply = await callChatMessages(agentHistory);
     agentHistory.push({ role: 'assistant', content: reply });
@@ -794,11 +566,11 @@ function buildPayload() {
 }
 
 els.run.addEventListener('click', async () => {
-  const openai = (localStorage.getItem('margots_openai') || '').trim();
-  const anthropic = (localStorage.getItem('margots_anthropic') || '').trim();
-  const xai = (localStorage.getItem('margots_xai') || '').trim();
-  if (!openai && !anthropic && !xai) {
-    els.status.innerHTML = '<span class="err">Add API keys first (top right).</span>';
+  const gemini = getKey('gemini');
+  const groq = getKey('groq');
+  const openrouter = getKey('openrouter');
+  if (!gemini && !groq && !openrouter) {
+    els.status.innerHTML = '<span class="err">Add free-tier API keys first (top right).</span>';
     openModal();
     return;
   }
@@ -815,12 +587,12 @@ els.run.addEventListener('click', async () => {
   els.status.textContent = 'Running…';
   document.body.classList.add('working');
   const jobs = [];
-  if (anthropic) jobs.push(callAnthropic(anthropic, PROMPTS.strict, user).then(t => { els.out_strict.textContent = t; }).catch(e => { els.out_strict.textContent = 'Error: ' + e.message; }));
-  else els.out_strict.textContent = 'No Anthropic key';
-  if (openai) jobs.push(callOpenAICompatible('https://api.openai.com/v1', openai, 'gpt-4o', PROMPTS.context, user).then(t => { els.out_context.textContent = t; }).catch(e => { els.out_context.textContent = 'Error: ' + e.message; }));
-  else els.out_context.textContent = 'No OpenAI key';
-  if (xai) jobs.push(callOpenAICompatible('https://api.x.ai/v1', xai, 'grok-3', PROMPTS.skeptic, user).then(t => { els.out_skeptic.textContent = t; }).catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; }));
-  else els.out_skeptic.textContent = 'No xAI key';
+  if (gemini) jobs.push(callGemini(gemini, PROMPTS.strict, user).then(t => { els.out_strict.textContent = t; }).catch(e => { els.out_strict.textContent = 'Error: ' + e.message; }));
+  else els.out_strict.textContent = 'No Gemini key';
+  if (groq) jobs.push(callOpenAICompatible('https://api.groq.com/openai/v1', groq, 'llama-3.3-70b-versatile', PROMPTS.context, user).then(t => { els.out_context.textContent = t; }).catch(e => { els.out_context.textContent = 'Error: ' + e.message; }));
+  else els.out_context.textContent = 'No Groq key';
+  if (openrouter) jobs.push(callOpenAICompatible('https://openrouter.ai/api/v1', openrouter, 'meta-llama/llama-3.3-70b-instruct:free', PROMPTS.skeptic, user, { 'HTTP-Referer': location.origin, 'X-Title': 'Margots' }).then(t => { els.out_skeptic.textContent = t; }).catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; }));
+  else els.out_skeptic.textContent = 'No OpenRouter key';
   await Promise.all(jobs);
   document.body.classList.remove('working');
   els.run.disabled = false;
