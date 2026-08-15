@@ -6,181 +6,251 @@
   <title>Margots</title>
   <style>
     :root {
-      --bg: #0b0d10;
-      --surface: #12151a;
-      --surface2: #181c23;
-      --text: #eef1f5;
-      --muted: #8b93a7;
-      --line: #262b36;
-      --accent: #4f8cff;
-      --accent-dim: rgba(79, 140, 255, 0.12);
-      --ok: #3ecf8e;
-      --err: #ff6b6b;
-      --radius: 14px;
+      --bg: #f6f1ea;
+      --bg2: #fbf8f4;
+      --surface: #ffffff;
+      --text: #1c1917;
+      --muted: #78716c;
+      --line: #e7e0d8;
+      --line-strong: #d6cfc6;
+      --black: #171412;
+      --soft: #f0eae3;
+      --ok: #16a34a;
+      --err: #dc2626;
+      --shadow: 0 10px 30px rgba(28, 25, 23, 0.06);
+      --radius: 18px;
     }
 
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #152038 0%, transparent 55%),
-        radial-gradient(900px 500px at 100% 0%, #101820 0%, transparent 50%),
-        var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       color: var(--text);
+      background:
+        radial-gradient(circle at 1px 1px, rgba(28,25,23,0.05) 1px, transparent 0) 0 0 / 22px 22px,
+        linear-gradient(180deg, #fbf7f2 0%, var(--bg) 40%, #f3eee8 100%);
       line-height: 1.5;
     }
 
-    .app {
-      max-width: 1200px;
+    .topbar {
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 28px 20px 48px;
-    }
-
-    header {
+      padding: 18px 20px 0;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
+      gap: 12px;
     }
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      letter-spacing: -0.03em;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    header p {
-      margin: 6px 0 0;
+    .mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      background: conic-gradient(from 210deg, #f43f5e, #fb923c, #fbbf24, #34d399, #60a5fa, #a78bfa, #f43f5e);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55);
+    }
+    .pill {
+      font-size: 0.72rem;
+      border: 1px solid var(--line-strong);
+      background: #fff;
       color: var(--muted);
-      font-size: 0.95rem;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 600;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 18px;
-      align-items: start;
-    }
-    @media (max-width: 920px) {
-      .layout { grid-template-columns: 1fr; }
+    .shell {
+      max-width: 920px;
+      margin: 28px auto 48px;
+      padding: 0 16px;
     }
 
-    .panel {
+    .hero {
+      text-align: center;
+      padding: 18px 8px 22px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: -0.04em;
+      font-weight: 700;
+      color: #1c1917;
+    }
+    .hero p {
+      margin: 10px auto 0;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .stage {
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 16px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    .panel h2 {
-      margin: 0 0 12px;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+    .stage-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fcfaf8;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d6d3d1;
+    }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+    .stage-title {
+      margin-left: 6px;
+      font-size: 0.85rem;
       color: var(--muted);
       font-weight: 600;
+    }
+
+    .stage-body { padding: 22px 20px 20px; }
+
+    .composer {
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--black);
+      color: #fff;
+      border-color: var(--black);
     }
 
     label {
       display: block;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--muted);
       margin: 0 0 6px;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: var(--surface2);
-      color: var(--text);
-      padding: 11px 12px;
-      font: inherit;
-    }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-dim);
-    }
-    textarea {
-      min-height: 130px;
-      resize: vertical;
+      font-weight: 600;
     }
     .field { margin-bottom: 12px; }
     .field:last-child { margin-bottom: 0; }
 
-    .keys input {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.82rem;
-    }
-
-    .hint {
-      margin-top: 10px;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .tab {
-      background: transparent;
-      color: var(--muted);
+    input, textarea {
+      width: 100%;
       border: 1px solid var(--line);
-      padding: 9px 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.88rem;
-    }
-    .tab.active {
+      background: #fcfbfa;
       color: var(--text);
-      border-color: var(--accent);
-      background: var(--accent-dim);
+      border-radius: 12px;
+      padding: 12px 12px;
+      font: inherit;
     }
-
-    #run {
-      margin-top: 14px;
-      background: var(--accent);
-      color: #061018;
-      border: none;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 12px;
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #a8a29e;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(28,25,23,0.04);
     }
-    #run:hover { filter: brightness(1.05); }
-    #run:disabled { opacity: 0.55; cursor: not-allowed; }
+    textarea { min-height: 110px; resize: vertical; }
 
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
     .status {
-      min-height: 1.2em;
-      margin-top: 10px;
       font-size: 0.85rem;
       color: var(--muted);
+      min-height: 1.2em;
     }
     .ok { color: var(--ok); }
     .err { color: var(--err); }
 
-    .results {
-      display: grid;
-      gap: 14px;
+    #run {
+      border: none;
+      background: var(--black);
+      color: #fff;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 120px;
     }
+    #run:hover { filter: brightness(1.08); }
+    #run:disabled { opacity: 0.55; cursor: not-allowed; }
 
-    .facts pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
+    .keys {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 760px) {
+      .keys { grid-template-columns: 1fr; }
+    }
+    .keys input {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.82rem;
-      color: #c9d1d9;
-      background: #0d1015;
+    }
+    .hint {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .section {
+      margin-top: 16px;
+    }
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .facts {
+      background: #fcfbfa;
       border: 1px solid var(--line);
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 12px;
-      max-height: 180px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #44403c;
+      max-height: 160px;
       overflow: auto;
     }
 
@@ -189,67 +259,57 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
-    @media (max-width: 920px) {
+    @media (max-width: 860px) {
       .answers { grid-template-columns: 1fr; }
     }
-
     .answer {
-      background: var(--surface);
+      background: #fcfbfa;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 16px;
       padding: 14px;
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
+      min-height: 180px;
     }
     .answer h3 {
-      margin: 0 0 10px;
-      font-size: 0.85rem;
-      letter-spacing: 0.04em;
+      margin: 0 0 8px;
+      font-size: 0.8rem;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--muted);
-      font-weight: 700;
     }
     .answer .body {
-      flex: 1;
       white-space: pre-wrap;
       word-break: break-word;
       font-size: 0.92rem;
-      color: #d7dde8;
+      color: #292524;
       line-height: 1.55;
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div>
-        <h1>Margots</h1>
-        <p>Sequence and variant analysis with three independent model backends.</p>
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark"></div>
+      <span>Margots</span>
+      <span class="pill">beta</span>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="hero">
+      <h1>Analysis that works alongside you</h1>
+      <p>Run the same bioinformatics question through three backends. Local measurements first, answers side by side.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+        <span class="stage-title">Margots workspace</span>
       </div>
-    </header>
 
-    <div class="layout">
-      <aside>
-        <div class="panel" style="margin-bottom:14px">
-          <h2>API keys</h2>
-          <div class="field keys">
-            <label>OpenAI</label>
-            <input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" />
-          </div>
-          <div class="field keys">
-            <label>Anthropic</label>
-            <input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" />
-          </div>
-          <div class="field keys">
-            <label>xAI</label>
-            <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
-          </div>
-          <p class="hint">Stored only in this browser (localStorage).</p>
-        </div>
-
-        <div class="panel">
-          <h2>Input</h2>
+      <div class="stage-body">
+        <div class="composer">
           <div class="tabs">
             <button class="tab active" data-mode="sequence">Sequence</button>
             <button class="tab" data-mode="variant">Variant</button>
@@ -259,11 +319,11 @@
           <div id="panel_sequence">
             <div class="field">
               <label>Sequence</label>
-              <textarea id="seq" placeholder="DNA, RNA, or protein"></textarea>
+              <textarea id="seq" placeholder="Paste DNA, RNA, or protein sequence"></textarea>
             </div>
             <div class="field">
               <label>Question (optional)</label>
-              <input id="seq_q" placeholder="What stands out?" />
+              <input id="seq_q" placeholder="What should we look for?" />
             </div>
           </div>
 
@@ -277,40 +337,59 @@
           <div id="panel_free" hidden>
             <div class="field">
               <label>Context</label>
-              <textarea id="ctx" placeholder="Paste notes or summary"></textarea>
+              <textarea id="ctx" placeholder="Paste notes, summary, or data description"></textarea>
             </div>
             <div class="field">
               <label>Question</label>
-              <input id="free_q" placeholder="What should be checked?" />
+              <input id="free_q" placeholder="What do you want checked?" />
             </div>
           </div>
 
-          <button id="run">Run analysis</button>
-          <div class="status" id="status"></div>
+          <div class="actions">
+            <div class="status" id="status"></div>
+            <button id="run">Run</button>
+          </div>
         </div>
-      </aside>
 
-      <main class="results">
-        <div class="panel facts">
+        <div class="keys">
+          <div class="field">
+            <label>OpenAI key</label>
+            <input id="k_openai" type="password" placeholder="sk-..." autocomplete="off" />
+          </div>
+          <div class="field">
+            <label>Anthropic key</label>
+            <input id="k_anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" />
+          </div>
+          <div class="field">
+            <label>xAI key</label>
+            <input id="k_xai" type="password" placeholder="xai-..." autocomplete="off" />
+          </div>
+        </div>
+        <p class="hint">Keys stay in this browser only (localStorage).</p>
+
+        <div class="section">
           <h2>Local measurements</h2>
-          <pre id="facts">No run yet.</pre>
+          <div class="facts" id="facts">No run yet.</div>
         </div>
 
-        <div class="answers">
-          <div class="answer">
-            <h3>Strict</h3>
-            <div class="body" id="out_strict">—</div>
-          </div>
-          <div class="answer">
-            <h3>Context</h3>
-            <div class="body" id="out_context">—</div>
-          </div>
-          <div class="answer">
-            <h3>Skeptic</h3>
-            <div class="body" id="out_skeptic">—</div>
+        <div class="section">
+          <h2>Answers</h2>
+          <div class="answers">
+            <div class="answer">
+              <h3>Strict</h3>
+              <div class="body" id="out_strict">—</div>
+            </div>
+            <div class="answer">
+              <h3>Context</h3>
+              <div class="body" id="out_context">—</div>
+            </div>
+            <div class="answer">
+              <h3>Skeptic</h3>
+              <div class="body" id="out_skeptic">—</div>
+            </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </div>
 
@@ -446,10 +525,9 @@ function buildPayload() {
     };
   }
   if (mode === 'variant') {
-    const text = els.variant.value.trim();
     return {
       facts: { source: 'user text only' },
-      user: `Variant description:\n${text}\n\nComment on possible molecular effect and what still needs external database checks.`
+      user: `Variant description:\n${els.variant.value.trim()}\n\nComment on possible molecular effect and what still needs external database checks.`
     };
   }
   return {
