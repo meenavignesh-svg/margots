@@ -6,33 +6,39 @@ Browser-based bioinformatics analysis workspace. Local measurements run in-page;
 
 ## Features
 
-- **Sequence** — DNA / RNA / protein paste with GC%, composition, length
+### Analysis modes
+- **Sequence** — DNA / RNA / protein with GC%, composition, Tm estimate, reverse complement, ORF scan, codon frequencies, translation preview
 - **Variant** — free-text variant notes
 - **Free** — any scientific context + question
-- **Upload** — FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, JSON, TXT, and other text formats (read locally in the browser)
-- **Agent** — chat with a holographic agent that replies by voice
-- Three parallel answers: **Strict · Gemini**, **Context · Groq**, **Skeptic · OpenRouter**
+- **Upload** — FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, JSON, TXT (parsed locally)
+- **Agent** — holographic chat agent that remembers last run, editor sequence, and uploaded file; speaks replies
 
-## API keys (free tiers)
+### Workspace tools
+- **Load example** / sample DNA · RNA · protein chips
+- **History** — last 20 runs in localStorage, click to restore
+- **Export** — JSON, text, or CSV of facts + answers
+- **Share** — copy a URL hash that reloads the result
+- **Copy all** — clipboard dump of the three answers
+- **Automatic fallback** — if a preferred provider key is missing or fails, the next available free-tier key is used
 
-Keys are entered in the app (top right) and stored only in `localStorage`.
-
-| Slot | Provider | Get a key |
-|------|----------|-----------|
+### Model slots
+| Slot | Preferred | Free key |
+|------|-----------|----------|
 | Strict | Google Gemini | https://aistudio.google.com/apikey |
 | Context | Groq | https://console.groq.com/keys |
 | Skeptic | OpenRouter | https://openrouter.ai/keys |
 
-No credit card is required for the basic free tiers of these providers. Rate limits apply per account.
+Keys are stored only in `localStorage`. One key is enough to run.
 
 ## Hosting
 
-Static site on GitHub Pages from the `docs/` folder.
+GitHub Pages from `docs/`.
 
-Source of the app: `docs/index.html`
+- UI: `docs/index.html`
+- Logic: `docs/app.js`
 
 ## Privacy
 
-- Uploaded files are parsed in the browser; they are not uploaded to a Margots server
-- Model calls go directly from your browser to the provider APIs using your keys
-- Keys never leave your machine except as Authorization headers to those APIs
+- Files are read in the browser only
+- Model calls go directly to the providers with your keys
+- No Margots backend
