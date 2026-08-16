@@ -1,7 +1,8 @@
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 from enum import Enum
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -35,7 +36,7 @@ PROMPTS = {
 @dataclass
 class Result:
     facts: Dict[str, Any]
-    outputs: Dict[str, str]          # role -> raw text
+    outputs: Dict[str, str]
     errors: Dict[str, str] = field(default_factory=dict)
 
 
@@ -46,37 +47,42 @@ class Engine:
         self._init()
 
     def _init(self):
-        # strict -> anthropic
         key = os.getenv("ANTHROPIC_API_KEY")
         if key:
             from anthropic import Anthropic
             self.clients[Role.STRICT] = Anthropic(api_key=key)
-            self.models[Role.STRICT] = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+            model = os.getenv("ANTHROPIC_MODEL")
+            if model:
+                self.models[Role.STRICT] = model
 
-        # context -> openai
         key = os.getenv("OPENAI_API_KEY")
         if key:
             from openai import OpenAI
             self.clients[Role.CONTEXT] = OpenAI(api_key=key)
-            self.models[Role.CONTEXT] = os.getenv("OPENAI_MODEL", "gpt-4o")
+            model = os.getenv("OPENAI_MODEL")
+            if model:
+                self.models[Role.CONTEXT] = model
 
-        # skeptic -> xai
         key = os.getenv("XAI_API_KEY")
         if key:
             from openai import OpenAI
             self.clients[Role.SKEPTIC] = OpenAI(api_key=key, base_url="https://api.x.ai/v1")
-            self.models[Role.SKEPTIC] = os.getenv("XAI_MODEL", "grok-3")
+            model = os.getenv("XAI_MODEL")
+            if model:
+                self.models[Role.SKEPTIC] = model
 
     def available(self) -> List[str]:
         return [r.value for r in self.clients]
 
     def _call(self, role: Role, user_content: str) -> str:
         client = self.clients[role]
-        model = self.models[role]
+        model = self.models.get(role)
+        if not model:
+            raise RuntimeError(f"No model configured for {role.value}. Set the corresponding *_MODEL variable.")
+
         system = PROMPTS[role]
 
         if role == Role.STRICT:
-            # anthropic path
             resp = client.messages.create(
                 model=model,
                 max_tokens=4096,
@@ -86,7 +92,6 @@ class Engine:
             )
             return resp.content[0].text
 
-        # openai-compatible
         resp = client.chat.completions.create(
             model=model,
             temperature=0.2 if role != Role.SKEPTIC else 0.5,
@@ -96,12 +101,12 @@ class Engine:
                 {"role": "user", "content": user_content},
             ],
         )
-        return resp.choices[0].message.content
+        return resp.choices[0].message.content or ""
 
     def run(self, payload: str, facts: Dict[str, Any] | None = None) -> Result:
         facts = facts or {}
-        outputs = {}
-        errors = {}
+        outputs: Dict[str, str] = {}
+        errors: Dict[str, str] = {}
 
         user_msg = (
             f"Measured facts:\n{facts}\n\n"
@@ -113,6 +118,6 @@ class Engine:
             try:
                 outputs[role.value] = self._call(role, user_msg)
             except Exception as e:
-                errors[role.value] = str(e)
+                errors[role.value] = f"{type(e).__name__}: {e}"
 
         return Result(facts=facts, outputs=outputs, errors=errors)
