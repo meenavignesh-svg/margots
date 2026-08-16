@@ -1,7 +1,8 @@
 import re
 from typing import Any, Dict
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 from Bio.Seq import Seq
 from Bio.SeqUtils import gc_fraction
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
@@ -9,34 +10,63 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from .llm_engine import Engine, Result
 
 
+DNA_RE = re.compile(r"^[ACGTN]+$")
+RNA_RE = re.compile(r"^[ACGUN]+$")
+PROTEIN_RE = re.compile(r"^[ACDEFGHIKLMNPQRSTVWYBXZJUO]+$")
+
+
+def normalize_sequence(sequence: str) -> str:
+    return re.sub(r"\s+", "", sequence).upper()
+
+
 def seq_stats(sequence: str) -> Dict[str, Any]:
-    sequence = sequence.strip().upper().replace(" ", "").replace("\n", "")
+    sequence = normalize_sequence(sequence)
     if not sequence:
-        return {"error": "empty"}
+        return {"error": "empty", "kind": "invalid"}
 
-    if re.fullmatch(r"[ACGTN]+", sequence):
+    is_dna = bool(DNA_RE.fullmatch(sequence))
+    is_rna = bool(RNA_RE.fullmatch(sequence))
+
+    # A/C/G-only sequences are inherently ambiguous between DNA and RNA.
+    if is_dna and is_rna:
+        kind = "nucleic_acid_ambiguous"
+    elif is_dna:
         kind = "dna"
-    elif re.fullmatch(r"[ACGU]+", sequence):
+    elif is_rna:
         kind = "rna"
-    else:
+    elif PROTEIN_RE.fullmatch(sequence):
         kind = "protein"
+    else:
+        return {
+            "error": "invalid_sequence",
+            "kind": "invalid",
+            "message": "Sequence contains characters that are not valid DNA, RNA, or protein symbols.",
+        }
 
-    out = {
+    out: Dict[str, Any] = {
         "kind": kind,
         "length": len(sequence),
         "preview": sequence[:200] + ("..." if len(sequence) > 200 else ""),
+        "counts": {b: sequence.count(b) for b in sorted(set(sequence))},
     }
 
-    if kind in ("dna", "rna"):
+    if kind in ("dna", "rna", "nucleic_acid_ambiguous"):
         out["gc_percent"] = round(gc_fraction(sequence) * 100, 2)
-        out["counts"] = {b: sequence.count(b) for b in sorted(set(sequence))}
+
         if kind == "dna":
             s = Seq(sequence)
             out["revcomp_preview"] = str(s.reverse_complement())[:100]
-            try:
-                out["translation_preview"] = str(s.translate(to_stop=True))[:100]
-            except Exception:
-                pass
+            if len(sequence) % 3 == 0:
+                try:
+                    out["translation_preview"] = str(s.translate(to_stop=True))[:100]
+                except Exception as e:
+                    out["translation_error"] = str(e)
+            else:
+                out["translation_note"] = "Translation preview omitted because sequence length is not divisible by 3."
+        elif kind == "rna":
+            out["translation_note"] = "RNA detected. Translation requires an explicit reading frame/start policy."
+        else:
+            out["sequence_note"] = "Only A/C/G symbols are present, so DNA vs RNA cannot be determined from sequence alone."
 
     if kind == "protein":
         try:
@@ -75,7 +105,7 @@ class Analyzer:
     def sequence(self, sequence: str, question: str | None = None) -> Result:
         facts = seq_stats(sequence)
         q = question or "What can be reliably said about this sequence?"
-        payload = f"{q}\n\nSequence (truncated):\n{sequence[:3500]}"
+        payload = f"{q}\n\nSequence (truncated):\n{normalize_sequence(sequence)[:3500]}"
         return self.engine.run(payload, facts)
 
     def expression(self, df: pd.DataFrame, question: str | None = None) -> Result:
