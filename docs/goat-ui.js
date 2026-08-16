@@ -7,83 +7,72 @@
     body::before{content:"";position:fixed;inset:-20%;z-index:-3;pointer-events:none;background:radial-gradient(circle at 18% 20%,rgba(34,211,238,.12),transparent 28%),radial-gradient(circle at 82% 72%,rgba(139,92,246,.10),transparent 30%);animation:goatAmbient 14s ease-in-out infinite alternate}
     .goat-grid{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(56,189,248,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.10) 1px,transparent 1px);background-size:48px 48px;transform:perspective(500px) rotateX(62deg) scale(1.8);transform-origin:50% 100%;mask-image:linear-gradient(to top,black,transparent 78%);animation:goatGrid 16s linear infinite}
     .goat-orb{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--goat-cyan);box-shadow:0 0 12px var(--goat-cyan),0 0 32px rgba(34,211,238,.55);pointer-events:none;z-index:-1;animation:goatFloat var(--d,9s) ease-in-out infinite;opacity:.55}
-    .topbar,.shell{transform-style:preserve-3d}
-    .topbar{transition:transform .18s ease-out}
-    .hero{position:relative;transform-style:preserve-3d}
-    .hero h1{position:relative;transform:translateZ(34px);text-shadow:0 0 18px rgba(34,211,238,.3),0 0 55px rgba(59,130,246,.18)}
-    .hero p{transform:translateZ(18px)}
+    .topbar,.shell{transform-style:preserve-3d}.topbar{transition:transform .18s ease-out}
+    .hero{position:relative;transform-style:preserve-3d}.hero h1{position:relative;transform:translateZ(34px);text-shadow:0 0 18px rgba(34,211,238,.3),0 0 55px rgba(59,130,246,.18)}.hero p{transform:translateZ(18px)}
     .stage{position:relative;transform-style:preserve-3d;transition:transform .18s ease-out,box-shadow .25s ease;box-shadow:0 24px 70px rgba(0,0,0,.38),0 0 55px rgba(34,211,238,.07)}
-    .stage::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.08),transparent 22%,transparent 72%,rgba(34,211,238,.06));mix-blend-mode:screen}
-    .stage::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;border:1px solid rgba(103,232,249,.10);box-shadow:inset 0 0 45px rgba(34,211,238,.035)}
+    .stage::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.08),transparent 22%,transparent 72%,rgba(34,211,238,.06));mix-blend-mode:screen}.stage::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;border:1px solid rgba(103,232,249,.10);box-shadow:inset 0 0 45px rgba(34,211,238,.035)}
     .composer,.answer,.facts,.chat,.drop{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;background-image:linear-gradient(135deg,rgba(255,255,255,.035),transparent 35%)}
     .composer:hover,.answer:hover,.facts:hover,.chat:hover,.drop:hover{transform:translateY(-2px) translateZ(8px);border-color:rgba(103,232,249,.36);box-shadow:0 14px 38px rgba(0,0,0,.24),0 0 26px rgba(34,211,238,.06)}
-    .tab,.ghost,.keys-btn,.primary,.chip,.btn-primary,.btn-secondary{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
-    .tab:hover,.ghost:hover,.keys-btn:hover,.primary:hover,.chip:hover,.btn-primary:hover,.btn-secondary:hover{transform:translateY(-2px);filter:brightness(1.08)}
-    .primary:hover{box-shadow:0 0 24px rgba(34,211,238,.48),0 8px 22px rgba(0,0,0,.25)}
+    .tab,.ghost,.keys-btn,.primary,.chip,.btn-primary,.btn-secondary{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}.tab:hover,.ghost:hover,.keys-btn:hover,.primary:hover,.chip:hover,.btn-primary:hover,.btn-secondary:hover{transform:translateY(-2px);filter:brightness(1.08)}.primary:hover{box-shadow:0 0 24px rgba(34,211,238,.48),0 8px 22px rgba(0,0,0,.25)}
     .hero::after{content:"MARGOTS // BIOINTELLIGENCE";display:block;margin:13px auto 0;width:max-content;max-width:100%;padding:4px 10px;border:1px solid rgba(56,189,248,.16);border-radius:999px;color:rgba(125,211,252,.55);font:600 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;transform:translateZ(20px);background:rgba(2,8,16,.35)}
-    .stage-top{position:relative;overflow:hidden}
-    .stage-top::after{content:"";position:absolute;left:-20%;top:0;width:28%;height:100%;background:linear-gradient(90deg,transparent,rgba(103,232,249,.12),transparent);transform:skewX(-20deg);animation:goatSweep 5.5s linear infinite}
-    .dna-stage{filter:drop-shadow(0 0 18px rgba(34,211,238,.28)) drop-shadow(0 0 60px rgba(59,130,246,.08));transform:translate(-50%,-50%) rotateX(5deg)}
-    .hud-ring{box-shadow:0 0 20px rgba(34,211,238,.035)}
-    .holo{transform-style:preserve-3d;animation:goatHoloFloat 4.5s ease-in-out infinite}
-    .holo-core{box-shadow:0 0 22px rgba(34,211,238,.65),0 0 70px rgba(59,130,246,.25),inset 0 0 20px rgba(255,255,255,.42);}
-    .holo-ring.a{transform:rotateX(66deg) rotateZ(0deg);animation:goatOrbitA 7s linear infinite}
-    .holo-ring.b{transform:rotateX(66deg) rotateZ(55deg);animation:goatOrbitB 10s linear infinite}
-    .holo-ring.c{transform:rotateX(66deg) rotateZ(110deg);animation:goatOrbitC 15s linear infinite}
-    .wave span{box-shadow:0 0 8px rgba(103,232,249,.5)}
-    body.working .stage{box-shadow:0 24px 80px rgba(0,0,0,.42),0 0 75px rgba(34,211,238,.14)}
-    body.working .stage::before{animation:goatPulse 1.4s ease-in-out infinite}
-    body.working .hero h1{animation:goatTitlePulse 1.5s ease-in-out infinite}
+    .stage-top{position:relative;overflow:hidden}.stage-top::after{content:"";position:absolute;left:-20%;top:0;width:28%;height:100%;background:linear-gradient(90deg,transparent,rgba(103,232,249,.12),transparent);transform:skewX(-20deg);animation:goatSweep 5.5s linear infinite}
+    .dna-stage{filter:drop-shadow(0 0 18px rgba(34,211,238,.28)) drop-shadow(0 0 60px rgba(59,130,246,.08));transform:translate(-50%,-50%) rotateX(5deg)}.hud-ring{box-shadow:0 0 20px rgba(34,211,238,.035)}
+    .holo{transform-style:preserve-3d;animation:goatHoloFloat 4.5s ease-in-out infinite}.holo-core{box-shadow:0 0 22px rgba(34,211,238,.65),0 0 70px rgba(59,130,246,.25),inset 0 0 20px rgba(255,255,255,.42)}
+    .holo-ring.a{transform:rotateX(66deg) rotateZ(0deg);animation:goatOrbitA 7s linear infinite}.holo-ring.b{transform:rotateX(66deg) rotateZ(55deg);animation:goatOrbitB 10s linear infinite}.holo-ring.c{transform:rotateX(66deg) rotateZ(110deg);animation:goatOrbitC 15s linear infinite}.wave span{box-shadow:0 0 8px rgba(103,232,249,.5)}
+    body.working .stage{box-shadow:0 24px 80px rgba(0,0,0,.42),0 0 75px rgba(34,211,238,.14)}body.working .stage::before{animation:goatPulse 1.4s ease-in-out infinite}body.working .hero h1{animation:goatTitlePulse 1.5s ease-in-out infinite}
+    /* JARVIS COMMAND DECK */
+    .jarvis-deck{position:fixed;right:18px;bottom:18px;width:min(390px,calc(100vw - 36px));z-index:40;padding:12px;border:1px solid rgba(56,189,248,.28);border-radius:18px;background:linear-gradient(145deg,rgba(4,16,29,.94),rgba(2,8,18,.86));box-shadow:0 18px 70px rgba(0,0,0,.55),0 0 45px rgba(34,211,238,.10);backdrop-filter:blur(18px);transform:translateZ(80px)}
+    .jarvis-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}.jarvis-dot{width:9px;height:9px;border-radius:50%;background:#334155}.jarvis-dot.live{background:#34d399;box-shadow:0 0 12px #34d399}.jarvis-name{font:800 .72rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.15em;color:#a5f3fc}.jarvis-state{margin-left:auto;font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.08em}
+    .jarvis-readout{min-height:38px;padding:9px 10px;border:1px solid rgba(56,189,248,.14);border-radius:11px;background:rgba(0,0,0,.2);color:#cbe9f8;font-size:.78rem;line-height:1.4}.jarvis-readout strong{color:#67e8f9}.jarvis-form{display:flex;gap:7px;margin-top:8px}.jarvis-form input{min-width:0;flex:1;padding:9px 11px!important;border-radius:10px!important}.jarvis-mic,.jarvis-send{border:1px solid rgba(56,189,248,.28);background:rgba(8,30,45,.8);color:#a5f3fc;border-radius:10px;padding:0 11px;font-weight:800;cursor:pointer}.jarvis-mic:hover,.jarvis-send:hover{border-color:#22d3ee;box-shadow:0 0 18px rgba(34,211,238,.16)}.jarvis-mic.active{background:rgba(34,211,238,.18);box-shadow:0 0 20px rgba(34,211,238,.25)}
+    .jarvis-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.jarvis-tool{border:1px solid rgba(56,189,248,.14);background:rgba(4,20,34,.65);color:#8aa0b8;border-radius:999px;padding:5px 8px;font-size:.67rem;cursor:pointer}.jarvis-tool:hover{color:#e8f3ff;border-color:rgba(56,189,248,.4)}
+    .jarvis-overlay{position:fixed;inset:0;z-index:35;pointer-events:none;overflow:hidden}.jarvis-corner{position:absolute;width:120px;height:120px;border-color:rgba(34,211,238,.18);border-style:solid}.jarvis-corner.tl{left:16px;top:16px;border-width:1px 0 0 1px}.jarvis-corner.tr{right:16px;top:16px;border-width:1px 1px 0 0}.jarvis-corner.bl{left:16px;bottom:16px;border-width:0 0 1px 1px}.jarvis-corner.br{right:16px;bottom:16px;border-width:0 1px 1px 0}.jarvis-cross{position:absolute;left:50%;top:50%;width:14px;height:14px;transform:translate(-50%,-50%);opacity:.18}.jarvis-cross::before,.jarvis-cross::after{content:"";position:absolute;background:#22d3ee}.jarvis-cross::before{width:14px;height:1px;top:7px}.jarvis-cross::after{height:14px;width:1px;left:7px}
+    body.jarvis-listening .holo-core{animation:jarvisListen .7s ease-in-out infinite alternate}body.jarvis-listening .jarvis-dot{background:#22d3ee;box-shadow:0 0 16px #22d3ee}body.jarvis-listening .jarvis-state{color:#67e8f9}body.jarvis-listening .jarvis-state::after{content:" // LISTENING"}
+    body.jarvis-speaking .jarvis-dot{background:#a78bfa;box-shadow:0 0 16px #8b5cf6}body.jarvis-speaking .jarvis-state{color:#c4b5fd}body.jarvis-speaking .jarvis-state::after{content:" // SPEAKING"}
+    @keyframes jarvisListen{from{transform:scale(1)}to{transform:scale(1.13);filter:brightness(1.35)}}
+    @media(max-width:700px){.jarvis-deck{right:10px;bottom:10px;width:calc(100vw - 20px)}.jarvis-overlay .jarvis-corner{width:70px;height:70px}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}.goat-grid{display:none}}
-    @keyframes goatAmbient{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,-1%,0) scale(1.04)}}
-    @keyframes goatGrid{from{background-position:0 0}to{background-position:48px 48px}}
-    @keyframes goatFloat{0%,100%{transform:translate3d(0,0,0) scale(.7);opacity:.2}50%{transform:translate3d(var(--x,30px),var(--y,-70px),0) scale(1.2);opacity:.7}}
-    @keyframes goatSweep{from{left:-30%}to{left:120%}}
-    @keyframes goatHoloFloat{0%,100%{transform:translateY(0) rotateX(0)}50%{transform:translateY(-6px) rotateX(3deg)}}
-    @keyframes goatOrbitA{to{transform:rotateX(66deg) rotateZ(360deg)}}
-    @keyframes goatOrbitB{to{transform:rotateX(66deg) rotateZ(-305deg)}}
-    @keyframes goatOrbitC{to{transform:rotateX(66deg) rotateZ(360deg)}}
-    @keyframes goatPulse{0%,100%{opacity:.4}50%{opacity:.95}}
-    @keyframes goatTitlePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+    @keyframes goatAmbient{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,-1%,0) scale(1.04)}}@keyframes goatGrid{from{background-position:0 0}to{background-position:48px 48px}}@keyframes goatFloat{0%,100%{transform:translate3d(0,0,0) scale(.7);opacity:.2}50%{transform:translate3d(var(--x,30px),var(--y,-70px),0) scale(1.2);opacity:.7}}@keyframes goatSweep{from{left:-30%}to{left:120%}}@keyframes goatHoloFloat{0%,100%{transform:translateY(0) rotateX(0)}50%{transform:translateY(-6px) rotateX(3deg)}}@keyframes goatOrbitA{to{transform:rotateX(66deg) rotateZ(360deg)}}@keyframes goatOrbitB{to{transform:rotateX(66deg) rotateZ(-305deg)}}@keyframes goatOrbitC{to{transform:rotateX(66deg) rotateZ(360deg)}}@keyframes goatPulse{0%,100%{opacity:.4}50%{opacity:.95}}@keyframes goatTitlePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
   `;
   document.head.appendChild(style);
-
   const grid=document.createElement('div');grid.className='goat-grid';document.body.appendChild(grid);
   const frag=document.createDocumentFragment();
-  for(let i=0;i<22;i++){
-    const o=document.createElement('span');o.className='goat-orb';
-    o.style.left=(4+Math.random()*92)+'%';o.style.top=(8+Math.random()*86)+'%';
-    o.style.setProperty('--d',(7+Math.random()*9)+'s');
-    o.style.setProperty('--x',(-35+Math.random()*70)+'px');
-    o.style.setProperty('--y',(-45-Math.random()*80)+'px');
-    o.style.animationDelay=(-Math.random()*12)+'s';frag.appendChild(o);
-  }
+  for(let i=0;i<22;i++){const o=document.createElement('span');o.className='goat-orb';o.style.left=(4+Math.random()*92)+'%';o.style.top=(8+Math.random()*86)+'%';o.style.setProperty('--d',(7+Math.random()*9)+'s');o.style.setProperty('--x',(-35+Math.random()*70)+'px');o.style.setProperty('--y',(-45-Math.random()*80)+'px');o.style.animationDelay=(-Math.random()*12)+'s';frag.appendChild(o)}
   document.body.appendChild(frag);
+  const finePointer=matchMedia('(pointer:fine)');const stage=document.querySelector('.stage');const topbar=document.querySelector('.topbar');let raf=0,px=0,py=0;
+  function tilt(){raf=0;if(!finePointer.matches||window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;const x=(px/window.innerWidth-.5),y=(py/window.innerHeight-.5);if(stage)stage.style.transform=`rotateX(${(-y*2.2).toFixed(2)}deg) rotateY(${(x*3).toFixed(2)}deg)`;if(topbar)topbar.style.transform=`translate3d(${(x*3).toFixed(1)}px,${(y*2).toFixed(1)}px,0)`}
+  window.addEventListener('pointermove',e=>{px=e.clientX;py=e.clientY;if(!raf)raf=requestAnimationFrame(tilt)},{passive:true});window.addEventListener('blur',()=>{if(stage)stage.style.transform='';if(topbar)topbar.style.transform=''});
+  const title=document.querySelector('.hero h1');if(title){const text=title.textContent;title.setAttribute('data-text',text);title.addEventListener('mouseenter',()=>title.style.letterSpacing='-.025em');title.addEventListener('mouseleave',()=>title.style.letterSpacing='-.04em')}
+  document.querySelectorAll('.answer').forEach((card,i)=>{card.style.setProperty('--card-delay',i*70+'ms');card.addEventListener('pointerenter',()=>card.style.zIndex='4');card.addEventListener('pointerleave',()=>card.style.zIndex='')});
+})();
 
-  const finePointer=matchMedia('(pointer:fine)');
-  const stage=document.querySelector('.stage');
-  const topbar=document.querySelector('.topbar');
-  let raf=0,px=0,py=0;
-  function tilt(){
-    raf=0;
-    if(!finePointer.matches||window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-    const x=(px/window.innerWidth-.5),y=(py/window.innerHeight-.5);
-    if(stage)stage.style.transform=`rotateX(${(-y*2.2).toFixed(2)}deg) rotateY(${(x*3).toFixed(2)}deg)`;
-    if(topbar)topbar.style.transform=`translate3d(${(x*3).toFixed(1)}px,${(y*2).toFixed(1)}px,0)`;
-  }
-  window.addEventListener('pointermove',e=>{px=e.clientX;py=e.clientY;if(!raf)raf=requestAnimationFrame(tilt)},{passive:true});
-  window.addEventListener('blur',()=>{if(stage)stage.style.transform='';if(topbar)topbar.style.transform=''});
-
-  const title=document.querySelector('.hero h1');
-  if(title){
-    const text=title.textContent;title.setAttribute('data-text',text);
-    title.addEventListener('mouseenter',()=>title.style.letterSpacing='-.025em');
-    title.addEventListener('mouseleave',()=>title.style.letterSpacing='-.04em');
-  }
-
-  document.querySelectorAll('.answer').forEach((card,i)=>{
-    card.style.setProperty('--card-delay',i*70+'ms');
-    card.addEventListener('pointerenter',()=>card.style.zIndex='4');
-    card.addEventListener('pointerleave',()=>card.style.zIndex='');
-  });
+/* JARVIS-STYLE INTERACTION LAYER — UI/voice only; it never fabricates scientific results. */
+(() => {
+  'use strict';
+  const ready=()=>{
+    const deck=document.createElement('section');deck.className='jarvis-deck';deck.setAttribute('aria-label','Margots command interface');
+    deck.innerHTML=`<div class="jarvis-head"><span class="jarvis-dot live"></span><span class="jarvis-name">MARGOTS // COMMAND</span><span class="jarvis-state">ONLINE</span></div><div class="jarvis-readout" id="jarvisReadout"><strong>Ready.</strong> Say or type a command.</div><form class="jarvis-form" id="jarvisForm"><input id="jarvisInput" autocomplete="off" placeholder="Ask Margots…" aria-label="Command"/><button class="jarvis-mic" id="jarvisMic" type="button" title="Voice input" aria-label="Voice input">◉</button><button class="jarvis-send" type="submit" aria-label="Send command">↗</button></form><div class="jarvis-tools"><button class="jarvis-tool" data-cmd="analyze">Analyze current sequence</button><button class="jarvis-tool" data-cmd="agent">Open agent</button><button class="jarvis-tool" data-cmd="history">Show history</button><button class="jarvis-tool" data-cmd="time">System time</button></div>`;
+    document.body.appendChild(deck);
+    const overlay=document.createElement('div');overlay.className='jarvis-overlay';overlay.innerHTML='<span class="jarvis-corner tl"></span><span class="jarvis-corner tr"></span><span class="jarvis-corner bl"></span><span class="jarvis-corner br"></span><span class="jarvis-cross"></span>';document.body.appendChild(overlay);
+    const input=deck.querySelector('#jarvisInput'),readout=deck.querySelector('#jarvisReadout'),form=deck.querySelector('#jarvisForm'),mic=deck.querySelector('#jarvisMic');
+    const say=(html,voice=false)=>{readout.innerHTML=html;if(voice&&'speechSynthesis' in window){window.speechSynthesis.cancel();const t=readout.textContent.replace(/\s+/g,' ').trim();const u=new SpeechSynthesisUtterance(t);u.rate=.96;u.pitch=1.03;u.onstart=()=>document.body.classList.add('jarvis-speaking');u.onend=()=>document.body.classList.remove('jarvis-speaking');window.speechSynthesis.speak(u)}};
+    const clickFirst=(selectors)=>{for(const s of selectors){const el=document.querySelector(s);if(el){el.click();return true}}return false};
+    const findText=(rx)=>[...document.querySelectorAll('button,.tab,.ghost,.keys-btn,.primary,h2,h3')].find(el=>rx.test(el.textContent||''));
+    function execute(raw,voice=false){const q=raw.trim();if(!q)return;say('<strong>Processing.</strong> '+q,voice);const l=q.toLowerCase();
+      if(/\b(time|clock)\b/.test(l)){say('<strong>System time:</strong> '+new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'medium'}).format(new Date()),voice);return}
+      if(/\b(history|previous runs?)\b/.test(l)){const el=findText(/history/i);if(el){el.click();say('<strong>History panel activated.</strong>',voice)}else say('<strong>History:</strong> use the workspace history section below.',voice);return}
+      if(/\b(agent|assistant|hologram|jarvis)\b/.test(l)){const el=findText(/agent/i);if(el){el.click();say('<strong>Agent mode activated.</strong> I am ready for your scientific question.',voice)}else say('<strong>Agent mode:</strong> use the Agent workspace in Margots.',voice);return}
+      if(/\b(analy[sz]e|analysis|run)\b/.test(l)){const el=document.querySelector('.primary');if(el&&!el.disabled){el.click();say('<strong>Analysis started.</strong> Deterministic facts and configured AI backends will run.',voice)}else say('<strong>Analysis unavailable.</strong> Add valid input and configured provider keys first.',voice);return}
+      if(/\b(clear|reset)\b/.test(l)){const el=findText(/clear|reset/i);if(el){el.click();say('<strong>Workspace reset.</strong>',voice)}else say('<strong>Clear:</strong> no reset control is currently exposed.',voice);return}
+      const agentInput=document.querySelector('.agent-row input');
+      if(agentInput){agentInput.value=q;agentInput.dispatchEvent(new Event('input',{bubbles:true}));const send=agentInput.parentElement?.querySelector('button');if(send){send.click();say('<strong>Sent to the Margots agent.</strong>',voice);return}}
+      say('<strong>Command understood.</strong> For analysis, try “analyze current sequence”, or use the Agent workspace for open-ended scientific questions.',voice);
+    }
+    form.addEventListener('submit',e=>{e.preventDefault();execute(input.value,true);input.value=''});
+    deck.querySelectorAll('.jarvis-tool').forEach(b=>b.addEventListener('click',()=>{const c=b.dataset.cmd;execute(c==='analyze'?'analyze current sequence':c==='agent'?'open agent':c==='history'?'show history':'system time',false)}));
+    const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(SpeechRecognition){const rec=new SpeechRecognition();rec.lang=navigator.language||'en-US';rec.interimResults=false;rec.continuous=false;mic.addEventListener('click',()=>{try{rec.start();document.body.classList.add('jarvis-listening');mic.classList.add('active');say('<strong>Listening.</strong> Speak your command.',false)}catch(_){}});rec.onresult=e=>{const text=e.results?.[0]?.[0]?.transcript||'';input.value=text;execute(text,true);input.value=''};rec.onend=()=>{document.body.classList.remove('jarvis-listening');mic.classList.remove('active')};rec.onerror=()=>{document.body.classList.remove('jarvis-listening');mic.classList.remove('active');say('<strong>Voice input unavailable.</strong> You can type the command instead.',false)};}else{mic.disabled=true;mic.title='Voice input is not supported by this browser'}
+    window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toBeLowerCase()==='k'){e.preventDefault();input.focus();input.select()}});
+    say('<strong>Online.</strong> Margots command deck initialized. <span style="color:#64748b">Ctrl/⌘+K for commands.</span>');
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();
