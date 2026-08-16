@@ -1,603 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Margots</title>
-  <style>
-    :root {
-      --bg: #050b14; --panel: rgba(8, 18, 32, 0.78); --text: #e8f3ff; --muted: #8aa0b8;
-      --line: rgba(56, 189, 248, 0.22); --line-strong: rgba(56, 189, 248, 0.4);
-      --cyan: #38bdf8; --ok: #34d399; --err: #fb7185;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(14, 116, 144, 0.18), transparent 60%),
-        linear-gradient(180deg, #02060d 0%, #050b14 50%, #07101c 100%);
-      line-height: 1.5; overflow-x: hidden;
-    }
-    .dna-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .hud-ring { position: absolute; left: 50%; top: 48%; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 50%; transform: translate(-50%, -50%); }
-    .hud-ring.r1 { width: min(70vw, 520px); height: min(70vw, 520px); animation: ring 24s linear infinite; }
-    .hud-ring.r2 { width: min(90vw, 680px); height: min(90vw, 680px); border-style: dashed; opacity: 0.5; animation: ring 40s linear infinite reverse; }
-    .hud-ring.r3 { width: min(50vw, 360px); height: min(50vw, 360px); opacity: 0.35; animation: ring 18s linear infinite; }
-    @keyframes ring { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-    .scan { position: absolute; left: 0; right: 0; height: 120px; background: linear-gradient(180deg, transparent, rgba(56,189,248,0.06), transparent); animation: scan 6s ease-in-out infinite; }
-    @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
-    .dna-stage { position: absolute; left: 50%; top: 46%; width: 280px; height: 560px; transform: translate(-50%, -50%); perspective: 1000px; opacity: 0.45; filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35)); }
-    .dna { position: absolute; inset: 0; transform-style: preserve-3d; animation: dna-spin 8s linear infinite; }
-    body.working .dna { animation-duration: 2.4s; }
-    body.working .dna-stage, body.speaking .dna-stage { opacity: 0.75; }
-    @keyframes dna-spin { from { transform: rotateY(0deg) rotateZ(-8deg); } to { transform: rotateY(360deg) rotateZ(-8deg); } }
-    .pair { position: absolute; left: 50%; width: 140px; height: 4px; margin-left: -70px; transform-style: preserve-3d; }
-    .pair .rung { position: absolute; left: 0; right: 0; top: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(34,211,238,0.95), rgba(148,163,184,0.35), rgba(56,189,248,0.95)); box-shadow: 0 0 8px rgba(34, 211, 238, 0.45); }
-    .pair .base { position: absolute; top: -5px; width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
-    .pair .base.a { left: -3px; background: #22d3ee; color: #22d3ee; }
-    .pair .base.b { right: -3px; background: #38bdf8; color: #38bdf8; }
-    .pair .base.c { left: -3px; background: #67e8f9; color: #67e8f9; }
-    .pair .base.d { right: -3px; background: #0ea5e9; color: #0ea5e9; }
-    .topbar { max-width: 1080px; margin: 0 auto; padding: 18px 20px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: relative; z-index: 2; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; }
-    .mark { width: 22px; height: 22px; border-radius: 7px; background: radial-gradient(circle at 30% 30%, #67e8f9, #0284c7); box-shadow: 0 0 14px rgba(34, 211, 238, 0.55); }
-    .pill { font-size: 0.72rem; border: 1px solid var(--line-strong); background: rgba(8,18,32,0.7); color: var(--cyan); border-radius: 999px; padding: 3px 8px; font-weight: 600; }
-    .keys-btn { border: 1px solid var(--line-strong); background: rgba(8,18,32,0.75); color: var(--text); border-radius: 999px; padding: 8px 14px; font-weight: 650; font-size: 0.88rem; cursor: pointer; }
-    .keys-btn .dot-live { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #334155; margin-right: 6px; vertical-align: middle; }
-    .keys-btn .dot-live.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
-    .shell { max-width: 920px; margin: 12px auto 48px; padding: 0 16px; position: relative; z-index: 1; }
-    .hero { text-align: center; padding: 18px 8px 16px; }
-    .hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.55rem); letter-spacing: -0.04em; font-weight: 700; text-shadow: 0 0 24px rgba(56,189,248,0.25); }
-    .hero p { margin: 10px auto 0; max-width: 540px; color: var(--muted); font-size: 1.02rem; }
-    .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 0 40px rgba(14, 165, 233, 0.08); overflow: hidden; backdrop-filter: blur(14px); }
-    .stage-top { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line); background: rgba(3, 12, 22, 0.55); }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; }
-    .dot.r { background: #fb7185; } .dot.y { background: #fbbf24; } .dot.g { background: #34d399; }
-    .stage-title { margin-left: 6px; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
-    .stage-body { padding: 22px 20px 20px; }
-    .composer { background: rgba(3, 12, 22, 0.55); border: 1px solid var(--line); border-radius: 18px; padding: 14px; }
-    .tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-    .tab { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 7px 12px; font-size: 0.86rem; font-weight: 600; cursor: pointer; }
-    .tab.active { color: #031018; background: linear-gradient(90deg, #67e8f9, #38bdf8); border-color: transparent; }
-    label { display: block; font-size: 0.8rem; color: var(--muted); margin: 0 0 6px; font-weight: 600; }
-    .field { margin-bottom: 12px; }
-    input, textarea { width: 100%; border: 1px solid var(--line); background: rgba(2, 8, 16, 0.7); color: var(--text); border-radius: 12px; padding: 12px; font: inherit; }
-    input:focus, textarea:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
-    textarea { min-height: 110px; resize: vertical; }
-    .drop { border: 1.5px dashed var(--line-strong); border-radius: 14px; background: rgba(2, 8, 16, 0.5); padding: 22px 14px; text-align: center; color: var(--muted); cursor: pointer; }
-    .drop.drag { border-color: var(--cyan); color: var(--text); }
-    .drop strong { color: var(--text); }
-    .drop input { display: none; }
-    .file-meta { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
-    .actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
-    .status { font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
-    .ok { color: var(--ok); } .err { color: var(--err); }
-    #run, #agent_send { border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018; border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer; min-width: 100px; box-shadow: 0 0 18px rgba(34, 211, 238, 0.35); }
-    #run:disabled, #agent_send:disabled { opacity: 0.55; cursor: not-allowed; }
-    .hint { margin-top: 12px; font-size: 0.78rem; color: var(--muted); text-align: center; }
-    .section { margin-top: 16px; }
-    .section h2 { margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-    .facts { background: rgba(2, 8, 16, 0.65); border: 1px solid var(--line); border-radius: 14px; padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; white-space: pre-wrap; word-break: break-word; color: #b6c9dc; max-height: 180px; overflow: auto; }
-    .answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    @media (max-width: 860px) { .answers { grid-template-columns: 1fr; } }
-    .answer { background: rgba(2, 8, 16, 0.55); border: 1px solid var(--line); border-radius: 16px; padding: 14px; min-height: 180px; }
-    .answer h3 { margin: 0 0 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan); }
-    .answer .body { white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; color: #d7e6f5; line-height: 1.55; }
-    .agent-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 14px; }
-    .holo { position: relative; width: 160px; height: 160px; display: grid; place-items: center; }
-    .holo-core { width: 72px; height: 72px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e0f7ff 0%, #67e8f9 25%, #0ea5e9 60%, #0369a1 100%); box-shadow: 0 0 20px rgba(34, 211, 238, 0.55), 0 0 50px rgba(14, 165, 233, 0.35), inset 0 0 20px rgba(255,255,255,0.35); animation: float 3.6s ease-in-out infinite; position: relative; z-index: 2; }
-    .holo-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(103, 232, 249, 0.45); animation: spin 8s linear infinite; }
-    .holo-ring.a { width: 100px; height: 100px; }
-    .holo-ring.b { width: 130px; height: 130px; border-style: dashed; animation-direction: reverse; animation-duration: 12s; opacity: 0.6; }
-    .holo-ring.c { width: 156px; height: 156px; opacity: 0.35; animation-duration: 18s; }
-    .holo-beam { position: absolute; bottom: -18px; width: 90px; height: 40px; background: linear-gradient(180deg, rgba(34,211,238,0.25), transparent); filter: blur(6px); border-radius: 50%; }
-    .wave { display: flex; align-items: flex-end; gap: 4px; height: 28px; opacity: 0.35; }
-    .wave span { width: 4px; border-radius: 4px; background: #67e8f9; height: 8px; }
-    body.speaking .holo-core { animation: talk-pulse 0.35s ease-in-out infinite alternate; box-shadow: 0 0 28px rgba(34, 211, 238, 0.85), 0 0 70px rgba(14, 165, 233, 0.55), inset 0 0 24px rgba(255,255,255,0.45); }
-    body.speaking .holo-ring { border-color: rgba(103, 232, 249, 0.9); }
-    body.speaking .wave { opacity: 1; }
-    body.speaking .wave span { animation: bar 0.5s ease-in-out infinite alternate; }
-    body.speaking .wave span:nth-child(2) { animation-delay: 0.08s; }
-    body.speaking .wave span:nth-child(3) { animation-delay: 0.16s; }
-    body.speaking .wave span:nth-child(4) { animation-delay: 0.04s; }
-    body.speaking .wave span:nth-child(5) { animation-delay: 0.2s; }
-    body.speaking .wave span:nth-child(6) { animation-delay: 0.12s; }
-    body.speaking .wave span:nth-child(7) { animation-delay: 0.24s; }
-    body.working .holo-core { animation: think 1s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes talk-pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
-    @keyframes think { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.05); filter: brightness(1.25); } }
-    @keyframes bar { from { height: 6px; } to { height: 26px; } }
-    .agent-status { font-size: 0.82rem; color: var(--muted); min-height: 1.2em; text-align: center; }
-    body.speaking .agent-status { color: var(--cyan); }
-    body.working .agent-status { color: #7dd3fc; }
-    .chat { display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow: auto; padding: 10px; background: rgba(2, 8, 16, 0.45); border-radius: 12px; border: 1px solid var(--line); margin-bottom: 12px; }
-    .bubble { max-width: 92%; padding: 10px 12px; border-radius: 14px; font-size: 0.92rem; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
-    .bubble.user { align-self: flex-end; background: rgba(56, 189, 248, 0.18); border: 1px solid var(--line); }
-    .bubble.agent { align-self: flex-start; background: rgba(8, 28, 42, 0.9); border: 1px solid var(--line-strong); }
-    .bubble .who { display: block; font-size: 0.72rem; color: var(--cyan); margin-bottom: 4px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-    .agent-row { display: flex; gap: 8px; align-items: center; }
-    .agent-row input { flex: 1; }
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 13, 0.72); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
-    .modal-backdrop.open { display: flex; }
-    .modal { width: min(460px, 100%); background: #0b1624; border: 1px solid var(--line-strong); border-radius: 18px; box-shadow: 0 0 40px rgba(34, 211, 238, 0.12); padding: 18px; }
-    .modal h2 { margin: 0 0 6px; font-size: 1.1rem; }
-    .modal p { margin: 0 0 14px; color: var(--muted); font-size: 0.88rem; }
-    .modal a { color: var(--cyan); }
-    .modal input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.84rem; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
-    .btn-secondary { border: 1px solid var(--line-strong); background: transparent; color: var(--text); border-radius: 999px; padding: 10px 14px; font-weight: 650; cursor: pointer; }
-    .btn-primary { border: none; background: linear-gradient(90deg, #22d3ee, #38bdf8); color: #031018; border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-    @media (max-width: 720px) { .dna-stage { width: 200px; height: 420px; opacity: 0.3; } }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Margots</title>
+<style>
+:root{
+  --bg:#050b14;--panel:rgba(8,18,32,.82);--text:#e8f3ff;--muted:#8aa0b8;
+  --line:rgba(56,189,248,.22);--line-strong:rgba(56,189,248,.4);
+  --cyan:#38bdf8;--ok:#34d399;--err:#fb7185;--surface:rgba(2,8,16,.7);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);
+  background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(14,116,144,.18),transparent 60%),linear-gradient(180deg,#02060d 0%,#050b14 50%,#07101c 100%);
+  line-height:1.5;overflow-x:hidden;
+}
+.dna-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.hud-ring{position:absolute;left:50%;top:48%;border:1px solid rgba(56,189,248,.18);border-radius:50%;transform:translate(-50%,-50%)}
+.hud-ring.r1{width:min(70vw,520px);height:min(70vw,520px);animation:ring 24s linear infinite}
+.hud-ring.r2{width:min(90vw,680px);height:min(90vw,680px);border-style:dashed;opacity:.5;animation:ring 40s linear infinite reverse}
+.hud-ring.r3{width:min(50vw,360px);height:min(50vw,360px);opacity:.35;animation:ring 18s linear infinite}
+@keyframes ring{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+.scan{position:absolute;left:0;right:0;height:120px;background:linear-gradient(180deg,transparent,rgba(56,189,248,.06),transparent);animation:scan 6s ease-in-out infinite}
+@keyframes scan{0%{top:-10%}100%{top:110%}}
+.dna-stage{position:absolute;left:50%;top:46%;width:280px;height:560px;transform:translate(-50%,-50%);perspective:1000px;opacity:.4;filter:drop-shadow(0 0 18px rgba(34,211,238,.35))}
+.dna{position:absolute;inset:0;transform-style:preserve-3d;animation:dna-spin 8s linear infinite}
+body.working .dna{animation-duration:2.4s}
+body.working .dna-stage,body.speaking .dna-stage{opacity:.72}
+@keyframes dna-spin{from{transform:rotateY(0) rotateZ(-8deg)}to{transform:rotateY(360deg) rotateZ(-8deg)}}
+.pair{position:absolute;left:50%;width:140px;height:4px;margin-left:-70px;transform-style:preserve-3d}
+.pair .rung{position:absolute;left:0;right:0;top:0;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(34,211,238,.95),rgba(148,163,184,.35),rgba(56,189,248,.95));box-shadow:0 0 8px rgba(34,211,238,.45)}
+.pair .base{position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 12px currentColor}
+.pair .base.a{left:-3px;background:#22d3ee;color:#22d3ee}
+.pair .base.b{right:-3px;background:#38bdf8;color:#38bdf8}
+.pair .base.c{left:-3px;background:#67e8f9;color:#67e8f9}
+.pair .base.d{right:-3px;background:#0ea5e9;color:#0ea5e9}
+.topbar{max-width:1100px;margin:0 auto;padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:2;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em}
+.mark{width:22px;height:22px;border-radius:7px;background:radial-gradient(circle at 30% 30%,#67e8f9,#0284c7);box-shadow:0 0 14px rgba(34,211,238,.55)}
+.pill{font-size:.72rem;border:1px solid var(--line-strong);background:rgba(8,18,32,.7);color:var(--cyan);border-radius:999px;padding:3px 8px;font-weight:600}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ghost{border:1px solid var(--line-strong);background:rgba(8,18,32,.75);color:var(--text);border-radius:999px;padding:8px 12px;font-weight:650;font-size:.84rem;cursor:pointer}
+.ghost:hover{border-color:var(--cyan)}
+.keys-btn{border:1px solid var(--line-strong);background:rgba(8,18,32,.75);color:var(--text);border-radius:999px;padding:8px 14px;font-weight:650;font-size:.88rem;cursor:pointer}
+.keys-btn .dot-live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#334155;margin-right:6px;vertical-align:middle}
+.keys-btn .dot-live.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.shell{max-width:960px;margin:12px auto 48px;padding:0 16px;position:relative;z-index:1}
+.hero{text-align:center;padding:14px 8px 12px}
+.hero h1{margin:0;font-size:clamp(1.7rem,4vw,2.4rem);letter-spacing:-.04em;font-weight:700;text-shadow:0 0 24px rgba(56,189,248,.25)}
+.hero p{margin:10px auto 0;max-width:560px;color:var(--muted);font-size:1rem}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:0 0 40px rgba(14,165,233,.08);overflow:hidden;backdrop-filter:blur(14px)}
+.stage-top{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(3,12,22,.55);flex-wrap:wrap}
+.dot{width:10px;height:10px;border-radius:50%;background:#334155}
+.dot.r{background:#fb7185}.dot.y{background:#fbbf24}.dot.g{background:#34d399}
+.stage-title{margin-left:6px;font-size:.85rem;color:var(--muted);font-weight:600;flex:1}
+.stage-body{padding:20px 18px}
+.composer{background:rgba(3,12,22,.55);border:1px solid var(--line);border-radius:18px;padding:14px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 12px;font-size:.86rem;font-weight:600;cursor:pointer}
+.tab.active{color:#031018;background:linear-gradient(90deg,#67e8f9,#38bdf8);border-color:transparent}
+label{display:block;font-size:.8rem;color:var(--muted);margin:0 0 6px;font-weight:600}
+.field{margin-bottom:12px}
+input,textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:12px;font:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+textarea{min-height:110px;resize:vertical}
+.drop{border:1.5px dashed var(--line-strong);border-radius:14px;background:rgba(2,8,16,.5);padding:22px 14px;text-align:center;color:var(--muted);cursor:pointer}
+.drop.drag{border-color:var(--cyan);color:var(--text)}
+.drop strong{color:var(--text)}.drop input{display:none}
+.file-meta{margin-top:8px;font-size:.82rem;color:var(--muted)}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.status{font-size:.85rem;color:var(--muted);min-height:1.2em}
+.ok{color:var(--ok)}.err{color:var(--err)}
+.primary{border:none;background:linear-gradient(90deg,#22d3ee,#38bdf8);color:#031018;border-radius:999px;padding:11px 18px;font-weight:700;cursor:pointer;min-width:100px;box-shadow:0 0 18px rgba(34,211,238,.35)}
+.primary:disabled{opacity:.55;cursor:not-allowed}
+.hint{margin-top:12px;font-size:.78rem;color:var(--muted);text-align:center}
+.section{margin-top:16px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.section h2{margin:0;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.facts{background:rgba(2,8,16,.65);border:1px solid var(--line);border-radius:14px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;white-space:pre-wrap;word-break:break-word;color:#b6c9dc;max-height:240px;overflow:auto}
+.answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:900px){.answers{grid-template-columns:1fr}}
+.answer{background:rgba(2,8,16,.55);border:1px solid var(--line);border-radius:16px;padding:14px;min-height:160px}
+.answer h3{margin:0 0 8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--cyan)}
+.answer .body{white-space:pre-wrap;word-break:break-word;font-size:.9rem;color:#d7e6f5;line-height:1.55}
+.agent-stage{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:14px}
+.holo{position:relative;width:150px;height:150px;display:grid;place-items:center}
+.holo-core{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e0f7ff 0%,#67e8f9 25%,#0ea5e9 60%,#0369a1 100%);box-shadow:0 0 20px rgba(34,211,238,.55),0 0 50px rgba(14,165,233,.35),inset 0 0 20px rgba(255,255,255,.35);animation:float 3.6s ease-in-out infinite;position:relative;z-index:2}
+.holo-ring{position:absolute;border-radius:50%;border:1px solid rgba(103,232,249,.45);animation:spin 8s linear infinite}
+.holo-ring.a{width:96px;height:96px}.holo-ring.b{width:124px;height:124px;border-style:dashed;animation-direction:reverse;animation-duration:12s;opacity:.6}.holo-ring.c{width:148px;height:148px;opacity:.35;animation-duration:18s}
+.holo-beam{position:absolute;bottom:-16px;width:86px;height:36px;background:linear-gradient(180deg,rgba(34,211,238,.25),transparent);filter:blur(6px);border-radius:50%}
+.wave{display:flex;align-items:flex-end;gap:4px;height:26px;opacity:.35}
+.wave span{width:4px;border-radius:4px;background:#67e8f9;height:8px}
+body.speaking .holo-core{animation:talk-pulse .35s ease-in-out infinite alternate;box-shadow:0 0 28px rgba(34,211,238,.85),0 0 70px rgba(14,165,233,.55)}
+body.speaking .wave{opacity:1}
+body.speaking .wave span{animation:bar .5s ease-in-out infinite alternate}
+body.speaking .wave span:nth-child(2){animation-delay:.08s}
+body.speaking .wave span:nth-child(3){animation-delay:.16s}
+body.speaking .wave span:nth-child(4){animation-delay:.04s}
+body.speaking .wave span:nth-child(5){animation-delay:.2s}
+body.speaking .wave span:nth-child(6){animation-delay:.12s}
+body.speaking .wave span:nth-child(7){animation-delay:.24s}
+body.working .holo-core{animation:think 1s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes talk-pulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes think{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.05);filter:brightness(1.25)}}
+@keyframes bar{from{height:6px}to{height:26px}}
+.agent-status{font-size:.82rem;color:var(--muted);min-height:1.2em;text-align:center}
+body.speaking .agent-status{color:var(--cyan)}
+.chat{display:flex;flex-direction:column;gap:10px;max-height:260px;overflow:auto;padding:10px;background:rgba(2,8,16,.45);border-radius:12px;border:1px solid var(--line);margin-bottom:12px}
+.bubble{max-width:92%;padding:10px 12px;border-radius:14px;font-size:.92rem;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.bubble.user{align-self:flex-end;background:rgba(56,189,248,.18);border:1px solid var(--line)}
+.bubble.agent{align-self:flex-start;background:rgba(8,28,42,.9);border:1px solid var(--line-strong)}
+.bubble .who{display:block;font-size:.72rem;color:var(--cyan);margin-bottom:4px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.agent-row{display:flex;gap:8px;align-items:center}
+.agent-row input{flex:1}
+.history{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow:auto}
+.hist-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(2,8,16,.45);cursor:pointer;font-size:.84rem}
+.hist-item:hover{border-color:var(--cyan)}
+.hist-item .t{color:var(--muted);font-size:.75rem}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,13,.72);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal-backdrop.open{display:flex}
+.modal{width:min(480px,100%);background:#0b1624;border:1px solid var(--line-strong);border-radius:18px;box-shadow:0 0 40px rgba(34,211,238,.12);padding:18px;max-height:90vh;overflow:auto}
+.modal h2{margin:0 0 6px;font-size:1.1rem}
+.modal p{margin:0 0 14px;color:var(--muted);font-size:.88rem}
+.modal a{color:var(--cyan)}
+.modal input{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.84rem}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap}
+.btn-secondary{border:1px solid var(--line-strong);background:transparent;color:var(--text);border-radius:999px;padding:10px 14px;font-weight:650;cursor:pointer}
+.btn-primary{border:none;background:linear-gradient(90deg,#22d3ee,#38bdf8);color:#031018;border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer}
+.example-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--cyan);color:var(--text)}
+@media(max-width:720px){.dna-stage{width:180px;height:380px;opacity:.28}.hero h1{font-size:1.55rem}}
+</style>
 </head>
 <body>
-  <div class="dna-bg" aria-hidden="true">
-    <div class="hud-ring r1"></div><div class="hud-ring r2"></div><div class="hud-ring r3"></div>
-    <div class="scan"></div><div class="dna-stage" id="dna_main"></div>
-  </div>
-  <div class="topbar">
-    <div class="brand"><div class="mark"></div><span>Margots</span><span class="pill">beta</span></div>
+<div class="dna-bg" aria-hidden="true">
+  <div class="hud-ring r1"></div><div class="hud-ring r2"></div><div class="hud-ring r3"></div>
+  <div class="scan"></div><div class="dna-stage" id="dna_main"></div>
+</div>
+<div class="topbar">
+  <div class="brand"><div class="mark"></div><span>Margots</span><span class="pill">v2</span></div>
+  <div class="top-actions">
+    <button class="ghost" id="btn_example" type="button">Load example</button>
+    <button class="ghost" id="btn_history" type="button">History</button>
+    <button class="ghost" id="btn_export" type="button">Export</button>
+    <button class="ghost" id="btn_share" type="button">Share</button>
     <button class="keys-btn" id="open_keys" type="button"><span class="dot-live" id="keys_dot"></span>API keys</button>
   </div>
-  <div class="shell">
-    <div class="hero">
-      <h1>Analysis that works alongside you</h1>
-      <p>Three free-tier backends side by side, or talk with the hologram agent.</p>
+</div>
+<div class="shell">
+  <div class="hero">
+    <h1>Analysis that works alongside you</h1>
+    <p>Local sequence intelligence first. Three free-tier backends in parallel. Agent that remembers your data.</p>
+  </div>
+  <div class="stage">
+    <div class="stage-top">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="stage-title">Margots workspace</span>
     </div>
-    <div class="stage">
-      <div class="stage-top">
-        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="stage-title">Margots workspace</span>
+    <div class="stage-body">
+      <div class="composer">
+        <div class="tabs">
+          <button class="tab active" data-mode="sequence">Sequence</button>
+          <button class="tab" data-mode="variant">Variant</button>
+          <button class="tab" data-mode="free">Free</button>
+          <button class="tab" data-mode="upload">Upload</button>
+          <button class="tab" data-mode="agent">Agent</button>
+        </div>
+        <div id="panel_sequence">
+          <div class="example-row">
+            <button class="chip" data-ex="dna" type="button">Sample DNA</button>
+            <button class="chip" data-ex="rna" type="button">Sample RNA</button>
+            <button class="chip" data-ex="prot" type="button">Sample protein</button>
+          </div>
+          <div class="field"><label>Sequence</label><textarea id="seq" placeholder="Paste DNA, RNA, or protein sequence"></textarea></div>
+          <div class="field"><label>Question (optional)</label><input id="seq_q" placeholder="What should we look for?"/></div>
+        </div>
+        <div id="panel_variant" hidden>
+          <div class="field"><label>Variant</label><textarea id="variant" placeholder="e.g. BRCA1 c.5266dupC"></textarea></div>
+        </div>
+        <div id="panel_free" hidden>
+          <div class="field"><label>Context</label><textarea id="ctx" placeholder="Paste notes, summary, or data description"></textarea></div>
+          <div class="field"><label>Question</label><input id="free_q" placeholder="What do you want checked?"/></div>
+        </div>
+        <div id="panel_upload" hidden>
+          <div class="drop" id="drop">
+            <strong>Drop any file here</strong> or click to browse<br/>
+            <span style="font-size:.82rem">FASTA, FASTQ, CSV, TSV, TXT, JSON, VCF, BED, GFF, MD, log</span>
+            <input id="file" type="file"/>
+          </div>
+          <div class="file-meta" id="file_meta">No file selected.</div>
+          <div class="field" style="margin-top:12px"><label>Question (optional)</label><input id="upload_q" placeholder="What should be analyzed?"/></div>
+        </div>
+        <div id="panel_agent" hidden>
+          <div class="agent-stage">
+            <div class="holo" aria-hidden="true">
+              <div class="holo-ring a"></div><div class="holo-ring b"></div><div class="holo-ring c"></div>
+              <div class="holo-core"></div><div class="holo-beam"></div>
+            </div>
+            <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="agent-status" id="agent_status">Idle · waiting for your question</div>
+          </div>
+          <div class="chat" id="chat"></div>
+          <div class="agent-row">
+            <input id="agent_q" placeholder="Ask about your sequence, file, or any biology…"/>
+            <button class="primary" id="agent_send" type="button">Send</button>
+          </div>
+        </div>
+        <div class="actions" id="run_actions">
+          <div class="status" id="status"></div>
+          <button class="primary" id="run">Run</button>
+        </div>
       </div>
-      <div class="stage-body">
-        <div class="composer">
-          <div class="tabs">
-            <button class="tab active" data-mode="sequence">Sequence</button>
-            <button class="tab" data-mode="variant">Variant</button>
-            <button class="tab" data-mode="free">Free</button>
-            <button class="tab" data-mode="upload">Upload</button>
-            <button class="tab" data-mode="agent">Agent</button>
-          </div>
-          <div id="panel_sequence">
-            <div class="field"><label>Sequence</label><textarea id="seq" placeholder="Paste DNA, RNA, or protein sequence"></textarea></div>
-            <div class="field"><label>Question (optional)</label><input id="seq_q" placeholder="What should we look for?" /></div>
-          </div>
-          <div id="panel_variant" hidden>
-            <div class="field"><label>Variant</label><textarea id="variant" placeholder="e.g. BRCA1 c.5266dupC"></textarea></div>
-          </div>
-          <div id="panel_free" hidden>
-            <div class="field"><label>Context</label><textarea id="ctx" placeholder="Paste notes, summary, or data description"></textarea></div>
-            <div class="field"><label>Question</label><input id="free_q" placeholder="What do you want checked?" /></div>
-          </div>
-          <div id="panel_upload" hidden>
-            <div class="drop" id="drop">
-              <strong>Drop any file here</strong> or click to browse<br />
-              <span style="font-size:0.82rem">FASTA, CSV, TSV, TXT, JSON, VCF, BED, GFF, MD, log</span>
-              <input id="file" type="file" />
-            </div>
-            <div class="file-meta" id="file_meta">No file selected.</div>
-            <div class="field" style="margin-top:12px"><label>Question (optional)</label><input id="upload_q" placeholder="What should be analyzed?" /></div>
-          </div>
-          <div id="panel_agent" hidden>
-            <div class="agent-stage">
-              <div class="holo" aria-hidden="true">
-                <div class="holo-ring a"></div><div class="holo-ring b"></div><div class="holo-ring c"></div>
-                <div class="holo-core"></div><div class="holo-beam"></div>
-              </div>
-              <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              <div class="agent-status" id="agent_status">Idle · waiting for your question</div>
-            </div>
-            <div class="chat" id="chat"></div>
-            <div class="agent-row">
-              <input id="agent_q" placeholder="Speak to the agent…" />
-              <button id="agent_send" type="button">Send</button>
-            </div>
-          </div>
-          <div class="actions" id="run_actions">
-            <div class="status" id="status"></div>
-            <button id="run">Run</button>
-          </div>
-        </div>
-        <p class="hint" id="main_hint">Uses free-tier APIs: Gemini, Groq, OpenRouter. Keys stay in your browser.</p>
-        <div class="section" id="facts_section">
-          <h2>Local measurements</h2>
-          <div class="facts" id="facts">No run yet.</div>
-        </div>
-        <div class="section" id="answers_section">
+      <p class="hint" id="main_hint">Gemini · Groq · OpenRouter with automatic fallback. Keys stay in your browser.</p>
+      <div class="section" id="facts_section">
+        <div class="section-head"><h2>Local measurements</h2></div>
+        <div class="facts" id="facts">No run yet.</div>
+      </div>
+      <div class="section" id="answers_section">
+        <div class="section-head">
           <h2>Answers</h2>
-          <div class="answers">
-            <div class="answer"><h3>Strict · Gemini</h3><div class="body" id="out_strict">—</div></div>
-            <div class="answer"><h3>Context · Groq</h3><div class="body" id="out_context">—</div></div>
-            <div class="answer"><h3>Skeptic · OpenRouter</h3><div class="body" id="out_skeptic">—</div></div>
+          <div style="display:flex;gap:6px">
+            <button class="ghost" id="btn_copy_all" type="button" style="padding:6px 10px;font-size:.78rem">Copy all</button>
           </div>
+        </div>
+        <div class="answers">
+          <div class="answer"><h3>Strict · Gemini</h3><div class="body" id="out_strict">—</div></div>
+          <div class="answer"><h3>Context · Groq</h3><div class="body" id="out_context">—</div></div>
+          <div class="answer"><h3>Skeptic · OpenRouter</h3><div class="body" id="out_skeptic">—</div></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="modal-backdrop" id="keys_modal">
-    <div class="modal" role="dialog">
-      <h2>Free-tier API keys</h2>
-      <p>No credit card needed for these. Stored only in this browser.</p>
-      <div class="field">
-        <label>Google Gemini · <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">get key</a></label>
-        <input id="k_gemini" type="password" placeholder="AIza…" autocomplete="off" />
-      </div>
-      <div class="field">
-        <label>Groq · <a href="https://console.groq.com/keys" target="_blank" rel="noopener">get key</a></label>
-        <input id="k_groq" type="password" placeholder="gsk_…" autocomplete="off" />
-      </div>
-      <div class="field">
-        <label>OpenRouter · <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">get key</a></label>
-        <input id="k_openrouter" type="password" placeholder="sk-or-…" autocomplete="off" />
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn-secondary" id="close_keys">Cancel</button>
-        <button type="button" class="btn-primary" id="save_keys">Save</button>
-      </div>
+<div class="modal-backdrop" id="keys_modal">
+  <div class="modal" role="dialog">
+    <h2>Free-tier API keys</h2>
+    <p>Stored only in this browser. Any one key is enough — missing slots fall back automatically.</p>
+    <div class="field"><label>Google Gemini · <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">get key</a></label><input id="k_gemini" type="password" placeholder="AIza…" autocomplete="off"/></div>
+    <div class="field"><label>Groq · <a href="https://console.groq.com/keys" target="_blank" rel="noopener">get key</a></label><input id="k_groq" type="password" placeholder="gsk_…" autocomplete="off"/></div>
+    <div class="field"><label>OpenRouter · <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">get key</a></label><input id="k_openrouter" type="password" placeholder="sk-or-…" autocomplete="off"/></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="close_keys">Cancel</button>
+      <button type="button" class="btn-primary" id="save_keys">Save</button>
     </div>
   </div>
+</div>
 
-<script>
-const MAX_CHARS = 120000;
-const KEYS = ['gemini','groq','openrouter'];
-const AGENT_SYSTEM = "You are Margots, a bioinformatics analysis agent. Be precise, concise, and practical. Prefer measurable claims. If unsure, say what data is missing. Keep answers short enough to be spoken aloud.";
-const PROMPTS = {
-  strict: "Stick to measurable features in the provided data. Avoid speculation. If evidence is weak, say so.",
-  context: "Interpret in biological or scientific context when relevant. Mark uncertainty clearly.",
-  skeptic: "Challenge the obvious reading. Offer alternatives and list what would falsify the main interpretation."
-};
+<div class="modal-backdrop" id="hist_modal">
+  <div class="modal" role="dialog">
+    <h2>Run history</h2>
+    <p>Last 20 runs stored in this browser.</p>
+    <div class="history" id="hist_list"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="hist_clear">Clear</button>
+      <button type="button" class="btn-primary" id="hist_close">Close</button>
+    </div>
+  </div>
+</div>
 
-function buildHelix(container) {
-  const dna = document.createElement('div'); dna.className = 'dna';
-  for (let i = 0; i < 22; i++) {
-    const pair = document.createElement('div'); pair.className = 'pair';
-    pair.style.top = (12 + i * 24) + 'px';
-    pair.style.transform = `rotateY(${i * 26}deg)`;
-    const rung = document.createElement('div'); rung.className = 'rung';
-    const a = document.createElement('div'); const b = document.createElement('div');
-    if (i % 2 === 0) { a.className = 'base a'; b.className = 'base b'; }
-    else { a.className = 'base c'; b.className = 'base d'; }
-    pair.append(rung, a, b); dna.appendChild(pair);
-  }
-  container.appendChild(dna);
-}
-buildHelix(document.getElementById('dna_main'));
+<div class="modal-backdrop" id="export_modal">
+  <div class="modal" role="dialog">
+    <h2>Export</h2>
+    <p>Download the latest local measurements and model answers.</p>
+    <div class="modal-actions" style="justify-content:flex-start">
+      <button type="button" class="btn-primary" id="exp_json">JSON</button>
+      <button type="button" class="btn-secondary" id="exp_txt">Text</button>
+      <button type="button" class="btn-secondary" id="exp_csv">CSV</button>
+      <button type="button" class="btn-secondary" id="export_close">Close</button>
+    </div>
+  </div>
+</div>
 
-const els = {
-  modeBtns: [...document.querySelectorAll('.tab')],
-  panels: {
-    sequence: document.getElementById('panel_sequence'),
-    variant: document.getElementById('panel_variant'),
-    free: document.getElementById('panel_free'),
-    upload: document.getElementById('panel_upload'),
-    agent: document.getElementById('panel_agent')
-  },
-  k_gemini: document.getElementById('k_gemini'),
-  k_groq: document.getElementById('k_groq'),
-  k_openrouter: document.getElementById('k_openrouter'),
-  seq: document.getElementById('seq'), seq_q: document.getElementById('seq_q'),
-  variant: document.getElementById('variant'), ctx: document.getElementById('ctx'), free_q: document.getElementById('free_q'),
-  upload_q: document.getElementById('upload_q'), drop: document.getElementById('drop'), file: document.getElementById('file'),
-  file_meta: document.getElementById('file_meta'), run: document.getElementById('run'),
-  run_actions: document.getElementById('run_actions'), status: document.getElementById('status'),
-  facts: document.getElementById('facts'), facts_section: document.getElementById('facts_section'),
-  answers_section: document.getElementById('answers_section'), main_hint: document.getElementById('main_hint'),
-  out_strict: document.getElementById('out_strict'), out_context: document.getElementById('out_context'),
-  out_skeptic: document.getElementById('out_skeptic'), open_keys: document.getElementById('open_keys'),
-  close_keys: document.getElementById('close_keys'), save_keys: document.getElementById('save_keys'),
-  keys_modal: document.getElementById('keys_modal'), keys_dot: document.getElementById('keys_dot'),
-  chat: document.getElementById('chat'), agent_q: document.getElementById('agent_q'),
-  agent_send: document.getElementById('agent_send'), agent_status: document.getElementById('agent_status')
-};
-
-let mode = 'sequence';
-let uploaded = null;
-let agentHistory = [{ role: 'system', content: AGENT_SYSTEM }];
-
-function getKey(name) { return (localStorage.getItem('margots_' + name) || '').trim(); }
-function loadKeys() {
-  KEYS.forEach(k => { els['k_' + k].value = getKey(k); });
-  updateKeysDot();
-}
-function saveKeys() {
-  KEYS.forEach(k => localStorage.setItem('margots_' + k, els['k_' + k].value.trim()));
-  updateKeysDot();
-}
-function updateKeysDot() {
-  els.keys_dot.classList.toggle('on', KEYS.some(k => getKey(k)));
-}
-function openModal() { loadKeys(); els.keys_modal.classList.add('open'); }
-function closeModal() { els.keys_modal.classList.remove('open'); }
-els.open_keys.onclick = openModal;
-els.close_keys.onclick = closeModal;
-els.save_keys.onclick = () => { saveKeys(); closeModal(); };
-els.keys_modal.onclick = e => { if (e.target === els.keys_modal) closeModal(); };
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-loadKeys();
-
-function setMode(m) {
-  mode = m;
-  els.modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === m));
-  Object.entries(els.panels).forEach(([name, el]) => { el.hidden = name !== m; });
-  const isAgent = m === 'agent';
-  els.run_actions.style.display = isAgent ? 'none' : 'flex';
-  els.facts_section.style.display = isAgent ? 'none' : 'block';
-  els.answers_section.style.display = isAgent ? 'none' : 'block';
-  els.main_hint.style.display = isAgent ? 'none' : 'block';
-}
-els.modeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
-
-els.drop.addEventListener('click', () => els.file.click());
-['dragenter','dragover'].forEach(ev => els.drop.addEventListener(ev, e => { e.preventDefault(); els.drop.classList.add('drag'); }));
-['dragleave','drop'].forEach(ev => els.drop.addEventListener(ev, e => { e.preventDefault(); els.drop.classList.remove('drag'); }));
-els.drop.addEventListener('drop', e => { const f = e.dataTransfer.files?.[0]; if (f) handleFile(f); });
-els.file.addEventListener('change', () => { const f = els.file.files?.[0]; if (f) handleFile(f); });
-
-function formatBytes(n) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
-  return (n / (1024 * 1024)).toFixed(1) + ' MB';
-}
-function detectKind(name, text) {
-  const lower = (name || '').toLowerCase(); const head = text.slice(0, 2000);
-  if (lower.endsWith('.fasta') || lower.endsWith('.fa') || lower.endsWith('.fna') || lower.endsWith('.faa') || head.startsWith('>')) return 'fasta';
-  if (lower.endsWith('.fastq') || lower.endsWith('.fq') || head.startsWith('@')) return 'fastq';
-  if (lower.endsWith('.vcf') || head.startsWith('##fileformat=VCF')) return 'vcf';
-  if (lower.endsWith('.csv')) return 'csv';
-  if (lower.endsWith('.tsv') || lower.endsWith('.bed') || lower.endsWith('.gtf') || lower.endsWith('.gff') || lower.endsWith('.gff3')) return 'tsv';
-  if (lower.endsWith('.json')) return 'json';
-  return 'text';
-}
-function parseFasta(text) {
-  const seqs = []; let cur = null;
-  for (const line of text.split(/\r?\n/)) {
-    if (line.startsWith('>')) { if (cur) seqs.push(cur); cur = { id: line.slice(1).trim(), seq: '' }; }
-    else if (cur) cur.seq += line.trim();
-  }
-  if (cur) seqs.push(cur); return seqs;
-}
-function tableFacts(text, sep) {
-  const lines = text.split(/\r?\n/).filter(Boolean);
-  if (!lines.length) return { rows: 0 };
-  const header = lines[0].split(sep);
-  return { rows: Math.max(0, lines.length - 1), cols: header.length, header: header.slice(0, 30), preview_rows: lines.slice(0, 6) };
-}
-function buildUploadFacts(name, size, type, text, kind) {
-  const facts = { file_name: name, file_size: formatBytes(size), mime: type || 'unknown', detected_kind: kind, chars: text.length, truncated: text.length >= MAX_CHARS };
-  if (kind === 'fasta') {
-    const seqs = parseFasta(text);
-    facts.num_sequences = seqs.length; facts.ids = seqs.slice(0, 10).map(s => s.id);
-    if (seqs[0]) {
-      const s = seqs[0].seq.toUpperCase().replace(/\s+/g, '');
-      facts.first_length = s.length;
-      facts.first_preview = s.slice(0, 120) + (s.length > 120 ? '...' : '');
-    }
-  } else if (kind === 'csv') Object.assign(facts, tableFacts(text, ','));
-  else if (kind === 'tsv') Object.assign(facts, tableFacts(text, '\t'));
-  else if (kind === 'json') {
-    try {
-      const obj = JSON.parse(text);
-      facts.json_type = Array.isArray(obj) ? 'array' : typeof obj;
-      if (Array.isArray(obj)) facts.json_length = obj.length;
-      else if (obj && typeof obj === 'object') facts.json_keys = Object.keys(obj).slice(0, 40);
-    } catch { facts.json_parse_error = true; }
-  } else if (kind === 'vcf') {
-    facts.variant_lines_preview = text.split(/\r?\n/).filter(l => l && !l.startsWith('#')).length;
-  }
-  return facts;
-}
-function handleFile(file) {
-  if (file.size > 8 * 1024 * 1024) { els.file_meta.textContent = 'File too large (max 8 MB).'; uploaded = null; return; }
-  const reader = new FileReader();
-  reader.onload = () => {
-    let text = String(reader.result || '');
-    if (text.includes('\u0000')) { els.file_meta.textContent = 'Binary file not supported.'; uploaded = null; return; }
-    if (text.length > MAX_CHARS) text = text.slice(0, MAX_CHARS);
-    const kind = detectKind(file.name, text);
-    const facts = buildUploadFacts(file.name, file.size, file.type, text, kind);
-    uploaded = { name: file.name, size: file.size, type: file.type, text, kind, facts };
-    els.file_meta.textContent = `${file.name} · ${formatBytes(file.size)} · detected as ${kind}`;
-    els.facts.textContent = JSON.stringify(facts, null, 2);
-  };
-  reader.readAsText(file);
-}
-function cleanSeq(s) { return s.replace(/\s+/g, '').toUpperCase(); }
-function seqFacts(raw) {
-  const s = cleanSeq(raw);
-  if (!s) return { error: 'empty sequence' };
-  let kind = 'protein';
-  if (/^[ACGTN]+$/.test(s)) kind = 'dna';
-  else if (/^[ACGU]+$/.test(s)) kind = 'rna';
-  const facts = { kind, length: s.length, preview: s.slice(0, 180) + (s.length > 180 ? '...' : '') };
-  if (kind === 'dna' || kind === 'rna') {
-    const bases = {};
-    for (const ch of s) bases[ch] = (bases[ch] || 0) + 1;
-    facts.counts = bases;
-    facts.gc_percent = Math.round(((bases.G || 0) + (bases.C || 0)) / s.length * 10000) / 100;
-  }
-  return facts;
-}
-
-async function callGemini(apiKey, system, user) {
-  const model = 'gemini-2.0-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: system }] },
-      contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: 1800 }
-    })
-  });
-  if (!r.ok) throw new Error(await r.text());
-  const data = await r.json();
-  return data.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('') || JSON.stringify(data);
-}
-
-async function callOpenAICompatible(baseUrl, apiKey, model, system, user, extraHeaders) {
-  const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey, ...(extraHeaders || {}) };
-  const r = await fetch(baseUrl + '/chat/completions', {
-    method: 'POST', headers,
-    body: JSON.stringify({
-      model, temperature: 0.2, max_tokens: 1800,
-      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
-    })
-  });
-  if (!r.ok) throw new Error(await r.text());
-  const data = await r.json();
-  return data.choices?.[0]?.message?.content || JSON.stringify(data);
-}
-
-async function callChatMessages(messages) {
-  const gemini = getKey('gemini');
-  const groq = getKey('groq');
-  const openrouter = getKey('openrouter');
-  if (gemini) {
-    const system = messages.find(m => m.role === 'system')?.content || AGENT_SYSTEM;
-    const rest = messages.filter(m => m.role !== 'system');
-    const text = rest.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
-    return callGemini(gemini, system, text);
-  }
-  if (groq) {
-    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groq },
-      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', temperature: 0.4, max_tokens: 1200, messages })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json()).choices?.[0]?.message?.content || '';
-  }
-  if (openrouter) {
-    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + openrouter,
-        'HTTP-Referer': location.origin,
-        'X-Title': 'Margots'
-      },
-      body: JSON.stringify({ model: 'meta-llama/llama-3.3-70b-instruct:free', temperature: 0.4, max_tokens: 1200, messages })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json()).choices?.[0]?.message?.content || '';
-  }
-  throw new Error('No API key set');
-}
-
-function setSpeaking(on) {
-  document.body.classList.toggle('speaking', on);
-  if (on) els.agent_status.textContent = 'Speaking…';
-}
-function stopSpeech() {
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  setSpeaking(false);
-}
-async function speak(text) {
-  stopSpeech();
-  const clean = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 1800);
-  if (!clean || !window.speechSynthesis) return;
-  setSpeaking(true);
-  const u = new SpeechSynthesisUtterance(clean);
-  u.rate = 1.02;
-  u.onend = () => { setSpeaking(false); els.agent_status.textContent = 'Idle · waiting for your question'; };
-  u.onerror = () => setSpeaking(false);
-  window.speechSynthesis.speak(u);
-}
-
-function addBubble(role, text) {
-  const div = document.createElement('div');
-  div.className = 'bubble ' + role;
-  const who = document.createElement('span'); who.className = 'who';
-  who.textContent = role === 'user' ? 'You' : 'Agent';
-  div.appendChild(who);
-  div.appendChild(document.createTextNode(text));
-  els.chat.appendChild(div);
-  els.chat.scrollTop = els.chat.scrollHeight;
-}
-
-async function agentSend() {
-  const q = els.agent_q.value.trim();
-  if (!q) return;
-  if (!KEYS.some(k => getKey(k))) { openModal(); return; }
-  els.agent_q.value = '';
-  addBubble('user', q);
-  agentHistory.push({ role: 'user', content: q });
-  els.agent_send.disabled = true;
-  document.body.classList.add('working');
-  els.agent_status.textContent = 'Thinking…';
-  try {
-    const reply = await callChatMessages(agentHistory);
-    agentHistory.push({ role: 'assistant', content: reply });
-    addBubble('agent', reply);
-    document.body.classList.remove('working');
-    await speak(reply);
-  } catch (e) {
-    addBubble('agent', 'Error: ' + e.message);
-    els.agent_status.textContent = 'Error';
-    document.body.classList.remove('working');
-  }
-  els.agent_send.disabled = false;
-}
-els.agent_send.addEventListener('click', agentSend);
-els.agent_q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); agentSend(); } });
-
-function buildPayload() {
-  if (mode === 'sequence') {
-    const seq = els.seq.value.trim();
-    const facts = seqFacts(seq);
-    const q = els.seq_q.value.trim() || 'What can be reliably said about this sequence?';
-    return { facts, user: `Measured facts:\n${JSON.stringify(facts, null, 2)}\n\nQuestion: ${q}\n\nSequence (truncated):\n${cleanSeq(seq).slice(0, 3500)}` };
-  }
-  if (mode === 'variant') {
-    return { facts: { source: 'user text only' }, user: `Variant description:\n${els.variant.value.trim()}\n\nComment on possible molecular effect and what still needs external database checks.` };
-  }
-  if (mode === 'upload') {
-    if (!uploaded) return { facts: { error: 'no file' }, user: 'No file uploaded.' };
-    const q = els.upload_q.value.trim() || 'Analyze this file and report the strongest defensible findings.';
-    return { facts: uploaded.facts, user: `File analysis request.\nQuestion: ${q}\n\nMeasured facts:\n${JSON.stringify(uploaded.facts, null, 2)}\n\nFile content (truncated):\n${uploaded.text.slice(0, 20000)}` };
-  }
-  return { facts: {}, user: `Context:\n${els.ctx.value.trim()}\n\nQuestion:\n${els.free_q.value.trim()}` };
-}
-
-els.run.addEventListener('click', async () => {
-  const gemini = getKey('gemini');
-  const groq = getKey('groq');
-  const openrouter = getKey('openrouter');
-  if (!gemini && !groq && !openrouter) {
-    els.status.innerHTML = '<span class="err">Add free-tier API keys first (top right).</span>';
-    openModal();
-    return;
-  }
-  if (mode === 'upload' && !uploaded) {
-    els.status.innerHTML = '<span class="err">Upload a file first.</span>';
-    return;
-  }
-  const { facts, user } = buildPayload();
-  els.facts.textContent = JSON.stringify(facts, null, 2);
-  els.out_strict.textContent = '…';
-  els.out_context.textContent = '…';
-  els.out_skeptic.textContent = '…';
-  els.run.disabled = true;
-  els.status.textContent = 'Running…';
-  document.body.classList.add('working');
-  const jobs = [];
-  if (gemini) jobs.push(callGemini(gemini, PROMPTS.strict, user).then(t => { els.out_strict.textContent = t; }).catch(e => { els.out_strict.textContent = 'Error: ' + e.message; }));
-  else els.out_strict.textContent = 'No Gemini key';
-  if (groq) jobs.push(callOpenAICompatible('https://api.groq.com/openai/v1', groq, 'llama-3.3-70b-versatile', PROMPTS.context, user).then(t => { els.out_context.textContent = t; }).catch(e => { els.out_context.textContent = 'Error: ' + e.message; }));
-  else els.out_context.textContent = 'No Groq key';
-  if (openrouter) jobs.push(callOpenAICompatible('https://openrouter.ai/api/v1', openrouter, 'meta-llama/llama-3.3-70b-instruct:free', PROMPTS.skeptic, user, { 'HTTP-Referer': location.origin, 'X-Title': 'Margots' }).then(t => { els.out_skeptic.textContent = t; }).catch(e => { els.out_skeptic.textContent = 'Error: ' + e.message; }));
-  else els.out_skeptic.textContent = 'No OpenRouter key';
-  await Promise.all(jobs);
-  document.body.classList.remove('working');
-  els.run.disabled = false;
-  els.status.innerHTML = '<span class="ok">Done</span>';
-});
-</script>
+<script src="app.js"></script>
 </body>
 </html>
