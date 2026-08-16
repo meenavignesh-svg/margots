@@ -53,11 +53,16 @@ const els={
 
 let mode='sequence', uploaded=null, lastResult=null;
 let agentHistory=[{role:'system',content:AGENT_SYSTEM}];
+let nanoSession=null;
 
 function getKey(n){return (localStorage.getItem('margots_'+n)||'').trim()}
 function loadKeys(){KEYS.forEach(k=>{els['k_'+k].value=getKey(k)});updateKeysDot()}
 function saveKeys(){KEYS.forEach(k=>localStorage.setItem('margots_'+k,els['k_'+k].value.trim()));updateKeysDot()}
-function updateKeysDot(){els.keys_dot.classList.toggle('on',KEYS.some(k=>getKey(k)))}
+function updateKeysDot(){
+  const any=KEYS.some(k=>getKey(k));
+  const nano=typeof LanguageModel!=='undefined';
+  els.keys_dot.classList.toggle('on', any||nano);
+}
 function openModal(m){m.classList.add('open')}
 function closeModal(m){m.classList.remove('open')}
 els.open_keys.onclick=()=>{loadKeys();openModal(els.keys_modal)};
@@ -232,6 +237,52 @@ function handleFile(file){
   reader.readAsText(file);
 }
 
+function localNarrative(role, facts){
+  const lines=[];
+  if(facts.error)return 'No usable input.';
+  if(facts.kind){
+    lines.push(`Detected ${facts.kind} sequence, length ${facts.length}.`);
+    if(facts.gc_percent!=null)lines.push(`GC content ${facts.gc_percent}%.`);
+    if(facts.tm_wallace_c!=null)lines.push(`Approximate Tm ${facts.tm_wallace_c} °C.`);
+    if(facts.orfs_top?.length){
+      const o=facts.orfs_top[0];
+      lines.push(`Longest ORF ~${o.aa} aa (frame ${o.frame}, nt ${o.nt}).`);
+      if(facts.longest_orf_translation_preview)lines.push(`Translation preview: ${facts.longest_orf_translation_preview}`);
+    } else if(facts.kind==='dna') lines.push('No ORF above the minimum length threshold.');
+    if(facts.top_codons?.length)lines.push('Top codons: '+facts.top_codons.slice(0,5).map(x=>x.k+':'+x.v).join(', '));
+  } else if(facts.detected_kind){
+    lines.push(`File typed as ${facts.detected_kind} (${facts.file_name||'unnamed'}).`);
+    if(facts.num_sequences!=null)lines.push(`${facts.num_sequences} FASTA records.`);
+    if(facts.variant_lines!=null)lines.push(`${facts.variant_lines} variant lines.`);
+    if(facts.rows!=null)lines.push(`Table ~${facts.rows} rows × ${facts.cols} cols.`);
+  } else {
+    lines.push('Local measurements only. Cloud models need a free API key or Chrome on-device Gemini Nano.');
+  }
+  if(role==='strict')lines.push('Strict view: report only what is measured above; do not invent external annotations.');
+  if(role==='context')lines.push('Context view: these numbers can guide experimental design, but external databases are still required for gene identity.');
+  if(role==='skeptic')lines.push('Skeptic view: composition stats alone cannot prove function; short sequences and unknown quality scores limit confidence.');
+  return lines.join('\n');
+}
+
+async function callGeminiNano(system,user){
+  if(typeof LanguageModel==='undefined')throw new Error('On-device Gemini Nano not available in this browser');
+  let availability='unknown';
+  try{
+    if(typeof LanguageModel.availability==='function'){
+      availability=await LanguageModel.availability();
+    }
+  }catch{}
+  if(availability==='unavailable')throw new Error('On-device model unavailable');
+  if(!nanoSession){
+    nanoSession=await LanguageModel.create({
+      initialPrompts:[{role:'system',content:system}]
+    });
+  }
+  const prompt=user.length>6000?user.slice(0,6000):user;
+  const text=await nanoSession.prompt(system+'\n\n'+prompt);
+  return String(text||'').trim();
+}
+
 async function callGemini(apiKey,system,user){
   const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
   const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
@@ -253,7 +304,16 @@ async function callOpenAICompatible(baseUrl,apiKey,model,system,user,extraHeader
   const data=await r.json();
   return data.choices?.[0]?.message?.content||JSON.stringify(data);
 }
-async function withFallback(prefer,system,user){
+
+// Priority: on-device Gemini Nano (no key) → Gemini API key → Groq → OpenRouter → local narrative
+async function withFallback(prefer,system,user,facts,role){
+  // 1) Google on-device first (no API key)
+  try{
+    const text=await callGeminiNano(system,user);
+    if(text)return {text,provider:'gemini-nano'};
+  }catch(_)
+  {}
+
   const order=prefer==='gemini'?['gemini','groq','openrouter']:prefer==='groq'?['groq','gemini','openrouter']:['openrouter','gemini','groq'];
   let lastErr=null;
   for(const p of order){
@@ -265,13 +325,16 @@ async function withFallback(prefer,system,user){
       return {text:await callOpenAICompatible('https://openrouter.ai/api/v1',key,'meta-llama/llama-3.3-70b-instruct:free',system,user,{'HTTP-Referer':location.origin,'X-Title':'Margots'}),provider:'openrouter'};
     }catch(e){lastErr=e}
   }
-  throw lastErr||new Error('No API key set');
+
+  // 2) Pure local fallback — always works
+  return {text:localNarrative(role, facts||{}), provider:'local'};
 }
+
 async function callChatMessages(messages){
   const system=messages.find(m=>m.role==='system')?.content||AGENT_SYSTEM;
   const rest=messages.filter(m=>m.role!=='system');
   const userBlob=rest.map(m=>`${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
-  const {text}=await withFallback('gemini',system,userBlob);
+  const {text}=await withFallback('gemini',system,userBlob,null,'context');
   return text;
 }
 
@@ -304,7 +367,6 @@ function agentContextBlock(){
 async function agentSend(){
   const q=els.agent_q.value.trim();
   if(!q)return;
-  if(!KEYS.some(k=>getKey(k))){openModal(els.keys_modal);return}
   els.agent_q.value='';
   addBubble('user',q);
   const ctx=agentContextBlock();
@@ -348,17 +410,20 @@ function pushHistory(entry){
 }
 
 els.run.addEventListener('click',async()=>{
-  if(!KEYS.some(k=>getKey(k))){els.status.innerHTML='<span class="err">Add free-tier API keys first.</span>';openModal(els.keys_modal);return}
   if(mode==='upload'&&!uploaded){els.status.innerHTML='<span class="err">Upload a file first.</span>';return}
   const {facts,user}=buildPayload();
   els.facts.textContent=JSON.stringify(facts,null,2);
   els.out_strict.textContent='…';els.out_context.textContent='…';els.out_skeptic.textContent='…';
-  els.run.disabled=true;els.status.textContent='Running…';document.body.classList.add('working');
+  els.run.disabled=true;
+  const hasKey=KEYS.some(k=>getKey(k));
+  const hasNano=typeof LanguageModel!=='undefined';
+  els.status.textContent=hasNano?'Running (Google on-device first)…':hasKey?'Running…':'Running local analysis (no API key)…';
+  document.body.classList.add('working');
   const out={strict:'',context:'',skeptic:''};
   const jobs=[
-    withFallback('gemini',PROMPTS.strict,user).then(r=>{out.strict=r.text;els.out_strict.textContent=`[${r.provider}]\n`+r.text}).catch(e=>{out.strict='Error: '+e.message;els.out_strict.textContent=out.strict}),
-    withFallback('groq',PROMPTS.context,user).then(r=>{out.context=r.text;els.out_context.textContent=`[${r.provider}]\n`+r.text}).catch(e=>{out.context='Error: '+e.message;els.out_context.textContent=out.context}),
-    withFallback('openrouter',PROMPTS.skeptic,user).then(r=>{out.skeptic=r.text;els.out_skeptic.textContent=`[${r.provider}]\n`+r.text}).catch(e=>{out.skeptic='Error: '+e.message;els.out_skeptic.textContent=out.skeptic})
+    withFallback('gemini',PROMPTS.strict,user,facts,'strict').then(r=>{out.strict=r.text;els.out_strict.textContent=`[${r.provider}]\n`+r.text}).catch(e=>{out.strict='Error: '+e.message;els.out_strict.textContent=out.strict}),
+    withFallback('groq',PROMPTS.context,user,facts,'context').then(r=>{out.context=r.text;els.out_context.textContent=`[${r.provider}]\n`+r.text}).catch(e=>{out.context='Error: '+e.message;els.out_context.textContent=out.context}),
+    withFallback('openrouter',PROMPTS.skeptic,user,facts,'skeptic').then(r=>{out.skeptic=r.text;els.out_skeptic.textContent=`[${r.provider}]\n`+r.text}).catch(e=>{out.skeptic='Error: '+e.message;els.out_skeptic.textContent=out.skeptic})
   ];
   await Promise.all(jobs);
   document.body.classList.remove('working');els.run.disabled=false;els.status.innerHTML='<span class="ok">Done</span>';
@@ -435,3 +500,8 @@ $('btn_share').onclick=async()=>{
     els.status.innerHTML='<span class="ok">Loaded shared result</span>';
   }catch{}
 })();
+
+// hint text
+if(els.main_hint){
+  els.main_hint.textContent='Runs without API keys: local analysis + Chrome Gemini Nano when available. Optional free keys unlock stronger cloud models.';
+}
