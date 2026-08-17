@@ -1,0 +1,18 @@
+/* Margots clean light unified-chat layout */
+:root{--m-bg:#fff;--m-side:#f7f7f8;--m-text:#171717;--m-muted:#6b7280;--m-line:#e5e7eb;--m-accent:#10a37f}
+html,body{background:var(--m-bg)!important;color:var(--m-text)!important}
+.top{background:#fff!important;border-color:var(--m-line)!important;backdrop-filter:none!important}
+.sidebar{background:var(--m-side)!important;border-color:var(--m-line)!important}
+.main{width:min(900px,100%)!important}
+.chat{scrollbar-color:#d1d5db transparent!important}
+.bubble{background:#f7f7f8!important;color:#171717!important;border-color:var(--m-line)!important;box-shadow:none!important;backdrop-filter:none!important}
+.user .bubble{background:#eef7f4!important;border-color:#d5ebe4!important}
+.who{color:#0b7f66!important}
+.composer{background:#fff!important;border-color:#d1d5db!important;box-shadow:0 6px 25px #00000012!important;backdrop-filter:none!important}
+.composer textarea{color:#171717!important}.composer textarea::placeholder{color:#6b7280!important}
+.composer button{background:#f3f4f6!important;color:#374151!important;border-color:#e5e7eb!important}.composer .send{background:#111827!important;color:#fff!important}
+.icon,.chip{background:#fff!important;color:#404040!important;border-color:#e5e7eb!important}
+.icon:hover,.chip:hover{background:#ececec!important;border-color:#d1d5db!important;box-shadow:none!important}
+.human{opacity:.16!important;transform:scale(.72)!important;right:-10px!important;bottom:70px!important;filter:none!important;pointer-events:none!important}
+.core{box-shadow:0 8px 25px #00000012!important}
+@media(max-width:760px){.human{display:none!important}}
