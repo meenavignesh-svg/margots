@@ -1,35 +1,221 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id),chat=$('chat'),input=$('input'),status=$('status'),drawer=$('drawer'),panel=$('panel'),file=$('hiddenFile');
+const $=id=>document.getElementById(id),chat=$('chat'),input=$('input'),statusEl=$('status'),drawer=$('drawer'),panel=$('panel'),file=$('hiddenFile');
 const KEYS=['gemini','groq','openrouter'],HKEY='margots_unified_history_v2';let uploaded=[];
-const codon={TTT:'F',TTC:'F',TTA:'L',TTG:'L',CTT:'L',CTC:'L',CTA:'L',CTG:'L',ATT:'I',ATC:'I',ATA:'I',ATG:'M',GTT:'V',GTC:'V',GTA:'V',GTG:'V',TCT:'S',TCC:'S',TCA:'S',TCG:'S',CCT:'P',CCC:'P',CCA:'P',CCG:'P',ACT:'T',ACC:'T',ACA:'T',ACG:'T',GCT:'A',GCC:'A',GCA:'A',GCG:'A',TAT:'Y',TAC:'Y',TAA:'*',TAG:'*',CAT:'H',CAC:'H',CAA:'Q',CAG:'Q',AAT:'N',AAC:'N',AAA:'K',AAG:'K',GAT:'D',GAC:'D',GAA:'E',GAG:'E',TGT:'C',TGC:'C',TGA:'*',TGG:'W',CGT:'R',CGC:'R',CGA:'R',CGG:'R',AGT:'S',AGC:'S',AGA:'R',AGG:'R',GGT:'G',GGC:'G',GGA:'G',GGG:'G'};
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function add(text,who='assistant',meta='MARGOTS',links=[]){$('welcome')?.remove();const d=document.createElement('div');d.className='msg '+(who==='user'?'user':'assistant');let html=`<div class="bubble">${who==='assistant'?`<span class="who">${esc(meta)}</span>`:''}${esc(text)}`;for(const l of links)html+=`<a class="source" target="_blank" rel="noopener noreferrer" href="${esc(l.url)}">${esc(l.title||l.url)}</a>`;html+='</div>';d.innerHTML=html;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d}
+const Bio=window.MargotsBio||null;
+const Lit=window.MargotsLiterature||null;
+
+function setStatus(t){if(statusEl)statusEl.textContent=t}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c]))}
+
+function add(text,who='assistant',meta='MARGOTS',links=[],cls=''){
+  $('welcome')?.remove();
+  const d=document.createElement('div');
+  d.className='msg '+(who==='user'?'user':'assistant');
+  let whoCls='system';
+  if(/strict|gemini/i.test(meta))whoCls='strict';
+  else if(/context|groq/i.test(meta))whoCls='context';
+  else if(/skeptic|openrouter/i.test(meta))whoCls='skeptic';
+  else if(/deterministic|local|facts/i.test(meta))whoCls='local';
+  let html=`<div class="bubble ${cls}">${who==='assistant'?`<span class="who ${whoCls}">${esc(meta)}</span>`:''}`;
+  if(cls==='facts'||/DETERMINISTIC/i.test(meta))html+=`<div class="facts">${esc(text)}</div>`;
+  else html+=esc(text);
+  for(const l of links)html+=`<a class="source" target="_blank" rel="noopener noreferrer" href="${esc(l.url)}">${esc(l.title||l.url)}</a>`;
+  html+='</div>';
+  d.innerHTML=html;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;
+}
+
+function addAgents(results){
+  $('welcome')?.remove();
+  const wrap=document.createElement('div');
+  wrap.className='msg assistant';
+  const cols=results.length>=3?'cols-3':results.length===2?'cols-2':'';
+  let html=`<div class="bubble"><span class="who system">AI INTERPRETATION — not experimental validation</span><div class="agents ${cols}">`;
+  for(const r of results){
+    const c=(/strict/i.test(r.label)?'strict':/context/i.test(r.label)?'context':/skeptic/i.test(r.label)?'skeptic':'');
+    html+=`<div class="agent-card ${c}"><span class="who ${c}">${esc(r.label)}</span>${esc(r.text||r.error||'No response')}</div>`;
+  }
+  html+='</div></div>';
+  wrap.innerHTML=html;chat.appendChild(wrap);chat.scrollTop=chat.scrollHeight;
+}
+
 function saveHistory(q,a){try{const h=JSON.parse(localStorage.getItem(HKEY)||'[]');h.unshift({q,a,t:new Date().toISOString()});localStorage.setItem(HKEY,JSON.stringify(h.slice(0,50)))}catch{}}
 function keys(){return Object.fromEntries(KEYS.map(k=>[k,(localStorage.getItem('margots_'+k)||'').trim()]).filter(([,v])=>v))}
-function openDrawer(html){panel.innerHTML=html;drawer.classList.add('open')};function closeDrawer(){drawer.classList.remove('open')};drawer.onclick=e=>{if(e.target===drawer)closeDrawer()};
-function seqAnalyze(raw){const s=raw.toUpperCase().replace(/\s+/g,'');if(!s)return null;const dna=/^[ACGTN]+$/.test(s),rna=/^[ACGUN]+$/.test(s);if(!dna&&!rna)return {kind:'protein',length:s.length,preview:s.slice(0,120),amino_acid_alphabet:/^[ACDEFGHIKLMNPQRSTVWYBXZJUO*-]+$/i.test(s)};if(dna&&rna&&!s.includes('T')&&!s.includes('U'))return {kind:'ambiguous DNA/RNA',length:s.length,preview:s.slice(0,120),note:'A/C/G/N alone cannot distinguish DNA from RNA.'};const kind=rna&&!s.includes('T')?'RNA':'DNA';const gc=((s.match(/[GC]/g)||[]).length/s.length*100).toFixed(2);let trans='';if(kind==='DNA')for(let i=0;i+2<s.length;i+=3)trans+=codon[s.slice(i,i+3)]||'X';return {kind,length:s.length,gc_percent:Number(gc),translation_preview:kind==='RNA'?'RNA sequence — choose a reading frame before translation.':trans.slice(0,120),reverse_complement:kind==='RNA'?'':s.split('').reverse().map(c=>({A:'T',T:'A',G:'C',C:'G',N:'N'}[c]||c)).join('').slice(0,120)}}
+function openDrawer(html){panel.innerHTML=html;drawer.classList.add('open')}
+function closeDrawer(){drawer.classList.remove('open')}
+drawer.onclick=e=>{if(e.target===drawer)closeDrawer()};
+
 function findSequence(text){const m=String(text).match(/\b[ACGTUN]{20,}\b/i);return m?m[0]:null}
+function needsLiterature(q){return /\b(paper|pubmed|study|literature|research|journal|doi|citation|review)\b/i.test(q)||(!findSequence(q)&&q.split(/\s+/).length>=4)}
+function needsAI(q){return !/^(gc|reverse complement|translate|orf)\b/i.test(q.trim())||q.length>40||needsLiterature(q)}
+
+function localFacts(seq){
+  if(Bio&&Bio.analyze)return Bio.analyze(seq);
+  const s=String(seq).toUpperCase().replace(/\s+/g,'');
+  const gc=((s.match(/[GC]/g)||[]).length/s.length*100).toFixed(2);
+  return{layer:'DETERMINISTIC',kind:'DNA',length:s.length,gc_percent:Number(gc)};
+}
+
 function uploadText(f){return new Promise((res,rej)=>{const r=new FileReader;r.onload=()=>res(String(r.result||''));r.onerror=rej;r.readAsText(f)})}
-async function handleFiles(fs){for(const f of fs){if(f.size>8*1024*1024){add(`${f.name}: upload rejected because it exceeds the 8 MB browser limit.`);continue}if(!/\.(fa|fasta|fna|fastq|fq|csv|tsv|txt|json|vcf|bed|gff|gff3|gb|gbk|pep|faa|seq)$/i.test(f.name)){add(`📎 ${f.name}: unsupported text format. Common supported formats include FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, TXT and JSON.`);continue}try{const text=await uploadText(f);uploaded.push({name:f.name,size:f.size,text:text.slice(0,120000)});add(`📎 Uploaded ${f.name} (${Math.max(1,Math.round(f.size/1024))} KB). It is now available as context in this conversation.`);const seq=findSequence(text);if(seq){const x=seqAnalyze(seq);add(`Local analysis — ${f.name}\n${JSON.stringify(x,null,2)}`)}}catch{add(`${f.name}: could not be read as text.`)}}}
-$('attach').onclick=()=>file.click();file.onchange=()=>{handleFiles([...file.files]);file.value=''};
-async function webFirst(q){status.textContent='● SEARCHING';const d=add(`🔎 Searching first…\n${q}`);const url='https://www.google.com/search?q='+encodeURIComponent(q);try{window.open(url,'_blank','noopener,noreferrer')}catch{}setTimeout(()=>{const b=d.querySelector('.bubble');if(b)b.textContent='🔎 Google search opened first. Margots is continuing with your configured AI provider.'},300);return url}
-async function gemini(key,q,context){const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`You are Margots, a precise scientific assistant. Use supplied local data. Do not invent web results or citations. If web evidence is not directly supplied, clearly say so. Question: ${q}\nContext: ${context}`}]}]})});if(!r.ok)throw Error('Gemini '+r.status);const j=await r.json();return j.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||''}
-async function compatible(url,key,model,q,context){const r=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'system',content:'You are Margots, a precise scientific assistant. Do not fabricate sources, web results, or experimental facts.'},{role:'user',content:`${q}\n\nLocal context:\n${context}`}],temperature:.2})});if(!r.ok)throw Error(model+' '+r.status);const j=await r.json();return j.choices?.[0]?.message?.content||''}
-async function ai(q,context){const k=keys();if(!Object.keys(k).length){openKeys();return null}status.textContent='● THINKING';const jobs=[];if(k.gemini)jobs.push(gemini(k.gemini,q,context));if(k.groq)jobs.push(compatible('https://api.groq.com/openai/v1/chat/completions',k.groq,'llama-3.3-70b-versatile',q,context));if(k.openrouter)jobs.push(compatible('https://openrouter.ai/api/v1/chat/completions',k.openrouter,'openai/gpt-4o-mini',q,context));const out=await Promise.allSettled(jobs);const ok=out.filter(x=>x.status==='fulfilled'&&x.value).map(x=>x.value);if(!ok.length){add('All configured AI providers failed. Check the API keys and try again.');return null}return ok.length===1?ok[0]:`Independent Margots analyses:\n\n${ok.map((x,i)=>`AGENT ${i+1}\n${x}`).join('\n\n---\n\n')}`}
-function openKeys(){openDrawer(`<h2>API keys</h2><p>Keys stay in this browser's local storage. Never commit them to GitHub.</p>${KEYS.map(k=>`<div class="row"><b style="width:90px">${k}</b><input id="key_${k}" type="password" placeholder="Paste ${k} key"></div>`).join('')}<div class="row"><button class="secondary" id="closePanel">Cancel</button><button class="primary" id="saveKeys">Save keys</button></div>`);KEYS.forEach(k=>{const el=$('key_'+k);if(el)el.value=localStorage.getItem('margots_'+k)||''});$('closePanel').onclick=closeDrawer;$('saveKeys').onclick=()=>{KEYS.forEach(k=>localStorage.setItem('margots_'+k,$('key_'+k).value.trim()));closeDrawer();add('API configuration saved. Ask your question again when ready.')}}
+async function handleFiles(fs){
+  for(const f of fs){
+    if(f.size>8*1024*1024){add(f.name+': exceeds 8 MB browser limit.','assistant','SYSTEM');continue}
+    if(!/\.(fa|fasta|fna|fastq|fq|csv|tsv|txt|json|vcf|bed|gff|gff3|gb|gbk|pep|faa|seq)$/i.test(f.name)){
+      add(f.name+': unsupported format. Try FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, TXT, JSON.','assistant','SYSTEM');continue}
+    try{
+      const text=await uploadText(f);
+      uploaded.push({name:f.name,size:f.size,text:text.slice(0,120000)});
+      add('Uploaded '+f.name+' ('+Math.max(1,Math.round(f.size/1024))+' KB). Available as conversation context.','assistant','SYSTEM');
+      if(Bio&&Bio.parseFasta&&/>/.test(text)){
+        const recs=Bio.parseFasta(text).slice(0,3);
+        for(const rec of recs){
+          const facts=localFacts(rec.sequence);
+          add(JSON.stringify({header:rec.header,...facts},null,2),'assistant','DETERMINISTIC FACTS',[],'facts');
+        }
+      }else{
+        const seq=findSequence(text);
+        if(seq)add(JSON.stringify(localFacts(seq),null,2),'assistant','DETERMINISTIC FACTS',[],'facts');
+      }
+    }catch{add(f.name+': could not read as text.','assistant','SYSTEM')}
+  }
+}
+$('attach').onclick=()=>file.click();
+file.onchange=()=>{handleFiles([...file.files]);file.value=''};
+
+async function gemini(key,q,context){
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(key),{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:
+      'You are Margots. Separate facts from interpretation. Never invent citations. If literature context is empty, say so. Question: '+q+'\nContext:\n'+context}]}]})});
+  if(!r.ok)throw Error('Gemini HTTP '+r.status+' (CORS/network/key/quota)');
+  const j=await r.json();
+  return j.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'';
+}
+async function compatible(url,key,model,q,context){
+  const r=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},
+    body:JSON.stringify({model,messages:[
+      {role:'system',content:'You are Margots. Do not fabricate papers or experimental facts. Label uncertainty.'},
+      {role:'user',content:q+'\n\nContext:\n'+context}],temperature:.2})});
+  if(!r.ok)throw Error(model+' HTTP '+r.status+' (CORS/network/key/quota)');
+  const j=await r.json();
+  return j.choices?.[0]?.message?.content||'';
+}
+
+async function runAgents(q,context){
+  const k=keys();
+  if(!Object.keys(k).length){openKeys();return null}
+  setStatus('THINKING');
+  const jobs=[];
+  if(k.gemini)jobs.push(gemini(k.gemini,q,context).then(t=>({label:'STRICT · Gemini',text:t})).catch(e=>({label:'STRICT · Gemini',error:String(e.message||e)})));
+  if(k.groq)jobs.push(compatible('https://api.groq.com/openai/v1/chat/completions',k.groq,'llama-3.3-70b-versatile',q,context).then(t=>({label:'CONTEXT · Groq',text:t})).catch(e=>({label:'CONTEXT · Groq',error:String(e.message||e)})));
+  if(k.openrouter)jobs.push(compatible('https://openrouter.ai/api/v1/chat/completions',k.openrouter,'openai/gpt-4o-mini',q,context).then(t=>({label:'SKEPTIC · OpenRouter',text:t})).catch(e=>({label:'SKEPTIC · OpenRouter',error:String(e.message||e)})));
+  return Promise.all(jobs);
+}
+
+function openKeys(){
+  openDrawer(`<h2>API keys</h2>
+<p><b>Storage:</b> keys are saved only in this browser via <code>localStorage</code> under <code>margots_gemini</code>, <code>margots_groq</code>, <code>margots_openrouter</code>. They are never sent to a Margots server.</p>
+<p><b>CORS / failures:</b> model calls go browser→provider. Failures usually mean invalid key, quota, blocked network, or provider CORS/policy. Each agent fails independently.</p>
+<p><b>Literature:</b> Europe PMC, OpenAlex, UniProt need no key.</p>
+${KEYS.map(k=>`<div class="row"><b style="width:90px">${k}</b><input id="key_${k}" type="password" placeholder="Paste ${k} key"></div>`).join('')}
+<div class="row"><button class="secondary" id="closePanel">Cancel</button><button class="primary" id="saveKeys">Save keys</button></div>`);
+  KEYS.forEach(k=>{const el=$('key_'+k);if(el)el.value=localStorage.getItem('margots_'+k)||''});
+  $('closePanel').onclick=closeDrawer;
+  $('saveKeys').onclick=()=>{KEYS.forEach(k=>localStorage.setItem('margots_'+k,$('key_'+k).value.trim()));closeDrawer();add('API keys saved in localStorage only.','assistant','SYSTEM')};
+}
 $('keysBtn').onclick=openKeys;
-function showHistory(){let h=[];try{h=JSON.parse(localStorage.getItem(HKEY)||'[]')}catch{}openDrawer(`<h2>Conversation history</h2>${h.length?h.map((x,i)=>`<div class="history-item" data-i="${i}"><b>${esc(x.q.slice(0,100))}</b><div style="color:#6b7f95;font-size:11px">${new Date(x.t).toLocaleString()}</div></div>`).join(''):'<p>No saved conversations.</p>'}<div class="row"><button class="secondary" id="closePanel">Close</button><button class="secondary" id="clearHist">Clear history</button></div>`);$('closePanel').onclick=closeDrawer;$('clearHist').onclick=()=>{localStorage.removeItem(HKEY);closeDrawer()};panel.querySelectorAll('.history-item').forEach(el=>el.onclick=()=>{const x=h[Number(el.dataset.i)];add(x.q,'user');add(x.a);closeDrawer()})}
-$('historyBtn').onclick=showHistory;$('clearBtn').onclick=()=>{chat.innerHTML='<div class="welcome" id="welcome"><div class="core"></div><h1>How can I help?</h1><p>One conversation for research, sequences, files, web search, AI analysis and everything else.</p><div class="suggest"><button class="chip">Analyze a sequence</button><button class="chip">Explain a biotech topic</button><button class="chip">Analyze a file</button></div></div>';uploaded=[];bindChips()};
-function bindChips(){document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{input.value=b.textContent.includes('sequence')?'Analyze this DNA sequence: ATGCGATCGATCGATCGATCGATCGTAA':b.textContent.includes('file')?'Analyze the uploaded file and summarize the important findings.':'Explain this biotechnology topic clearly for a second-year student.';input.focus()})}bindChips();
-async function ask(q){q=q.trim();if(!q)return;add(q,'user');input.value='';input.style.height='auto';const local=findSequence(q);let context=[...uploaded.map(x=>`FILE ${x.name}:\n${x.text.slice(0,20000)}`)];if(local){const x=seqAnalyze(local);add(`🧬 Local sequence analysis\n${JSON.stringify(x,null,2)}`);context.push(`SEQUENCE: ${JSON.stringify(x)}`)}try{await webFirst(q);const answer=await ai(q,context.join('\n\n'));if(answer){add(answer);saveHistory(q,answer)}}catch(e){add('⚠️ I could not complete the AI step: '+e.message)}finally{status.textContent='● READY'}}
-$('form').onsubmit=e=>{e.preventDefault();ask(input.value)};input.oninput=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,150)+'px'};input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('form').requestSubmit()}};
-$('mic').onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){add('Voice input is not supported by this browser.');return}const r=new R;r.lang='en-IN';r.onstart=()=>status.textContent='● LISTENING';r.onresult=e=>{input.value=e.results[0][0].transcript;input.focus()};r.onerror=()=>status.textContent='● READY';r.onend=()=>status.textContent='● READY';r.start()};
-window.addEventListener('error',e=>{if(e.message)add('⚠️ Margots UI error: '+e.message)});
-['dragenter','dragover'].forEach(t=>chat.addEventListener(t,e=>{e.preventDefault();chat.style.outline='2px dashed #38bdf8';chat.style.outlineOffset='-8px'}));['dragleave','drop'].forEach(t=>chat.addEventListener(t,e=>{e.preventDefault();if(t==='drop'&&e.dataTransfer?.files?.length)handleFiles([...e.dataTransfer.files]);chat.style.outline='';chat.style.outlineOffset=''}));
-input.addEventListener('paste',e=>{const text=e.clipboardData?.getData('text')||'';const clean=text.replace(/[\s>\d|]+/g,'');if(clean.length>=20&&/^[ACGTUN]+$/i.test(clean)){setTimeout(()=>add(`🧬 Detected a pasted nucleotide sequence (${clean.length} bases). Send it to analyze it locally.`),0)}});
-const human=$('human');if(human){document.addEventListener('pointermove',e=>{const x=(e.clientX/innerWidth-.5)*6,y=(e.clientY/innerHeight-.5)*4;human.style.setProperty('--mx',x+'deg');human.style.setProperty('--my',y+'deg')})}
-// In-app About: dynamically add a polished About action without replacing the existing layout.
-function showAbout(){openDrawer(`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div style="font:800 11px ui-monospace;color:#22d3ee;letter-spacing:.14em">MARGOTS</div><h2 style="margin:5px 0 0">Intelligent Science, Unified.</h2></div><button class="secondary" id="aboutClose">Close</button></div><p style="font-size:15px;line-height:1.7;color:#b7cbe0">Margots is an AI-powered unified bioinformatics workspace designed to bring scientific search, biological data analysis, file processing and intelligent assistance into one conversation.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:16px 0"><div style="padding:14px;border:1px solid rgba(56,189,248,.18);border-radius:14px;background:rgba(8,18,32,.5)"><b>🧬 Bioinformatics</b><br><small style="color:#7f9bb3">DNA, RNA, protein and sequence workflows.</small></div><div style="padding:14px;border:1px solid rgba(56,189,248,.18);border-radius:14px;background:rgba(8,18,32,.5)"><b>🔎 Scientific discovery</b><br><small style="color:#7f9bb3">Search and explore scientific information.</small></div><div style="padding:14px;border:1px solid rgba(56,189,248,.18);border-radius:14px;background:rgba(8,18,32,.5)"><b>📎 Research files</b><br><small style="color:#7f9bb3">FASTA, FASTQ, CSV, TSV, VCF and more.</small></div><div style="padding:14px;border:1px solid rgba(56,189,248,.18);border-radius:14px;background:rgba(8,18,32,.5)"><b>🤖 AI assistance</b><br><small style="color:#7f9bb3">Natural-language scientific guidance and interpretation.</small></div></div><h3>How Margots works</h3><div style="padding:14px;border-radius:14px;background:rgba(34,211,238,.06);border:1px solid rgba(56,189,248,.15);font-weight:700;text-align:center">Question → Search → Data → Computation → Interpretation → Evidence</div><p style="line-height:1.7;color:#9db4c9">Margots is designed for students, educators and researchers in biotechnology, bioinformatics and computational biology. Its goal is not merely to generate an answer, but to connect a question with appropriate data, tools and scientific resources and explain the result clearly.</p><p style="color:#7f9bb3;font-size:12px">Research outputs should be independently validated against appropriate databases, software and primary literature before being used for scientific decisions or publication.</p>`);$('aboutClose').onclick=closeDrawer}
-function installAbout(){if($('margotsAbout'))return;const b=document.createElement('button');b.id='margotsAbout';b.className='icon';b.type='button';b.textContent='About';b.title='About Margots';b.style.position='fixed';b.style.left='18px';b.style.bottom='18px';b.style.zIndex='12';b.onclick=showAbout;document.body.appendChild(b)}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installAbout);else installAbout();
+
+function showHistory(){
+  let h=[];try{h=JSON.parse(localStorage.getItem(HKEY)||'[]')}catch{}
+  openDrawer(`<h2>History</h2>${h.length?h.map((x,i)=>`<div class="history-item" data-i="${i}"><b>${esc(x.q.slice(0,100))}</b><div style="color:#8b9bb0;font-size:11px">${new Date(x.t).toLocaleString()}</div></div>`).join(''):'<p>No saved conversations.</p>'}
+<div class="row"><button class="secondary" id="closePanel">Close</button><button class="secondary" id="clearHist">Clear</button></div>`);
+  $('closePanel').onclick=closeDrawer;
+  $('clearHist').onclick=()=>{localStorage.removeItem(HKEY);closeDrawer()};
+  panel.querySelectorAll('.history-item').forEach(el=>el.onclick=()=>{const x=h[Number(el.dataset.i)];add(x.q,'user');add(x.a);closeDrawer()});
+}
+$('historyBtn').onclick=showHistory;
+$('clearBtn').onclick=()=>{
+  chat.innerHTML=`<div class="welcome" id="welcome"><h1>Molecular intelligence</h1><p>Local sequence facts first. Independent AI agents when you need deeper reasoning.</p><div class="suggest"><button class="chip" type="button">Analyze a sequence</button><button class="chip" type="button">Explain a biotech topic</button><button class="chip" type="button">Analyze a file</button></div></div>`;
+  uploaded=[];bindChips();
+};
+
+function bindChips(){
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
+    input.value=b.textContent.includes('sequence')
+      ?'Analyze this DNA sequence: ATGAAATTTGGCGCGCGCGCGCGCATGCGCGCGCGCTAA'
+      :b.textContent.includes('file')
+        ?'Summarize the uploaded file using deterministic facts first.'
+        :'What does recent literature say about CRISPR off-target detection methods?';
+    input.focus();
+  });
+}
+bindChips();
+
+async function ask(q){
+  q=q.trim();if(!q)return;
+  add(q,'user');
+  input.value='';input.style.height='auto';
+  const seq=findSequence(q);
+  const contextParts=uploaded.map(x=>'FILE '+x.name+':\n'+x.text.slice(0,15000));
+
+  // 1) DETERMINISTIC layer — always when sequence present
+  if(seq){
+    const facts=localFacts(seq);
+    add(JSON.stringify(facts,null,2),'assistant','DETERMINISTIC FACTS',[],'facts');
+    contextParts.push('DETERMINISTIC_SEQUENCE_FACTS:\n'+JSON.stringify(facts));
+  }
+
+  // 2) PUBLIC LITERATURE — Europe PMC / OpenAlex / UniProt (no key)
+  let litLinks=[];
+  if(Lit&&needsLiterature(q)){
+    setStatus('LITERATURE');
+    try{
+      const lit=await Lit.searchAll(q.replace(/[ACGTUN]{20,}/gi,' ').trim()||q);
+      if(lit.papers&&lit.papers.length){
+        litLinks=lit.papers.slice(0,8).map(p=>({title:(p.source+': '+(p.title||'').slice(0,80)),url:p.url}));
+        add(Lit.formatContext(lit),'assistant','PUBLIC LITERATURE',litLinks);
+        contextParts.push(Lit.formatContext(lit));
+      }else{
+        add('No literature hits from public APIs (or network/CORS blocked).','assistant','PUBLIC LITERATURE');
+      }
+      if(lit.errors&&lit.errors.length){
+        add('Some literature sources failed: '+lit.errors.map(e=>e.source+': '+e.error).join('; '),'assistant','SYSTEM');
+      }
+    }catch(e){
+      add('Literature lookup failed: '+e.message,'assistant','SYSTEM');
+    }
+  }
+
+  // 3) AI INTERPRETATION — only with keys; clearly labeled
+  if(needsAI(q)||!seq){
+    try{
+      const results=await runAgents(q,contextParts.join('\n\n'));
+      if(results&&results.length){
+        addAgents(results);
+        saveHistory(q,results.map(r=>(r.label+': '+(r.text||r.error||''))).join('\n---\n'));
+      }else if(!Object.keys(keys()).length&&seq){
+        add('Deterministic facts are shown above. Add API keys for multi-agent interpretation.','assistant','SYSTEM');
+      }
+    }catch(e){
+      add('AI step failed: '+e.message+' — check keys, quota, and network/CORS.','assistant','SYSTEM');
+    }
+  }else if(seq){
+    add('Deterministic metrics only (no AI). Ask a broader question or add keys for interpretation.','assistant','SYSTEM');
+  }
+  setStatus('READY');
+}
+
+$('form').onsubmit=e=>{e.preventDefault();ask(input.value)};
+input.oninput=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,150)+'px'};
+input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('form').requestSubmit()}};
+$('mic').onclick=()=>{
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){add('Voice input not supported in this browser.','assistant','SYSTEM');return}
+  const r=new R;r.lang='en-IN';
+  r.onstart=()=>setStatus('LISTENING');
+  r.onresult=e=>{input.value=e.results[0][0].transcript;input.focus()};
+  r.onerror=()=>setStatus('READY');r.onend=()=>setStatus('READY');r.start();
+};
+
+['dragenter','dragover'].forEach(t=>chat.addEventListener(t,e=>{e.preventDefault();chat.style.outline='2px dashed #22d3ee'}));
+['dragleave','drop'].forEach(t=>chat.addEventListener(t,e=>{e.preventDefault();if(t==='drop'&&e.dataTransfer?.files?.length)handleFiles([...e.dataTransfer.files]);chat.style.outline=''}));
 })();
