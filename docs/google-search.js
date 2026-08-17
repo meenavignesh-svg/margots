@@ -1,17 +1,18 @@
 (()=>{'use strict';
 let latest='';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nativeOpen=window.open.bind(window);
 function show(items,q){const chat=document.getElementById('chat');if(!chat||!items?.length)return;const d=document.createElement('div');d.className='msg assistant';d.innerHTML=`<div class="bubble"><span class="who">GOOGLE SEARCH</span><b>Results for “${esc(q)}”</b><div class="g-results">${items.map(x=>`<a target="_blank" rel="noopener noreferrer" href="${esc(x.url)}"><strong>${esc(x.title)}</strong><small>${esc(x.snippet||'')}</small></a>`).join('')}</div></div>`;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
 async function search(q){q=String(q||'').trim();if(!q)return null;try{const r=await fetch('/api/search?q='+encodeURIComponent(q),{headers:{Accept:'application/json'}});if(r.ok){const data=await r.json();const items=Array.isArray(data.items)?data.items:[];if(items.length){latest=items.map(x=>`TITLE: ${x.title}\nURL: ${x.url}\nSNIPPET: ${x.snippet||''}`).join('\n\n');show(items,q);return items}}}catch(e){}
   latest='';
-  try{const u='https://www.google.com/search?q='+encodeURIComponent(q);window.location.href=u}catch(e){}
+  const u='https://www.google.com/search?q='+encodeURIComponent(q);
+  try{nativeOpen(u,'_blank','noopener,noreferrer')}catch(e){window.location.href=u}
   return null;
 }
 function configure(){const input=document.getElementById('input');const q=input?.value?.trim();if(q){search(q);return}const chat=document.getElementById('chat');if(chat){const d=document.createElement('div');d.className='msg assistant';d.innerHTML='<div class="bubble"><span class="who">GOOGLE</span>Google search is built into Margots. Enter a question in the chat and Margots will search first.</div>';chat.appendChild(d);chat.scrollTop=chat.scrollHeight}}
 window.MargotsGoogleSearch={search,configure,hasConfig:()=>true};
-const nativeOpen=window.open.bind(window);
 window.open=function(url,...rest){try{const u=new URL(url,location.href);if(u.hostname==='www.google.com'&&u.pathname==='/search'&&u.searchParams.get('q')){search(u.searchParams.get('q'));return null}}catch(e){}return nativeOpen(url,...rest)};
 const nativeFetch=window.fetch.bind(window);
 window.fetch=async function(resource,options){const url=typeof resource==='string'?resource:(resource?.url||'');if(latest&&options?.body&&(url.includes('generativelanguage.googleapis.com')||url.includes('api.groq.com')||url.includes('openrouter.ai'))){try{const body=JSON.parse(options.body);const extra=`\n\nGOOGLE SEARCH RESULTS (use these as web evidence; do not invent citations):\n${latest}`;if(body.contents?.[0]?.parts?.[0]?.text)body.contents[0].parts[0].text+=extra;if(Array.isArray(body.messages)){const m=body.messages.find(x=>x.role==='user');if(m)m.content=String(m.content)+extra}options={...options,body:JSON.stringify(body)};const r=await nativeFetch(resource,options);latest='';return r}catch(e){}}return nativeFetch(resource,options)};
-const style=document.createElement('style');style.textContent=` .g-results{display:grid;gap:7px;margin-top:10px}.g-results a{display:block;padding:9px 10px;border:1px solid #38bdf833;border-radius:10px;text-decoration:none;background:#071522;color:#7dd3fc}.g-results strong{display:block;font-size:13px}.g-results small{display:block;color:#9db4c9;margin-top:3px;line-height:1.4}.user .bubble{background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(59,130,246,.18));border-color:rgba(56,189,248,.35)}`;document.head.appendChild(style);
+const style=document.createElement('style');style.textContent=`.g-results{display:grid;gap:7px;margin-top:10px}.g-results a{display:block;padding:9px 10px;border:1px solid #38bdf833;border-radius:10px;text-decoration:none;background:#071522;color:#7dd3fc}.g-results strong{display:block;font-size:13px}.g-results small{display:block;color:#9db4c9;margin-top:3px;line-height:1.4}.user .bubble{background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(59,130,246,.18));border-color:rgba(56,189,248,.35)}`;document.head.appendChild(style);
 })();
