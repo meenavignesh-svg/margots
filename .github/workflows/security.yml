@@ -1,0 +1,13 @@
+name: Security guardrail
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  secret-pattern-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan source for credential patterns
+        run: python tools/security_scan.py
