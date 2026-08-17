@@ -3,185 +3,169 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Margots — Unified Scientific Intelligence</title>
+<title>Margots</title>
 <style>
-:root{
-  --bg0:#03070f;--bg1:#07111f;--text:#e8f4ff;--muted:#7f9bb3;
-  --cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;--line:rgba(56,189,248,.18);
-  --glass:rgba(8,18,32,.72);--ok:#34d399;
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:"Space Grotesk",Inter,system-ui,-apple-system,sans-serif;background:#0b0b0c;color:#e8e8e6;overflow:hidden}
+
+/* transparent DNA helix — center, subtle */
+.dna-wrap{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;z-index:0;opacity:.22;
 }
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);
-background:
-  radial-gradient(ellipse 70% 50% at 50% -10%,rgba(14,165,233,.22),transparent 55%),
-  radial-gradient(circle at 85% 80%,rgba(139,92,246,.12),transparent 40%),
-  radial-gradient(circle at 10% 70%,rgba(34,211,238,.08),transparent 35%),
-  linear-gradient(180deg,#02060d 0%,#07111f 50%,#0a1524 100%)}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-background-image:linear-gradient(rgba(56,189,248,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.04) 1px,transparent 1px);
-background-size:56px 56px;mask-image:radial-gradient(ellipse at 50% 40%,black 20%,transparent 75%);opacity:.7}
-.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.ambient span{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);opacity:.35;animation:drift 12s linear infinite}
-@keyframes drift{0%{transform:translateY(100vh) scale(.5);opacity:0}10%{opacity:.5}90%{opacity:.3}100%{transform:translateY(-10vh) scale(1.2);opacity:0}}
-.app{height:100%;display:flex;flex-direction:column;position:relative;z-index:1}
-.top{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;
-background:rgba(4,12,24,.65);backdrop-filter:blur(22px);border-bottom:1px solid var(--line);z-index:5}
-.brand{font-weight:850;letter-spacing:.16em;font-size:.95rem;display:flex;align-items:center;gap:10px}
-.brand .logo{width:28px;height:28px;border-radius:9px;background:radial-gradient(circle at 30% 30%,#a5f3fc,#0284c7);box-shadow:0 0 20px rgba(34,211,238,.45)}
-.status{font:700 11px ui-monospace,Menlo,monospace;color:var(--cyan);letter-spacing:.08em;display:flex;align-items:center;gap:8px}
-.status .pulse{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{50%{opacity:.45;transform:scale(.85)}}
-.actions{display:flex;gap:7px;flex-wrap:wrap}
-.icon{border:1px solid var(--line);background:rgba(8,20,36,.7);color:#9ec9e0;border-radius:12px;padding:8px 12px;font-weight:650;font-size:.82rem;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
-.icon:hover{border-color:rgba(34,211,238,.45);box-shadow:0 0 18px rgba(34,211,238,.12);transform:translateY(-1px)}
-.main{width:min(920px,100%);margin:auto;flex:1;display:flex;min-height:0;position:relative}
-.chat{flex:1;overflow:auto;padding:28px 16px 150px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,.3) transparent}
-.welcome{text-align:center;padding:7vh 12px}
-.core{width:118px;height:118px;margin:0 auto 22px;border-radius:50%;position:relative;
-background:radial-gradient(circle at 30% 20%,#fff 0%,#a5f3fc 22%,#22d3ee 50%,#1d4ed8 100%);
-box-shadow:0 0 40px rgba(34,211,238,.35),0 20px 60px rgba(37,99,235,.25);animation:float 4s ease-in-out infinite}
-.core::before,.core::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(103,232,249,.25);animation:spin 12s linear infinite}
-.core::after{inset:-22px;border-style:dashed;opacity:.45;animation-direction:reverse;animation-duration:18s}
-@keyframes float{50%{transform:translateY(-10px)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.welcome h1{margin:0 0 8px;font-size:clamp(1.6rem,4vw,2.2rem);letter-spacing:-.03em;font-weight:750;text-shadow:0 0 30px rgba(34,211,238,.2)}
-.welcome p{margin:0 auto;max-width:420px;color:var(--muted);font-size:.98rem;line-height:1.55}
-.suggest{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:22px}
-.chip{border:1px solid var(--line);background:rgba(8,20,36,.55);color:#b6d4e8;border-radius:999px;padding:9px 14px;font-size:.82rem;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
-.chip:hover{border-color:var(--cyan);background:rgba(34,211,238,.1);transform:translateY(-1px)}
-.msg{display:flex;margin:14px 0;animation:msgIn .35s ease}
-@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.dna{
+  width:min(280px,42vw);height:min(420px,70vh);position:relative;
+  transform-style:preserve-3d;
+}
+.dna .pair{
+  position:absolute;left:50%;width:100%;height:14px;
+  transform:translateX(-50%);
+}
+.dna .base{
+  position:absolute;top:50%;width:10px;height:10px;border-radius:50%;
+  transform:translateY(-50%);
+}
+.dna .base.a{left:0;background:rgba(244,62,1,.55)}
+.dna .base.b{right:0;background:rgba(56,189,248,.5)}
+.dna .rung{
+  position:absolute;left:10px;right:10px;top:50%;height:1.5px;
+  background:linear-gradient(90deg,rgba(244,62,1,.35),rgba(255,255,255,.12),rgba(56,189,248,.35));
+  transform:translateY(-50%);
+}
+
+.app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+
+/* top bar — Groq-like minimal */
+.top{
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(11,11,12,.85);backdrop-filter:blur(12px);
+}
+.brand{
+  font-weight:500;font-size:15px;letter-spacing:.04em;color:#f3f3ee;
+  display:flex;align-items:center;gap:10px;
+}
+.brand .mark{
+  width:22px;height:22px;border-radius:6px;
+  background:#f43e01;
+}
+.status{
+  font:500 11px/1 "IBM Plex Mono",ui-monospace,monospace;
+  color:#9c9c90;letter-spacing:.08em;text-transform:uppercase;
+}
+.actions{display:flex;gap:6px}
+.icon{
+  border:1px solid rgba(255,255,255,.1);background:transparent;color:#c8c8c0;
+  border-radius:999px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;
+}
+.icon:hover{border-color:rgba(255,255,255,.2);color:#fff}
+
+.main{
+  flex:1;min-height:0;width:min(760px,100%);margin:0 auto;
+  display:flex;flex-direction:column;position:relative;
+}
+.chat{
+  flex:1;overflow:auto;padding:32px 16px 140px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent;
+}
+
+.welcome{text-align:center;padding:12vh 12px 0}
+.welcome h1{
+  font-weight:300;font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;
+  color:#f3f3ee;margin-bottom:10px;
+}
+.welcome p{color:#9c9c90;font-size:15px;max-width:420px;margin:0 auto 28px;line-height:1.5}
+.suggest{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+  color:#c8c8c0;border-radius:999px;padding:9px 14px;font-size:13px;cursor:pointer;
+}
+.chip:hover{border-color:rgba(244,62,1,.45);color:#fff}
+
+.msg{display:flex;margin:14px 0}
 .msg.user{justify-content:flex-end}
-.bubble{max-width:min(92%,640px);padding:14px 16px;border-radius:18px;background:var(--glass);border:1px solid var(--line);
-box-shadow:0 12px 40px rgba(0,0,0,.25);white-space:pre-wrap;line-height:1.55;backdrop-filter:blur(12px)}
-.user .bubble{background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(59,130,246,.18);border-color:rgba(56,189,248,.35)}
-.who{display:block;color:var(--cyan);font:800 10px ui-monospace,Menlo,monospace;margin-bottom:6px;letter-spacing:.08em}
-.source{display:inline-block;margin:10px 8px 0 0;color:#7dd3fc;text-decoration:none;font-size:12px;border-bottom:1px solid rgba(125,211,252,.3)}
+.bubble{
+  max-width:min(92%,640px);padding:14px 16px;border-radius:16px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  white-space:pre-wrap;line-height:1.55;font-size:15px;color:#e8e8e6;
+}
+.user .bubble{
+  background:rgba(244,62,1,.12);border-color:rgba(244,62,1,.25);
+}
+.who{
+  display:block;font:500 10px/1 "IBM Plex Mono",ui-monospace,monospace;
+  color:#9c9c90;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;
+}
+.source{display:inline-block;margin:10px 8px 0 0;color:#f43e01;font-size:12px;text-decoration:none}
+
 .composer-wrap{position:absolute;left:12px;right:12px;bottom:18px}
-.composer{display:flex;gap:8px;padding:10px;background:rgba(4,14,26,.85);backdrop-filter:blur(24px);border:1px solid rgba(56,189,248,.28);
-border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(34,211,238,.08)}
-.composer textarea{flex:1;resize:none;border:0;outline:0;background:transparent;padding:12px;min-height:44px;max-height:130px;color:var(--text);font:inherit}
-.composer textarea::placeholder{color:#5a7a94}
-.composer button{width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:rgba(12,28,44,.8);color:#7dd3fc;cursor:pointer;font-size:1rem;transition:transform .15s,box-shadow .15s}
-.composer button:hover{transform:translateY(-1px);box-shadow:0 0 16px rgba(34,211,238,.2)}
-.composer .send{border:0;background:linear-gradient(135deg,#06b6d4,#2563eb);color:white;box-shadow:0 8px 24px rgba(37,99,235,.35)}
-.drawer{position:fixed;inset:0;background:rgba(2,6,13,.7);backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.composer{
+  display:flex;gap:8px;align-items:flex-end;padding:10px 12px;
+  background:#141416;border:1px solid rgba(255,255,255,.1);border-radius:18px;
+}
+.composer textarea{
+  flex:1;resize:none;border:0;outline:0;background:transparent;
+  color:#f3f3ee;font:inherit;font-size:15px;padding:8px 4px;
+  min-height:40px;max-height:120px;
+}
+.composer textarea::placeholder{color:#69695d}
+.composer button{
+  width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:#c8c8c0;cursor:pointer;font-size:15px;
+}
+.composer .send{
+  border:0;background:#f43e01;color:#fff;font-weight:600;
+}
+.composer .send:hover{filter:brightness(1.08)}
+
+.drawer{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;
+  display:none;align-items:flex-end;justify-content:center;
+}
 .drawer.open{display:flex}
-.panel{width:min(700px,100%);max-height:82vh;overflow:auto;background:rgba(8,18,32,.96);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:22px;box-shadow:0 -24px 80px rgba(0,0,0,.5);color:var(--text)}
-.panel h2{margin:0 0 6px}.panel p{color:var(--muted);font-size:13px}
+.panel{
+  width:min(640px,100%);max-height:80vh;overflow:auto;
+  background:#141416;border:1px solid rgba(255,255,255,.1);
+  border-radius:20px 20px 0 0;padding:22px;color:#e8e8e6;
+}
+.panel h2{font-weight:500;margin-bottom:6px}
+.panel p{color:#9c9c90;font-size:13px;margin-bottom:12px}
 .row{display:flex;gap:8px;align-items:center;margin:8px 0}
-.row input{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px;background:rgba(2,8,16,.7);color:var(--text)}
-.primary{border:0;background:linear-gradient(135deg,#06b6d4,#2563eb);color:white;border-radius:12px;padding:10px 14px;font-weight:750;cursor:pointer}
-.secondary{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:12px;padding:10px 14px;cursor:pointer}
-.history-item{padding:12px;border:1px solid var(--line);border-radius:12px;margin:7px 0;cursor:pointer;background:rgba(4,14,26,.5)}
-.history-item:hover{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.35)}
+.row input{
+  flex:1;border:1px solid rgba(255,255,255,.12);border-radius:10px;
+  padding:10px;background:#0b0b0c;color:#e8e8e6;
+}
+.primary{
+  border:0;background:#f43e01;color:#fff;border-radius:999px;
+  padding:10px 16px;font-weight:600;cursor:pointer;
+}
+.secondary{
+  border:1px solid rgba(255,255,255,.12);background:transparent;color:#c8c8c0;
+  border-radius:999px;padding:10px 16px;cursor:pointer;
+}
+.history-item{
+  padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;
+  margin:7px 0;cursor:pointer;background:rgba(255,255,255,.02);
+}
+.history-item:hover{border-color:rgba(244,62,1,.35)}
 
-.human{position:fixed;right:18px;bottom:110px;width:200px;height:320px;z-index:6;pointer-events:none;
-  animation:floatHuman 4.8s ease-in-out infinite;transform-origin:50% 100%;
-  filter:drop-shadow(0 16px 36px rgba(34,211,238,.28));transition:filter .3s}
-.human.active{animation:think 1.4s ease-in-out infinite;filter:drop-shadow(0 16px 48px rgba(34,211,238,.45))}
-.human.talk{animation:talkBody .55s ease-in-out infinite;filter:drop-shadow(0 16px 50px rgba(56,189,248,.5))}
-.human .ring{position:absolute;left:18px;top:8px;width:164px;height:164px;border-radius:50%;
-  border:1px solid rgba(34,211,238,.35);box-shadow:0 0 28px rgba(34,211,238,.2),inset 0 0 24px rgba(34,211,238,.08);
-  animation:halo 10s linear infinite}
-.human .ring2{position:absolute;left:8px;top:-2px;width:184px;height:184px;border-radius:50%;
-  border:1px dashed rgba(103,232,249,.22);animation:halo 16s linear infinite reverse;opacity:.7}
-.human .portrait{position:absolute;left:28px;top:18px;width:144px;height:144px;border-radius:50%;
-  background:#0b1a2a center 18%/cover no-repeat;
-  border:2px solid rgba(103,232,249,.55);box-shadow:0 0 24px rgba(34,211,238,.35),inset 0 0 12px rgba(0,0,0,.2);
-  animation:look 5s ease-in-out infinite}
-.human.active .portrait{animation:thinkFace 1.2s ease-in-out infinite}
-.human.talk .portrait{animation:talkFace .45s ease-in-out infinite}
-.human .torso{position:absolute;left:42px;top:155px;width:116px;height:100px;
-  border-radius:40px 40px 18px 18px;
-  background:linear-gradient(160deg,#0c2740 0%,#0e4a6e 45%,#164e63 100%);
-  border:1px solid rgba(34,211,238,.3);box-shadow:inset 0 0 20px rgba(34,211,238,.12)}
-.human .collar{position:absolute;left:72px;top:152px;width:56px;height:28px;
-  background:linear-gradient(180deg,rgba(165,243,252,.15),transparent);border-radius:0 0 40% 40%}
-.human .arm{position:absolute;top:168px;width:28px;height:72px;border-radius:16px;
-  background:linear-gradient(180deg,#0e4a6e,#0c2740);border:1px solid rgba(34,211,238,.2)}
-.human .arm.l{left:22px;transform:rotate(18deg);animation:gestureL 3.2s ease-in-out infinite;transform-origin:top center}
-.human .arm.r{right:22px;transform:rotate(-18deg);animation:gestureR 4s ease-in-out infinite;transform-origin:top center}
-.human.talk .arm.l{animation:waveL .7s ease-in-out infinite}
-.human.talk .arm.r{animation:waveR .7s ease-in-out infinite}
-.human .hand{position:absolute;bottom:-6px;left:2px;width:24px;height:24px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#f5d0b0,#c48a62)}
-.human .badge{position:absolute;right:-4px;bottom:28px;padding:5px 8px;border-radius:8px;
-  background:rgba(4,14,26,.9);border:1px solid rgba(34,211,238,.45);color:#67e8f9;
-  font:700 8px ui-monospace;letter-spacing:.12em;box-shadow:0 0 14px rgba(34,211,238,.25)}
-.human .wavebars{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:3px;align-items:flex-end;height:18px;opacity:0}
-.human.talk .wavebars{opacity:1}
-.human .wavebars i{display:block;width:3px;border-radius:2px;background:#67e8f9;height:6px;animation:bar .4s ease-in-out infinite alternate}
-.human .wavebars i:nth-child(2){animation-delay:.08s}.human .wavebars i:nth-child(3){animation-delay:.16s}
-.human .wavebars i:nth-child(4){animation-delay:.04s}.human .wavebars i:nth-child(5){animation-delay:.2s}
-@keyframes floatHuman{50%{transform:translate3d(0,-10px,0)}}
-@keyframes thinkFace{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-@keyframes talkFace{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.02) translateY(1px)}}
-@keyframes waveL{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-8deg) translateY(-12px)}}
-@keyframes waveR{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(-40deg) translateY(-8px)}}
-@keyframes bar{from{height:5px}to{height:16px}}
-@keyframes halo{to{transform:rotate(360deg)}}
-@keyframes look{0%,100%{transform:rotateY(0)}50%{transform:rotateY(-4deg)}}
-@keyframes gestureL{0%,100%{transform:rotate(18deg)}50%{transform:rotate(5deg) translateY(-10px)}}
-@keyframes gestureR{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(-32deg) translateY(-6px)}}
-@keyframes talkBody{50%{transform:translateY(-3px) scale(1.01)}}
-@keyframes think{50%{transform:translateY(-6px) rotateY(-5deg)}}
-@media(max-width:760px){
-  .human{right:2px;bottom:105px;transform:scale(.55);transform-origin:bottom right;opacity:.9}
+@media(max-width:640px){
   .top{padding:0 12px}
-  .brand{letter-spacing:.08em;font-size:.85rem}
+  .brand{font-size:14px}
+  .dna{opacity:.9}
 }
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important}
-}
-
-/* MARGOTS_PREMIUM_LIGHT_UI */
-:root{--bg0:#ffffff;--bg1:#f7f7f8;--text:#171717;--muted:#6b7280;--cyan:#10a37f;--blue:#0d9488;--violet:#64748b;--line:#e5e7eb;--glass:#ffffff;--ok:#10a37f}
-html,body{background:#fff!important;color:#171717!important}
-body{background-image:none!important}
-body::before,.ambient{display:none!important}
-.top{height:60px!important;background:rgba(255,255,255,.94)!important;border-bottom:1px solid #e5e7eb!important;backdrop-filter:blur(14px)!important}
-.brand{letter-spacing:.02em!important;color:#171717!important}
-.brand .logo{background:linear-gradient(135deg,#10a37f,#0ea5e9)!important;box-shadow:0 4px 16px rgba(16,163,127,.18)!important}
-.icon{background:#fff!important;color:#404040!important;border-color:#e5e7eb!important;box-shadow:none!important}
-.main{width:min(860px,100%)!important}
-.chat{scrollbar-color:#d1d5db transparent!important}
-.core{width:72px!important;height:72px!important;margin-bottom:20px!important;background:linear-gradient(135deg,#10a37f,#0ea5e9)!important;box-shadow:0 10px 28px rgba(16,163,127,.18)!important}
-.core::before,.core::after{border-color:rgba(16,163,127,.18)!important}
-.welcome h1{color:#171717!important;text-shadow:none!important;font-weight:650!important}
-.welcome p{color:#6b7280!important}
-.chip{background:#fff!important;color:#404040!important;border-color:#e5e7eb!important}
-.chip:hover{background:#f7f7f8!important;border-color:#cfd4d9!important;transform:none!important}
-.bubble{background:#f7f7f8!important;color:#171717!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;border-radius:18px!important}
-.user .bubble{background:#eef7f4!important;border:0!important}
-.who{color:#6b7280!important}
-.source{color:#0b7f66!important}
-.composer-wrap{left:0!important;right:0!important;bottom:16px!important}
-.composer{background:#fff!important;border:1px solid #d1d5db!important;border-radius:18px!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important;backdrop-filter:none!important}
-.composer textarea{color:#171717!important}.composer textarea::placeholder{color:#9ca3af!important}
-.composer button{background:#f3f4f6!important;color:#374151!important;border-color:#e5e7eb!important}.composer .send{background:#111827!important;color:#fff!important}
-.panel{background:#fff!important;color:#171717!important;border-color:#e5e7eb!important;box-shadow:0 -20px 60px rgba(0,0,0,.12)!important}.panel p{color:#6b7280!important}.row input{background:#fff!important;color:#171717!important;border-color:#d1d5db!important}.secondary{color:#374151!important;background:#fff!important;border-color:#d1d5db!important}
-.human{right:-18px!important;opacity:.16!important;transform:scale(.78)!important;transform-origin:bottom right!important;filter:grayscale(.2)!important}.human.active,.human.talk{opacity:.24!important}
-@media(max-width:900px){.human{display:none!important}}
 </style>
 </head>
 <body>
-<div class="ambient" id="ambient" aria-hidden="true"></div>
+
+<div class="dna-wrap" aria-hidden="true">
+  <div class="dna" id="dna"></div>
+</div>
+
 <div class="app">
-  <div class="human" id="human" aria-hidden="true">
-    <div class="ring2"></div>
-    <div class="ring"></div>
-    <div class="portrait" role="img" aria-label="Margots assistant"></div>
-    <div class="torso"></div>
-    <div class="collar"></div>
-    <div class="arm l"><div class="hand"></div></div>
-    <div class="arm r"><div class="hand"></div></div>
-    <div class="badge">MARGOTS AI</div>
-    <div class="wavebars"><i></i><i></i><i></i><i></i><i></i></div>
-  </div>
   <header class="top">
-    <div class="brand"><span class="logo"></span> MARGOTS</div>
-    <div class="status" id="status"><span class="pulse"></span> READY</div>
+    <div class="brand"><span class="mark"></span> MARGOTS</div>
+    <div class="status" id="status">Ready</div>
     <div class="actions">
       <button class="icon" id="historyBtn">History</button>
       <button class="icon" id="keysBtn">API</button>
@@ -189,12 +173,12 @@ body::before,.ambient{display:none!important}
       <button class="icon" id="clearBtn">Clear</button>
     </div>
   </header>
+
   <main class="main">
     <section class="chat" id="chat">
       <div class="welcome" id="welcome">
-        <div class="core"></div>
         <h1>How can I help?</h1>
-        <p>One conversation for research, sequences, files, web search, AI analysis and everything else.</p>
+        <p>Research, sequences, files, search, and analysis — one clean conversation.</p>
         <div class="suggest">
           <button class="chip">Analyze a sequence</button>
           <button class="chip">Explain a biotech topic</button>
@@ -202,38 +186,44 @@ body::before,.ambient{display:none!important}
         </div>
       </div>
     </section>
+
     <div class="composer-wrap">
       <form class="composer" id="form">
-        <button type="button" id="attach" title="Attach">📎</button>
-        <textarea id="input" rows="1" placeholder="Ask Margots anything…"></textarea>
-        <button type="button" id="mic" title="Voice">🎙</button>
-        <button class="send" title="Send">➤</button>
+        <button type="button" id="attach" title="Attach">+</button>
+        <textarea id="input" rows="1" placeholder="Ask Margots…"></textarea>
+        <button type="button" id="mic" title="Voice">◉</button>
+        <button class="send" title="Send">↑</button>
       </form>
     </div>
   </main>
 </div>
+
 <div class="drawer" id="drawer"><div class="panel" id="panel"></div></div>
 <input id="hiddenFile" type="file" hidden multiple>
-<script src="assistant-face.js"></script>
+
 <script src="google-search.js"></script>
 <script src="unified-app.js"></script>
 <script>
+/* static transparent DNA — no avatar, no motion gimmicks */
 (function(){
-  const amb=document.getElementById('ambient');
-  for(let i=0;i<28;i++){
-    const s=document.createElement('span');
-    s.style.left=(Math.random()*100)+'%';
-    s.style.animationDelay=(Math.random()*12)+'s';
-    s.style.animationDuration=(8+Math.random()*10)+'s';
-    s.style.width=s.style.height=(2+Math.random()*3)+'px';
-    amb.appendChild(s);
+  const dna = document.getElementById('dna');
+  const N = 18;
+  for (let i = 0; i < N; i++) {
+    const pair = document.createElement('div');
+    pair.className = 'pair';
+    const t = i / (N - 1);
+    const y = t * 100;
+    const twist = t * Math.PI * 3.2;
+    const spread = 42 + Math.sin(twist) * 8;
+    pair.style.top = y + '%';
+    pair.innerHTML =
+      '<span class="base a" style="left:calc(50% - ' + spread + 'px)"></span>' +
+      '<span class="rung" style="left:calc(50% - ' + (spread - 6) + 'px);right:calc(50% - ' + (spread - 6) + 'px)"></span>' +
+      '<span class="base b" style="right:calc(50% - ' + spread + 'px)"></span>';
+    dna.appendChild(pair);
   }
 })();
-document.getElementById('googleBtn').onclick=()=>window.MargotsGoogleSearch?.configure();
-const h=document.getElementById('human'),st=document.getElementById('status'),inp=document.getElementById('input');
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement===inp){h.classList.add('talk');setTimeout(()=>h.classList.remove('talk'),900)}});
-inp.addEventListener('input',()=>{h.classList.add('active');clearTimeout(window.mh);window.mh=setTimeout(()=>h.classList.remove('active'),1000)});
-new MutationObserver(()=>{if(/SEARCH|THINK|LISTEN|RUN|WORK/i.test(st.textContent))h.classList.add('active');else if(/READY/i.test(st.textContent))h.classList.remove('active')}).observe(st,{childList:true,subtree:true,characterData:true});
+document.getElementById('googleBtn').onclick = () => window.MargotsGoogleSearch?.configure();
 </script>
 </body>
 </html>
