@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Margots Tetris — Molecular Blocks</title>
+<style>
+:root{--bg:#071018;--panel:#0c1722;--line:#183044;--text:#e8f4ff;--muted:#8aa1b5;--accent:#22d3ee}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 10%,#123047 0,#071018 48%,#04080d 100%);color:var(--text);font-family:Inter,system-ui,sans-serif;display:grid;place-items:center;overflow:auto}
+.wrap{display:grid;grid-template-columns:auto 230px;gap:22px;align-items:start;padding:24px}.game{position:relative;padding:14px;border:1px solid var(--line);border-radius:22px;background:rgba(12,23,34,.9);box-shadow:0 24px 80px rgba(0,0,0,.45),0 0 45px rgba(34,211,238,.08)}
+canvas{display:block;width:min(70vw,300px);height:auto;background:#050b11;border-radius:12px;image-rendering:pixelated}.side{padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(12,23,34,.86);min-width:210px}.title{font-weight:800;letter-spacing:.08em;margin-bottom:4px}.sub{color:var(--muted);font-size:12px;margin-bottom:18px}.stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #142636;font-size:13px}.stat b{color:var(--accent)}button{width:100%;margin-top:14px;padding:11px;border-radius:12px;border:1px solid #28445a;background:#101e2c;color:#dff6ff;font-weight:700;cursor:pointer}button:hover{border-color:var(--accent);box-shadow:0 0 18px rgba(34,211,238,.12)}.keys{margin-top:18px;color:var(--muted);font-size:11px;line-height:1.7}.overlay{position:absolute;inset:14px;display:grid;place-items:center;background:rgba(2,7,12,.72);border-radius:12px;text-align:center}.overlay h2{margin:0 0 6px}.overlay p{margin:0;color:var(--muted);font-size:12px}@media(max-width:650px){.wrap{grid-template-columns:1fr;padding:12px}.side{width:min(70vw,300px);margin:auto}.game{margin:auto}}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="game"><canvas id="board" width="300" height="600" aria-label="Tetris game"></canvas><div class="overlay" id="overlay"><div><h2>MOLECULAR TETRIS</h2><p>Press Start or Space</p></div></div></div>
+<aside class="side"><div class="title">🧬 MARGOTS TETRIS</div><div class="sub">Clear molecular blocks. Survive the cascade.</div><div class="stat"><span>Score</span><b id="score">0</b></div><div class="stat"><span>Lines</span><b id="lines">0</b></div><div class="stat"><span>Level</span><b id="level">1</b></div><button id="start">START GAME</button><button id="pause">PAUSE</button><button id="back">BACK TO MARGOTS</button><div class="keys">← → Move<br>↑ Rotate<br>↓ Soft drop<br>Space Hard drop<br>P Pause</div></aside></div>
+<script>
+const c=document.getElementById('board'),ctx=c.getContext('2d'),W=10,H=20,S=30;ctx.scale(S,S);
+const colors=['','#22d3ee','#a78bfa','#fb923c','#34d399','#f472b6','#facc15','#60a5fa'];
+const shapes=[[[1,1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1],[1,1]],[[0,1,1],[1,1,0]],[[0,1,0],[1,1,1]],[[1,1,0],[0,1,1]]];
+let board,player,score=0,lines=0,level=1,drop=0,last=0,running=false,paused=false,raf;
+function reset(){board=Array.from({length:H},()=>Array(W).fill(0));score=lines=0;level=1;spawn();update()}
+function spawn(){const id=Math.floor(Math.random()*7)+1,shape=shapes[id-1].map(r=>r.slice());player={x:Math.floor((W-shape[0].length)/2),y:0,shape,id};if(collide())gameOver()}
+function collide(){for(let y=0;y<player.shape.length;y++)for(let x=0;x<player.shape[y].length;x++)if(player.shape[y][x]&&(board[player.y+y]?.[player.x+x]!==0))return true;return false}
+function merge(){player.shape.forEach((r,y)=>r.forEach((v,x)=>{if(v)board[player.y+y][player.x+x]=player.id}))}
+function clearLines(){let n=0;outer:for(let y=H-1;y>=0;y--){for(let x=0;x<W;x++)if(!board[y][x])continue outer;board.splice(y,1);board.unshift(Array(W).fill(0));n++;y++}if(n){lines+=n;score += [0,100,300,500,800][n]*level;level=1+Math.floor(lines/10);update()}}
+function rotate(){const old=player.shape;const h=old.length,w=old[0].length;const next=Array.from({length:w},()=>Array(h).fill(0));for(let y=0;y<h;y++)for(let x=0;x<w;x++)next[x][h-1-y]=old[y][x];player.shape=next;if(collide())player.shape=old}
+function move(dx){player.x+=dx;if(collide())player.x-=dx}
+function dropPiece(){player.y++;if(collide()){player.y--;merge();clearLines();spawn();}drop=0}
+function hardDrop(){while(!collide()){player.y++;score+=2}player.y--;merge();clearLines();spawn();update()}
+function drawCell(x,y,id){ctx.fillStyle=colors[id];ctx.fillRect(x+.08,y+.08,.84,.84);ctx.strokeStyle='rgba(255,255,255,.22)';ctx.strokeRect(x+.1,y+.1,.8,.8)}
+function draw(){ctx.fillStyle='#050b11';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(34,211,238,.06)';for(let x=0;x<=W;x++){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y++){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}board.forEach((r,y)=>r.forEach((v,x)=>v&&drawCell(x,y,v)));if(player)player.shape.forEach((r,y)=>r.forEach((v,x)=>v&&drawCell(player.x+x,player.y+y,player.id)))}
+function update(){document.getElementById('score').textContent=score;document.getElementById('lines').textContent=lines;document.getElementById('level').textContent=level}
+function loop(t=0){if(!running)return;if(!paused){const dt=t-last;last=t;drop+=dt;if(drop>Math.max(90,800-(level-1)*65))dropPiece();draw()}raf=requestAnimationFrame(loop)}
+function start(){cancelAnimationFrame(raf);reset();running=true;paused=false;document.getElementById('overlay').style.display='none';last=performance.now();raf=requestAnimationFrame(loop)}
+function gameOver(){running=false;document.getElementById('overlay').style.display='grid';document.querySelector('#overlay h2').textContent='GAME OVER';document.querySelector('#overlay p').textContent=`Score ${score} · Press Start to play again`}
+document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowDown','ArrowUp',' '].includes(e.key))e.preventDefault();if(e.key==='p'||e.key==='P'){paused=!paused;return}if(!running||paused)return;if(e.key==='ArrowLeft')move(-1);else if(e.key==='ArrowRight')move(1);else if(e.key==='ArrowDown')dropPiece();else if(e.key==='ArrowUp')rotate();else if(e.key===' ')hardDrop();draw();update()});
+document.getElementById('start').onclick=start;document.getElementById('pause').onclick=()=>{if(running)paused=!paused};document.getElementById('back').onclick=()=>location.href='index.html';reset();draw();
+</script></body></html>
