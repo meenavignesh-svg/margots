@@ -1,4 +1,4 @@
-name: Inject Margots GOAT UI
+name: Apply Margots UI
 
 on:
   push:
@@ -8,32 +8,30 @@ permissions:
   contents: write
 
 jobs:
-  inject:
+  ui:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure GOAT UI scripts are loaded
+      - name: Ensure light chat layout is loaded
         shell: python
         run: |
           from pathlib import Path
           p = Path('docs/index.html')
           s = p.read_text(encoding='utf-8')
-          markers = [
+          css = '<link rel="stylesheet" href="chatgpt-layout.css">'
+          if css not in s:
+              s = s.replace('</head>', '  ' + css + '\n</head>', 1)
+          # Remove obsolete UI loader tags that can override the canonical layout.
+          for marker in [
               '<script src="goat-ui.js"></script>',
               '<script src="jarvis-search-first.js"></script>'
-          ]
-          needle = '<script src="app.js"></script>'
-          if needle not in s:
-              raise SystemExit('Expected app.js script tag was not found; refusing to modify index.html')
-          for marker in markers:
-              if marker not in s:
-                  s = s.replace(needle, needle + '\n' + marker, 1)
-                  needle = marker
+          ]:
+              s = s.replace(marker, '')
           p.write_text(s, encoding='utf-8')
 
-      - name: Commit injected loaders
+      - name: Commit layout change
         run: |
           if git diff --quiet -- docs/index.html; then
             echo 'No index change needed.'
@@ -42,5 +40,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/index.html
-          git commit -m 'Load GOAT and search-first JARVIS layers'
+          git commit -m 'Apply canonical light unified chat layout'
           git push
