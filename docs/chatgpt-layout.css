@@ -1,18 +1,45 @@
-/* Margots clean light unified-chat layout */
-:root{--m-bg:#fff;--m-side:#f7f7f8;--m-text:#171717;--m-muted:#6b7280;--m-line:#e5e7eb;--m-accent:#10a37f}
-html,body{background:var(--m-bg)!important;color:var(--m-text)!important}
-.top{background:#fff!important;border-color:var(--m-line)!important;backdrop-filter:none!important}
-.sidebar{background:var(--m-side)!important;border-color:var(--m-line)!important}
-.main{width:min(900px,100%)!important}
-.chat{scrollbar-color:#d1d5db transparent!important}
-.bubble{background:#f7f7f8!important;color:#171717!important;border-color:var(--m-line)!important;box-shadow:none!important;backdrop-filter:none!important}
-.user .bubble{background:#eef7f4!important;border-color:#d5ebe4!important}
-.who{color:#0b7f66!important}
-.composer{background:#fff!important;border-color:#d1d5db!important;box-shadow:0 6px 25px #00000012!important;backdrop-filter:none!important}
-.composer textarea{color:#171717!important}.composer textarea::placeholder{color:#6b7280!important}
-.composer button{background:#f3f4f6!important;color:#374151!important;border-color:#e5e7eb!important}.composer .send{background:#111827!important;color:#fff!important}
-.icon,.chip{background:#fff!important;color:#404040!important;border-color:#e5e7eb!important}
-.icon:hover,.chip:hover{background:#ececec!important;border-color:#d1d5db!important;box-shadow:none!important}
-.human{opacity:.16!important;transform:scale(.72)!important;right:-10px!important;bottom:70px!important;filter:none!important;pointer-events:none!important}
-.core{box-shadow:0 8px 25px #00000012!important}
-@media(max-width:760px){.human{display:none!important}}
+/* Margots — clean light unified chat */
+:root{--m-bg:#fff;--m-surface:#fff;--m-soft:#f7f7f8;--m-text:#171717;--m-muted:#6b7280;--m-line:#e5e7eb;--m-accent:#10a37f}
+*{box-sizing:border-box}
+html,body{background:#fff!important;color:var(--m-text)!important}
+body{background-image:none!important}
+.dna-wrap,.dna{display:none!important}
+.app{background:#fff!important}
+.top{height:60px!important;background:rgba(255,255,255,.96)!important;color:var(--m-text)!important;border-bottom:1px solid var(--m-line)!important;backdrop-filter:blur(12px)!important;box-shadow:0 1px 4px rgba(0,0,0,.03)!important}
+.brand{color:var(--m-text)!important;font-weight:700!important;letter-spacing:.01em!important}
+.brand .mark{width:28px!important;height:28px!important;border-radius:8px!important;background:linear-gradient(135deg,#10a37f,#0ea5e9)!important;box-shadow:0 5px 16px rgba(16,163,127,.18)!important}
+.status{color:var(--m-muted)!important}
+.actions{gap:6px!important}
+.icon{background:#fff!important;color:#404040!important;border:1px solid var(--m-line)!important;border-radius:9px!important;box-shadow:none!important}
+.icon:hover{background:var(--m-soft)!important;color:#171717!important;border-color:#d1d5db!important}
+.main{width:min(900px,100%)!important;background:#fff!important}
+.chat{background:#fff!important;scrollbar-color:#d1d5db transparent!important}
+.welcome{padding-top:13vh!important}
+.welcome h1{color:var(--m-text)!important;text-shadow:none!important;font-weight:650!important;letter-spacing:-.035em!important}
+.welcome p{color:var(--m-muted)!important}
+.suggest{gap:9px!important}
+.chip{background:#fff!important;color:#404040!important;border:1px solid var(--m-line)!important;border-radius:11px!important;box-shadow:0 1px 2px rgba(0,0,0,.03)!important}
+.chip:hover{background:var(--m-soft)!important;color:#171717!important;border-color:#d1d5db!important;transform:translateY(-1px)!important}
+.msg{animation:fadeIn .18s ease!important}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.bubble{background:var(--m-soft)!important;color:var(--m-text)!important;border:0!important;border-radius:16px!important;box-shadow:none!important;backdrop-filter:none!important}
+.user .bubble{background:#eef7f4!important;color:var(--m-text)!important;border:0!important}
+.who{color:var(--m-muted)!important}
+.source{color:#087f67!important}
+.composer-wrap{left:12px!important;right:12px!important;bottom:16px!important}
+.composer{background:#fff!important;border:1px solid #d1d5db!important;border-radius:18px!important;box-shadow:0 7px 28px rgba(0,0,0,.09)!important;backdrop-filter:none!important}
+.composer textarea{color:var(--m-text)!important}
+.composer textarea::placeholder{color:#9ca3af!important}
+.composer button{background:#f3f4f6!important;color:#374151!important;border:1px solid var(--m-line)!important}
+.composer button:hover{background:#e5e7eb!important}
+.composer .send{background:#111827!important;color:#fff!important;border:0!important}
+.drawer{background:rgba(0,0,0,.28)!important}
+.panel{background:#fff!important;color:var(--m-text)!important;border:1px solid var(--m-line)!important;box-shadow:0 -20px 60px rgba(0,0,0,.12)!important}
+.panel p{color:var(--m-muted)!important}
+.row input{background:#fff!important;color:var(--m-text)!important;border:1px solid #d1d5db!important}
+.primary{background:#111827!important;color:#fff!important}
+.secondary{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important}
+.history-item{background:#fff!important;border:1px solid var(--m-line)!important;color:var(--m-text)!important}
+.history-item:hover{background:var(--m-soft)!important;border-color:#d1d5db!important}
+.human,.core{display:none!important}
+@media(max-width:640px){.top{padding:0 12px!important}.main{width:100%!important}.chat{padding-left:14px!important;padding-right:14px!important}.composer-wrap{left:8px!important;right:8px!important}.welcome{padding-top:9vh!important}}
