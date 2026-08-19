@@ -3,7 +3,7 @@
 # 🧬 MARGOTS
 ### **Multi-Agent Molecular Intelligence**
 
-**A browser-first bioinformatics workspace combining deterministic sequence analysis with independent AI-assisted reasoning.**
+**An open-source browser-first bioinformatics workspace combining deterministic sequence analysis with AI-assisted scientific reasoning.**
 
 <a href="https://meenavignesh-svg.github.io/margots/"><img src="https://img.shields.io/badge/🚀_LIVE_APP-Launch_MARGOTS-00d9ff?style=for-the-badge&labelColor=07111f"/></a>
 <a href="https://github.com/meenavignesh-svg/margots"><img src="https://img.shields.io/badge/⭐_GITHUB-Repository-111827?style=for-the-badge&logo=github&logoColor=white"/></a>
@@ -11,31 +11,34 @@
 
 ![Status](https://img.shields.io/badge/status-active_development-f59e0b?style=for-the-badge)
 ![License](https://img.shields.io/github/license/meenavignesh-svg/margots?style=for-the-badge)
-![GitHub last commit](https://img.shields.io/github/last-commit/meenavignesh-svg/margots?style=for-the-badge&logo=github)
+![Last Commit](https://img.shields.io/github/last-commit/meenavignesh-svg/margots?style=for-the-badge&logo=github)
+![Repo Size](https://img.shields.io/github/repo-size/meenavignesh-svg/margots?style=for-the-badge)
 
 </div>
 
 ---
 
-## 🎯 Product Vision
+## 🔎 Why MARGOTS?
 
-MARGOTS is an **experimental scientific software platform** for exploring how deterministic bioinformatics calculations and multiple AI perspectives can coexist in one researcher-oriented workspace.
+MARGOTS is an **experimental open-source scientific software project** exploring the intersection of **biotechnology, bioinformatics, computational biology, artificial intelligence and scientific computing**.
 
-The central design principle is simple:
+It is designed around one principle:
 
 > **Calculate what can be calculated. Ask AI what requires interpretation. Keep the human in the loop.**
 
-MARGOTS is intentionally **not positioned as a clinical diagnostic system or a replacement for experimental validation**.
+MARGOTS is intended for **education, research exploration and computational experimentation**. It is not a clinical diagnostic system and does not replace experimental validation or expert review.
+
+### 🧬 Keywords
+
+`bioinformatics` · `biotechnology` · `computational-biology` · `AI-for-biology` · `sequence-analysis` · `genomics` · `protein-bioinformatics` · `DNA` · `RNA` · `FASTA` · `FASTQ` · `VCF` · `Python` · `artificial-intelligence` · `scientific-computing`
 
 ---
 
-## 🧬 What It Does
+## ✨ Features
 
-### Deterministic bioinformatics
+### 🧬 Deterministic Bioinformatics
 
-MARGOTS performs local, reproducible operations on biological sequence input, including:
-
-- DNA / RNA / protein handling
+- DNA, RNA and protein sequence handling
 - nucleotide and amino-acid composition
 - GC percentage
 - melting-temperature estimation
@@ -45,9 +48,9 @@ MARGOTS performs local, reproducible operations on biological sequence input, in
 - codon-frequency analysis
 - biological file parsing
 
-### AI-assisted reasoning
+### 🤖 AI-Assisted Scientific Reasoning
 
-The same scientific context can be supplied to multiple independently configured model slots. Their responses can then be compared rather than treating a single model output as authoritative.
+The same scientific context can be supplied to independently configured model providers so users can **compare multiple AI perspectives instead of treating one response as authoritative**.
 
 ```text
                  BIOLOGICAL INPUT
@@ -73,78 +76,52 @@ The same scientific context can be supplied to multiple independently configured
                HUMAN INTERPRETATION
 ```
 
+### 📁 Scientific File Workflows
+
+Current workflows include support for inputs such as **FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, JSON and TXT**, subject to the current implementation.
+
+### 🌐 Browser-First Design
+
+MARGOTS is designed to perform normal sequence calculations locally in the browser, reducing the need for a central analysis database in its static deployment model.
+
+---
+
+## 🎯 Who Is MARGOTS For?
+
+| Audience | Example use |
+|---|---|
+| 🧑‍🎓 Biotechnology students | Learn sequence analysis and computational biology |
+| 🧬 Bioinformatics learners | Experiment with biological datasets |
+| 🔬 Researchers | Explore computational workflows and AI-assisted reasoning |
+| 💻 Developers | Study scientific software architecture |
+| 🤖 AI researchers | Explore multi-model scientific reasoning |
+| 🧪 Educators | Demonstrate biological computation concepts |
+
 ---
 
 ## 🏗️ Architecture
 
-MARGOTS follows a **separation-of-concerns** approach:
-
 | Layer | Responsibility |
 |---|---|
-| **Input layer** | Parse, normalize and validate biological input |
-| **Bioinformatics core** | Deterministic sequence calculations |
-| **Context layer** | Build structured scientific context |
-| **Provider layer** | Communicate with configured AI providers |
-| **Comparison layer** | Present independent model outputs side-by-side |
-| **Workspace layer** | History, export, sharing and UI state |
-| **Presentation layer** | Responsive scientific interface and visualization |
+| **Input** | Parse, normalize and validate biological input |
+| **Bioinformatics Core** | Deterministic sequence calculations |
+| **Context** | Build structured scientific context |
+| **Provider** | Communicate with configured AI providers |
+| **Comparison** | Present independent model outputs side-by-side |
+| **Workspace** | History, export, sharing and UI state |
+| **Presentation** | Responsive scientific interface and visualization |
 
-See the full [architecture document](docs/ARCHITECTURE.md).
-
----
-
-## 🔬 Supported Workflows
-
-| Workflow | Purpose |
-|---|---|
-| 🧬 **Sequence** | Analyze DNA, RNA and protein sequences |
-| 🧪 **Variant** | Explore free-form variant descriptions with AI assistance |
-| 📁 **Upload** | Work with FASTA, FASTQ, CSV, TSV, VCF, BED, GFF, JSON and TXT inputs |
-| 🧠 **Agent** | Interact with the current scientific workspace context |
-| 💬 **Free** | Ask general scientific questions within the workspace |
-
-### Scientific input boundary
-
-MARGOTS should be used for **research, education and exploratory analysis**. It must not be represented as clinical decision support, a diagnostic system, or experimental confirmation.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## 🔐 Privacy & Security by Design
+## 🚀 Try It
 
-MARGOTS is designed around a **browser-first architecture**:
+### Live application
 
-- Local sequence calculations run in the browser.
-- Uploaded files are processed client-side in the normal workflow.
-- Provider credentials are supplied by the user and are not intended to be committed to the repository.
-- AI requests go to the configured third-party provider.
-- MARGOTS does not require a central analysis database for its normal static deployment.
+**[Launch MARGOTS →](https://meenavignesh-svg.github.io/margots/)**
 
-### ⚠️ Sensitive data
-
-Do **not** submit patient-identifiable information, protected health information, confidential research data, proprietary sequences, or other sensitive biological data unless you have independently verified that the deployment and selected third-party providers are authorized for that data.
-
-Never commit API keys to GitHub. Use `.env.example` as a template only.
-
-See [SECURITY.md](SECURITY.md).
-
----
-
-## 🤖 AI Provider Model
-
-Provider availability and model IDs change over time. MARGOTS therefore treats provider/model configuration as replaceable rather than hard-coding a permanent model assumption.
-
-Possible provider integrations include configured model APIs such as:
-
-- Google Gemini
-- Groq
-- OpenRouter
-- Other compatible providers supported by the current implementation
-
-**AI responses are advisory outputs.** Always verify scientific claims against primary literature, validated databases and appropriate domain expertise.
-
----
-
-## 🚀 Run Locally
+### Run locally
 
 ```bash
 git clone https://github.com/meenavignesh-svg/margots.git
@@ -152,13 +129,38 @@ cd margots
 python -m http.server 8000 --directory docs
 ```
 
-Open:
+Then open `http://localhost:8000`.
 
-```text
-http://localhost:8000
-```
+A local HTTP server is recommended instead of opening the HTML file directly with `file://`.
 
-A local HTTP server is recommended instead of opening `index.html` directly with `file://`.
+---
+
+## 🔐 Security & Privacy
+
+- Normal sequence calculations run locally in the browser.
+- Uploaded files are processed client-side in the normal workflow.
+- Provider credentials are supplied by the user and must never be committed to GitHub.
+- AI requests are sent to the configured third-party provider.
+- No central analysis database is required for the normal static deployment.
+
+**Never submit patient-identifiable information, protected health information, confidential research data, proprietary sequences or other sensitive biological data unless you have independently verified that the deployment and selected providers are authorized for that data.**
+
+See [SECURITY.md](SECURITY.md).
+
+---
+
+## 🤖 AI Providers
+
+Provider availability and model identifiers change over time. MARGOTS therefore treats provider/model configuration as replaceable.
+
+Possible integrations include configured APIs such as:
+
+- Google Gemini
+- Groq
+- OpenRouter
+- Other compatible providers supported by the implementation
+
+**AI outputs are advisory.** Scientific claims should be verified using primary literature, validated databases and appropriate domain expertise.
 
 ---
 
@@ -175,29 +177,11 @@ margots/
 ├── ABOUT.md                # Project background
 ├── ARCHITECTURE.md         # System design
 ├── CHANGELOG.md            # Release history
-├── CONTRIBUTING.md         # Engineering contribution rules
+├── CONTRIBUTING.md         # Contribution rules
 ├── SECURITY.md             # Security policy
 ├── CODE_OF_CONDUCT.md      # Community standards
 └── README.md
 ```
-
----
-
-## 🧪 Engineering Standards
-
-MARGOTS is being developed toward stronger software and scientific engineering practices:
-
-- deterministic calculations separated from AI reasoning
-- explicit input validation
-- provider isolation
-- security scanning in CI
-- documented data boundaries
-- reproducible workflows
-- accessibility and reduced-motion support
-- focused contributions
-- scientific caveats around AI-generated interpretation
-
-The project is still in **active development**. “Industry-ready” is a direction and engineering standard—not a claim that the current system has been validated for regulated clinical or production laboratory use.
 
 ---
 
@@ -213,20 +197,20 @@ The project is still in **active development**. “Industry-ready” is a direct
 - [x] Responsive scientific UI
 - [x] Security workflow
 
-### Next engineering milestones
+### Next
 
 - [ ] Automated unit tests for deterministic bioinformatics calculations
-- [ ] Input validation test suite across supported formats
+- [ ] Input-validation test suite
 - [ ] Provider adapter contract tests
-- [ ] Stronger model-output provenance and disagreement visualization
+- [ ] Model disagreement visualization
 - [ ] Reproducible analysis/report generation
 - [ ] Expanded sequence-quality diagnostics
-- [ ] Performance monitoring for large inputs
-- [ ] Accessibility audit and automated checks
-- [ ] Release/versioning discipline
-- [ ] Recorded product demonstration
+- [ ] Large-input performance monitoring
+- [ ] Accessibility audit
+- [ ] Formal releases and versioning
+- [ ] Product demonstration video
 
-### Long-term research direction
+### Research direction
 
 - [ ] More deterministic bioinformatics modules
 - [ ] Richer biological visualization
@@ -238,18 +222,33 @@ The project is still in **active development**. “Industry-ready” is a direct
 
 ## 🤝 Contributing
 
-Contributions, ideas and careful scientific feedback are welcome.
+MARGOTS welcomes thoughtful contributions, ideas, bug reports and scientific feedback.
 
 Before opening a PR:
 
 1. Test the affected workflow.
-2. Check browser console errors.
-3. Test invalid and empty biological input.
-4. Verify provider failures produce safe, understandable states.
+2. Test empty and invalid biological input.
+3. Check browser console errors.
+4. Test provider failure states.
 5. Confirm no secrets or private data were introduced.
-6. Document changes affecting scientific interpretation.
+6. Document changes that affect scientific interpretation.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+## ⭐ Support the Project
+
+If MARGOTS is useful or interesting to you:
+
+1. ⭐ **Star the repository**
+2. 👀 Follow development
+3. 🐛 Report reproducible issues
+4. 💡 Suggest useful bioinformatics workflows
+5. 🔀 Contribute improvements
+6. 📢 Share it with biotechnology, bioinformatics and AI communities
+
+A star or thoughtful issue helps other researchers and developers discover the project.
 
 ---
 
