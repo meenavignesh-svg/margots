@@ -1,0 +1,27 @@
+name: Margots Gateway Tests
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install -r requirements-gateway.txt pytest
+      - name: Compile Python
+        run: python -m compileall -q server core
+      - name: Test
+        run: pytest -q tests
+      - name: Credential pattern scan
+        run: python tools/security_scan.py

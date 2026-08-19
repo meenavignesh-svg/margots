@@ -27,6 +27,23 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Assemble production frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/index.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="production-runtime.js"></script>'
+          if tag not in s:
+              marker='</body>'
+              if marker not in s:
+                  raise SystemExit('index.html has no closing body tag')
+              s=s.replace(marker, tag+'\n'+marker, 1)
+              p.write_text(s, encoding='utf-8')
+          PY
+
       - name: Upload docs site
         uses: actions/upload-pages-artifact@v3
         with:
