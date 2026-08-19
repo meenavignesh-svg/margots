@@ -1,0 +1,14 @@
+{
+  "name": "margots",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-agent molecular intelligence — browser-native bioinformatics workspace",
+  "scripts": {
+    "test": "node docs/tests/bio-core.test.js",
+    "serve": "python3 -m http.server 8000 --directory docs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
