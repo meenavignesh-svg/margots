@@ -1,44 +1,9 @@
-name: Apply Margots UI
-
+# DISABLED — prevented stable production UI.
+name: Apply Margots UI (disabled)
 on:
-  push:
-    branches: [main]
-
-permissions:
-  contents: write
-
+  workflow_dispatch:
 jobs:
-  ui:
+  noop:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Ensure light chat layout is loaded
-        shell: python
-        run: |
-          from pathlib import Path
-          p = Path('docs/index.html')
-          s = p.read_text(encoding='utf-8')
-          css = '<link rel="stylesheet" href="chatgpt-layout.css">'
-          if css not in s:
-              s = s.replace('</head>', '  ' + css + '\n</head>', 1)
-          # Remove obsolete UI loader tags that can override the canonical layout.
-          for marker in [
-              '<script src="goat-ui.js"></script>',
-              '<script src="jarvis-search-first.js"></script>'
-          ]:
-              s = s.replace(marker, '')
-          p.write_text(s, encoding='utf-8')
-
-      - name: Commit layout change
-        run: |
-          if git diff --quiet -- docs/index.html; then
-            echo 'No index change needed.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/index.html
-          git commit -m 'Apply canonical light unified chat layout'
-          git push
+      - run: echo "Layout injection disabled. Canonical UI is docs/index.html."
