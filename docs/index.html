@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Margots — multi-agent molecular intelligence. Deterministic sequence facts, public literature, independent AI reasoning.">
+<meta name="theme-color" content="#070b12">
 <title>Margots — Multi-Agent Molecular Intelligence</title>
 <style>
 :root{
@@ -19,48 +20,49 @@ body{
     radial-gradient(circle at 90% 80%,rgba(59,130,246,.08),transparent 40%),
     var(--bg);
 }
-.dna-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;opacity:.14}
-.dna{width:min(240px,38vw);height:min(380px,62vh);position:relative}
+.dna-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;opacity:.16}
+.dna{width:min(240px,38vw);height:min(380px,62vh);position:relative;animation:dnaSpin 48s linear infinite;transform-style:preserve-3d}
+@keyframes dnaSpin{to{transform:rotateY(360deg)}}
 .dna .pair{position:absolute;left:50%;width:100%;height:12px;transform:translateX(-50%)}
 .dna .base{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;transform:translateY(-50%)}
-.dna .base.a{background:rgba(34,211,238,.7)}
-.dna .base.b{background:rgba(167,139,250,.65)}
-.dna .rung{position:absolute;top:50%;height:1px;background:linear-gradient(90deg,rgba(34,211,238,.35),rgba(255,255,255,.1),rgba(167,139,250,.35));transform:translateY(-50%)}
+.dna .base.a{background:rgba(34,211,238,.75)}
+.dna .base.b{background:rgba(167,139,250,.7)}
+.dna .rung{position:absolute;top:50%;height:1px;background:linear-gradient(90deg,rgba(34,211,238,.4),rgba(255,255,255,.12),rgba(167,139,250,.4));transform:translateY(-50%)}
 .app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
-.top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(7,11,18,.88);backdrop-filter:blur(16px)}
+.top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(7,11,18,.9);backdrop-filter:blur(16px)}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;letter-spacing:.06em}
 .brand .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#22d3ee,#3b82f6);box-shadow:0 0 18px rgba(34,211,238,.35)}
 .status{font:600 11px/1 ui-monospace,Menlo,monospace;color:var(--ok);letter-spacing:.08em;display:flex;align-items:center;gap:7px}
 .status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
-.icon{border:1px solid var(--line);background:rgba(14,21,34,.8);color:#b6c8dc;border-radius:10px;padding:7px 11px;font-size:12px;font-weight:600;cursor:pointer}
-.icon:hover{border-color:rgba(34,211,238,.4);color:#fff}
+.icon{border:1px solid var(--line);background:rgba(14,21,34,.85);color:#b6c8dc;border-radius:10px;padding:7px 11px;font-size:12px;font-weight:600;cursor:pointer}
+.icon:hover{border-color:rgba(34,211,238,.45);color:#fff}
 .main{flex:1;min-height:0;width:min(880px,100%);margin:0 auto;display:flex;flex-direction:column;position:relative}
 .chat{flex:1;overflow:auto;padding:28px 16px 150px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,.25) transparent}
 .welcome{text-align:center;padding:10vh 14px 0}
 .welcome h1{font-size:clamp(1.6rem,3.5vw,2.1rem);font-weight:650;letter-spacing:-.03em;margin-bottom:8px}
-.welcome p{color:var(--muted);font-size:15px;max-width:480px;margin:0 auto 22px;line-height:1.55}
+.welcome p{color:var(--muted);font-size:15px;max-width:500px;margin:0 auto 22px;line-height:1.55}
 .suggest{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.chip{border:1px solid var(--line);background:rgba(14,21,34,.7);color:#c5d4e6;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:550;cursor:pointer}
+.chip{border:1px solid var(--line);background:rgba(14,21,34,.75);color:#c5d4e6;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:550;cursor:pointer}
 .chip:hover{border-color:var(--cyan);color:#fff;background:rgba(34,211,238,.08)}
 .msg{display:flex;margin:12px 0;animation:in .22s ease}
 @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .msg.user{justify-content:flex-end}
-.bubble{max-width:min(94%,680px);padding:13px 15px;border-radius:16px;background:rgba(14,21,34,.9);border:1px solid var(--line);white-space:pre-wrap;line-height:1.55;font-size:14.5px}
+.bubble{max-width:min(94%,680px);padding:13px 15px;border-radius:16px;background:rgba(14,21,34,.92);border:1px solid var(--line);white-space:pre-wrap;line-height:1.55;font-size:14.5px}
 .user .bubble{background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.28)}
 .who{display:block;font:700 10px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;margin-bottom:7px;text-transform:uppercase}
 .who.strict{color:var(--strict)}.who.context{color:var(--context)}.who.skeptic{color:var(--skeptic)}.who.local{color:var(--ok)}.who.system{color:var(--muted)}
 .agents{display:grid;gap:10px;margin-top:4px}
 @media(min-width:720px){.agents.cols-2{grid-template-columns:1fr 1fr}.agents.cols-3{grid-template-columns:1fr 1fr 1fr}}
-.agent-card{padding:12px 13px;border-radius:14px;border:1px solid var(--line);background:rgba(7,11,18,.65);white-space:pre-wrap;line-height:1.5;font-size:13.5px}
+.agent-card{padding:12px 13px;border-radius:14px;border:1px solid var(--line);background:rgba(7,11,18,.7);white-space:pre-wrap;line-height:1.5;font-size:13.5px}
 .agent-card.strict{border-color:rgba(34,211,238,.35)}.agent-card.context{border-color:rgba(167,139,250,.35)}.agent-card.skeptic{border-color:rgba(251,146,60,.35)}
 .facts{margin-top:4px;padding:12px;border-radius:12px;border:1px solid rgba(52,211,153,.25);background:rgba(52,211,153,.06);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;white-space:pre-wrap;color:#c8f5e0}
 .source{display:inline-block;margin:8px 8px 0 0;color:var(--cyan);font-size:12px}
 .composer-wrap{position:absolute;left:12px;right:12px;bottom:16px}
-.composer{display:flex;gap:8px;align-items:flex-end;padding:10px;background:rgba(14,21,34,.95);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 48px rgba(0,0,0,.35)}
+.composer{display:flex;gap:8px;align-items:flex-end;padding:10px;background:rgba(14,21,34,.96);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 48px rgba(0,0,0,.35)}
 .composer textarea{flex:1;resize:none;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:14.5px;padding:10px 6px;min-height:42px;max-height:120px}
 .composer textarea::placeholder{color:#5f738a}
-.composer button{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:rgba(7,11,18,.8);color:#9ec9e0;cursor:pointer;font-size:15px}
+.composer button{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:rgba(7,11,18,.85);color:#9ec9e0;cursor:pointer;font-size:15px}
 .composer .send{border:0;background:linear-gradient(135deg,#22d3ee,#3b82f6);color:#041018;font-weight:700}
 .drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;display:none;align-items:flex-end;justify-content:center}
 .drawer.open{display:flex}
@@ -72,39 +74,10 @@ body{
 .secondary{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:10px 16px;cursor:pointer}
 .history-item{padding:12px;border:1px solid var(--line);border-radius:12px;margin:7px 0;cursor:pointer}
 .history-item:hover{border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.05)}
-@media(max-width:640px){.top{padding:0 10px}.brand{font-size:13px}.actions .icon{padding:6px 8px;font-size:11px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important}}
-
-/* MARGOTS_PREMIUM_LIGHT_UI */
-:root{--bg0:#ffffff;--bg1:#f7f7f8;--text:#171717;--muted:#6b7280;--cyan:#10a37f;--blue:#0d9488;--violet:#64748b;--line:#e5e7eb;--glass:#ffffff;--ok:#10a37f}
-html,body{background:#fff!important;color:#171717!important}
-body{background-image:none!important}
-body::before,.ambient{display:none!important}
-.top{height:60px!important;background:rgba(255,255,255,.94)!important;border-bottom:1px solid #e5e7eb!important;backdrop-filter:blur(14px)!important}
-.brand{letter-spacing:.02em!important;color:#171717!important}
-.brand .logo{background:linear-gradient(135deg,#10a37f,#0ea5e9)!important;box-shadow:0 4px 16px rgba(16,163,127,.18)!important}
-.icon{background:#fff!important;color:#404040!important;border-color:#e5e7eb!important;box-shadow:none!important}
-.main{width:min(860px,100%)!important}
-.chat{scrollbar-color:#d1d5db transparent!important}
-.core{width:72px!important;height:72px!important;margin-bottom:20px!important;background:linear-gradient(135deg,#10a37f,#0ea5e9)!important;box-shadow:0 10px 28px rgba(16,163,127,.18)!important}
-.core::before,.core::after{border-color:rgba(16,163,127,.18)!important}
-.welcome h1{color:#171717!important;text-shadow:none!important;font-weight:650!important}
-.welcome p{color:#6b7280!important}
-.chip{background:#fff!important;color:#404040!important;border-color:#e5e7eb!important}
-.chip:hover{background:#f7f7f8!important;border-color:#cfd4d9!important;transform:none!important}
-.bubble{background:#f7f7f8!important;color:#171717!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;border-radius:18px!important}
-.user .bubble{background:#eef7f4!important;border:0!important}
-.who{color:#6b7280!important}
-.source{color:#0b7f66!important}
-.composer-wrap{left:0!important;right:0!important;bottom:16px!important}
-.composer{background:#fff!important;border:1px solid #d1d5db!important;border-radius:18px!important;box-shadow:0 8px 30px rgba(0,0,0,.08)!important;backdrop-filter:none!important}
-.composer textarea{color:#171717!important}.composer textarea::placeholder{color:#9ca3af!important}
-.composer button{background:#f3f4f6!important;color:#374151!important;border-color:#e5e7eb!important}.composer .send{background:#111827!important;color:#fff!important}
-.panel{background:#fff!important;color:#171717!important;border-color:#e5e7eb!important;box-shadow:0 -20px 60px rgba(0,0,0,.12)!important}.panel p{color:#6b7280!important}.row input{background:#fff!important;color:#171717!important;border-color:#d1d5db!important}.secondary{color:#374151!important;background:#fff!important;border-color:#d1d5db!important}
-.human{right:-18px!important;opacity:.16!important;transform:scale(.78)!important;transform-origin:bottom right!important;filter:grayscale(.2)!important}.human.active,.human.talk{opacity:.24!important}
-@media(max-width:900px){.human{display:none!important}}
+.disclaimer{position:fixed;left:12px;bottom:8px;z-index:5;font-size:10px;color:#5f738a;max-width:280px;line-height:1.35;pointer-events:none}
+@media(max-width:640px){.top{padding:0 10px}.brand{font-size:13px}.actions .icon{padding:6px 8px;font-size:11px}.disclaimer{display:none}}
+@media(prefers-reduced-motion:reduce){.dna{animation:none!important}*{animation-duration:.001ms!important}}
 </style>
-  <link rel="stylesheet" href="chatgpt-layout.css">
 </head>
 <body>
 <div class="dna-wrap" aria-hidden="true"><div class="dna" id="dna"></div></div>
@@ -123,7 +96,7 @@ body::before,.ambient{display:none!important}
     <section class="chat" id="chat">
       <div class="welcome" id="welcome">
         <h1>Molecular intelligence</h1>
-        <p>Deterministic sequence facts first. Public literature from Europe PMC, OpenAlex, UniProt. Independent AI agents only for interpretation.</p>
+        <p>Deterministic sequence facts first. Public literature from Europe PMC, OpenAlex, UniProt. Independent AI agents only for interpretation — not experimental validation.</p>
         <div class="suggest">
           <button class="chip" type="button">Analyze a sequence</button>
           <button class="chip" type="button">Explain a biotech topic</button>
@@ -141,8 +114,9 @@ body::before,.ambient{display:none!important}
     </div>
   </main>
 </div>
+<p class="disclaimer">Research software. Not a medical device. Validate all outputs against primary literature and lab methods.</p>
 <div class="drawer" id="drawer"><div class="panel" id="panel"></div></div>
-<input id="hiddenFile" type="file" hidden multiple>
+<input id="hiddenFile" type="file" hidden multiple accept=".fa,.fasta,.fna,.fastq,.fq,.csv,.tsv,.txt,.json,.vcf,.bed,.gff,.gff3,.gb,.gbk,.pep,.faa,.seq">
 <script src="bio-core.js"></script>
 <script src="literature.js"></script>
 <script src="google-search.js"></script>
