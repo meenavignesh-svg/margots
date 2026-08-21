@@ -1,5 +1,9 @@
+"""Deterministic bioinformatics measurements + analysis orchestration."""
+
+from __future__ import annotations
+
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -8,7 +12,7 @@ from Bio.SeqUtils import gc_fraction
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 from .llm_engine import Engine, Result
-
+from .pipeline_agent import PipelineAgent
 
 DNA_RE = re.compile(r"^[ACGTN]+$")
 RNA_RE = re.compile(r"^[ACGUN]+$")
@@ -27,7 +31,6 @@ def seq_stats(sequence: str) -> Dict[str, Any]:
     is_dna = bool(DNA_RE.fullmatch(sequence))
     is_rna = bool(RNA_RE.fullmatch(sequence))
 
-    # A/C/G-only sequences are inherently ambiguous between DNA and RNA.
     if is_dna and is_rna:
         kind = "nucleic_acid_ambiguous"
     elif is_dna:
@@ -62,11 +65,17 @@ def seq_stats(sequence: str) -> Dict[str, Any]:
                 except Exception as e:
                     out["translation_error"] = str(e)
             else:
-                out["translation_note"] = "Translation preview omitted because sequence length is not divisible by 3."
+                out["translation_note"] = (
+                    "Translation preview omitted because sequence length is not divisible by 3."
+                )
         elif kind == "rna":
-            out["translation_note"] = "RNA detected. Translation requires an explicit reading frame/start policy."
+            out["translation_note"] = (
+                "RNA detected. Translation requires an explicit reading frame/start policy."
+            )
         else:
-            out["sequence_note"] = "Only A/C/G symbols are present, so DNA vs RNA cannot be determined from sequence alone."
+            out["sequence_note"] = (
+                "Only A/C/G symbols are present, so DNA vs RNA cannot be determined from sequence alone."
+            )
 
     if kind == "protein":
         try:
@@ -101,14 +110,15 @@ def table_stats(df: pd.DataFrame) -> Dict[str, Any]:
 class Analyzer:
     def __init__(self, engine: Engine):
         self.engine = engine
+        self.pipeline = PipelineAgent(engine)
 
-    def sequence(self, sequence: str, question: str | None = None) -> Result:
+    def sequence(self, sequence: str, question: Optional[str] = None) -> Result:
         facts = seq_stats(sequence)
         q = question or "What can be reliably said about this sequence?"
         payload = f"{q}\n\nSequence (truncated):\n{normalize_sequence(sequence)[:3500]}"
         return self.engine.run(payload, facts)
 
-    def expression(self, df: pd.DataFrame, question: str | None = None) -> Result:
+    def expression(self, df: pd.DataFrame, question: Optional[str] = None) -> Result:
         facts = table_stats(df)
         q = question or "Summarize the main patterns and any obvious issues in this table."
         return self.engine.run(q, facts)
@@ -122,3 +132,18 @@ class Analyzer:
 
     def free(self, context: str, question: str) -> Result:
         return self.engine.run(f"{context}\n\n{question}", {})
+
+    def pipeline(
+        self,
+        design: str,
+        organism: str = "",
+        data_type: str = "",
+        constraints: str = "",
+    ) -> Result:
+        """SeqFlow entry point: experimental design → multi-agent pipeline plan."""
+        return self.pipeline.plan(
+            design=design,
+            organism=organism,
+            data_type=data_type,
+            extra_constraints=constraints,
+        )
