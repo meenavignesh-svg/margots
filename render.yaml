@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: margots-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend:app --bind 0.0.0.0:$PORT --workers 2 --timeout 90
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        sync: false
+      - key: XAI_API_KEY
+        sync: false
+      - key: XAI_MODEL
+        sync: false
+      - key: GOOGLE_SEARCH_API_KEY
+        sync: false
+      - key: GOOGLE_SEARCH_ENGINE_ID
+        sync: false
