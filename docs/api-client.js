@@ -4,7 +4,36 @@
   const API_BASE_URL = configured || (location.protocol === 'http:' || location.protocol === 'https:' ? location.origin : 'http://127.0.0.1:8000');
   const TIMEOUT_MS = 45000;
 
+  // Keep PWA metadata out of the application secret/config surface.
+  const manifest = document.createElement('link');
+  manifest.rel = 'manifest';
+  manifest.href = 'manifest.webmanifest';
+  document.head.appendChild(manifest);
+  const theme = document.createElement('meta');
+  theme.name = 'theme-color';
+  theme.content = '#111827';
+  document.head.appendChild(theme);
+  const appleIcon = document.createElement('link');
+  appleIcon.rel = 'apple-touch-icon';
+  appleIcon.href = 'icon.svg';
+  document.head.appendChild(appleIcon);
+
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {}));
+  }
+
+  function notifyConnectivity() {
+    window.dispatchEvent(new CustomEvent('margots:connectivity', { detail: { online: navigator.onLine } }));
+  }
+  window.addEventListener('online', notifyConnectivity);
+  window.addEventListener('offline', notifyConnectivity);
+
   async function request(path, options = {}) {
+    if (!navigator.onLine && path !== '/health') {
+      const e = new Error('MARGOTS is offline. Reconnect to use server-backed analysis.');
+      e.code = 'OFFLINE';
+      throw e;
+    }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), options.timeout || TIMEOUT_MS);
     try {
@@ -23,7 +52,7 @@
       return payload;
     } catch (error) {
       if (error.name === 'AbortError') { const e = new Error('Request timed out. Check the backend or try again.'); e.code = 'TIMEOUT'; throw e; }
-      if (error instanceof TypeError) { const e = new Error('MARGOTS backend is unreachable. Check the API URL, HTTPS, CORS, and deployment status.'); e.code = 'NETWORK_ERROR'; throw e; }
+      if (error instanceof TypeError) { const e = new Error('MARGOTS server is currently unavailable. Please try again.'); e.code = 'NETWORK_ERROR'; throw e; }
       throw error;
     } finally { clearTimeout(timer); }
   }
