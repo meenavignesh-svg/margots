@@ -1,0 +1,15 @@
+{
+  "name": "MARGOTS — Genomic Workflow Intelligence",
+  "short_name": "MARGOTS",
+  "description": "AI-assisted biotechnology and bioinformatics workspace.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f8fafc",
+  "theme_color": "#111827",
+  "categories": ["education", "science", "productivity"],
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
