@@ -267,6 +267,112 @@ The current repository contains browser-native sequence functionality, AI-provid
 
 ---
 
+## 📱 Installable MARGOTS PWA
+
+MARGOTS now includes an installable Progressive Web App shell for modern browsers.
+
+### Android
+Open the HTTPS MARGOTS site in Chrome and choose **Install app** or **Add to Home screen**.
+
+### iPhone / iPad
+Open MARGOTS in Safari → **Share** → **Add to Home Screen**. This is Safari PWA installation, not an App Store native application.
+
+### Windows / macOS / Linux
+Use a browser with PWA installation support and choose **Install MARGOTS** / **Install app** when offered.
+
+The PWA caches the application shell for offline navigation. Server-backed AI and analysis require connectivity and are never falsely simulated offline.
+
+See [`docs/INSTALL.md`](docs/INSTALL.md) for the complete installation guide.
+
+---
+
+## 🔒 AI API Secret Architecture
+
+The normal user does **not** enter an AI API key. The browser only knows the public MARGOTS API endpoint.
+
+```text
+User device
+    ↓ HTTPS
+MARGOTS PWA
+    ↓ HTTPS JSON
+MARGOTS Flask backend
+    ↓ server-side SDK
+Private AI API key
+    ↓
+AI provider
+    ↓
+MARGOTS backend
+    ↓ HTTPS JSON
+MARGOTS PWA
+```
+
+**The AI API key is stored only on the backend and is never shipped with the MARGOTS application.**
+
+Provider keys are read from backend environment variables such as `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `XAI_API_KEY`. They are not stored in HTML, JavaScript, CSS, PWA assets, localStorage, sessionStorage, or the GitHub Pages build.
+
+See [`docs/SECURITY_ARCHITECTURE.md`](docs/SECURITY_ARCHITECTURE.md).
+
+---
+
+## 🛠️ Developer Setup
+
+```bash
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+python backend.py
+```
+
+In another terminal:
+
+```bash
+python -m http.server 8080 --directory docs
+```
+
+For local frontend-to-backend use, set `docs/config.js` to the local API URL. Production Pages configuration is injected by GitHub Actions through the public `MARGOTS_API_BASE_URL` repository/environment variable.
+
+Optional AI providers are configured only on the backend using a matching API key and model name. The deterministic bioinformatics layer works without an AI provider.
+
+### Tests
+
+```bash
+pytest -q tests
+node docs/tests/bio-core.test.js
+python -m compileall app.py backend.py core tools
+```
+
+### Backend API
+
+- `GET /health`
+- `POST /api/analyze`
+- `POST /api/search`
+
+Responses use a consistent `{success, data, error}` contract. The API applies validation, request limits, CORS restrictions, provider timeouts, rate limits and safe error handling.
+
+---
+
+## 🚀 Deployment
+
+**Frontend:** GitHub Pages/static HTTPS hosting.
+
+**Backend:** a real Python service such as Render, container hosting, or another HTTPS-capable platform. GitHub Pages cannot execute the Python backend.
+
+Production backend configuration should include:
+
+```text
+ENVIRONMENT=production
+ALLOWED_ORIGINS=https://meenavignesh-svg.github.io
+OPENAI_API_KEY=<server secret if used>
+OPENAI_MODEL=<server model>
+```
+
+For multiple backend instances, configure `RATELIMIT_STORAGE_URI` with shared Redis storage. Never place provider secrets in GitHub Pages configuration.
+
+See [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+---
+
 ## 🗺️ Roadmap
 
 ### Foundation
@@ -277,6 +383,10 @@ The current repository contains browser-native sequence functionality, AI-provid
 - [x] Multi-provider AI architecture
 - [x] Search API gateway foundation
 - [x] Responsive scientific interface
+- [x] Installable PWA shell
+- [x] Offline application-shell caching
+- [x] Server-side secret boundary
+- [x] Backend rate limiting and validation
 
 ### Automation
 
