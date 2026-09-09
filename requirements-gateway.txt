@@ -1,0 +1,10 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.34,<1
+httpx>=0.28,<1
+pydantic>=2.10,<3
+python-dotenv>=1.0,<2
+biopython>=1.84,<2
+pandas>=2.2,<3
+numpy>=1.26,<3
+openai>=1.40.0
+anthropic>=0.34.0

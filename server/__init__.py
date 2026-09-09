@@ -1,0 +1,1 @@
+"""MARGOTS API gateway package."""
