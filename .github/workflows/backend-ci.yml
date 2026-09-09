@@ -4,8 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,11 +15,26 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Compile Python
         run: python -m compileall app.py backend.py core tools
       - name: Run backend tests
-        run: pytest -q tests
+        run: python -m pytest -q tests
+      - name: Run browser-core test
+        run: node docs/tests/bio-core.test.js
+      - name: Verify PWA assets
+        run: |
+          test -f docs/manifest.webmanifest
+          test -f docs/sw.js
+          test -f docs/icon.svg
+          test -f docs/config.js
+          grep -q "serviceWorker" docs/api-client.js
+          grep -q "API_BASE_URL" docs/config.js
+      - name: Verify frontend contains no obvious provider secrets
+        run: |
+          if grep -RInE 'sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}' docs --exclude='*.map'; then
+            echo 'Potential frontend credential detected'; exit 1;
+          fi
