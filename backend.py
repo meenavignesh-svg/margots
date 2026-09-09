@@ -24,11 +24,11 @@ app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_REQUEST_BYTES", str(10 * 1
 
 
 def allowed_origins() -> list[str]:
-    return [x.strip() for x in os.getenv("ALLOWED_ORIGINS", "").split(",") if x.strip()]
+    configured = [x.strip() for x in os.getenv("ALLOWED_ORIGINS", "").split(",") if x.strip()]
+    return configured or ["http://localhost:8080", "http://127.0.0.1:8080", "http://localhost:8000", "http://127.0.0.1:8000"]
 
 
-CORS(app, origins=allowed_origins() or ["http://localhost:8000", "http://127.0.0.1:8000"],
-     methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type"])
+CORS(app, origins=allowed_origins(), methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type"])
 
 
 @lru_cache(maxsize=1)
