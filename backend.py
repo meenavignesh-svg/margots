@@ -13,6 +13,8 @@ import pandas as pd
 import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from core.bio_analyzer import Analyzer
 from core.llm_engine import Engine
@@ -25,10 +27,25 @@ app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_REQUEST_BYTES", str(10 * 1
 
 def allowed_origins() -> list[str]:
     configured = [x.strip() for x in os.getenv("ALLOWED_ORIGINS", "").split(",") if x.strip()]
-    return configured or ["http://localhost:8080", "http://127.0.0.1:8080", "http://localhost:8000", "http://127.0.0.1:8000"]
+    return configured or [
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
 
 
 CORS(app, origins=allowed_origins(), methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type"])
+
+# Rate limiting is intentionally server-side. Set RATELIMIT_STORAGE_URI to a
+# shared Redis URI in multi-instance production deployments.
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=[os.getenv("RATE_LIMIT_DEFAULT", "120 per minute")],
+    storage_uri=os.getenv("RATELIMIT_STORAGE_URI", "memory://"),
+    headers_enabled=True,
+)
 
 
 @lru_cache(maxsize=1)
@@ -49,7 +66,19 @@ def result_payload(result):
     return {"facts": result.facts, "outputs": result.outputs, "errors": result.errors}
 
 
+@app.after_request
+def security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if request.is_secure:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+
 @app.get("/health")
+@limiter.limit("30 per minute")
 def health():
     engine, _ = services()
     return ok({"status": "healthy", "ai_providers": engine.available()})
@@ -61,6 +90,7 @@ def root():
 
 
 @app.post("/api/search")
+@limiter.limit(os.getenv("SEARCH_RATE_LIMIT", "20 per minute"))
 def search():
     body = request.get_json(silent=True)
     query = str(body.get("query", "")).strip() if isinstance(body, dict) else ""
@@ -70,19 +100,25 @@ def search():
     if not key or not cx:
         return fail("SEARCH_NOT_CONFIGURED", "Search provider is not configured on this backend.", 503)
     try:
-        r = requests.get("https://www.googleapis.com/customsearch/v1",
-                         params={"key": key, "cx": cx, "q": query[:300], "safe": "active", "num": 8}, timeout=10)
+        r = requests.get(
+            "https://www.googleapis.com/customsearch/v1",
+            params={"key": key, "cx": cx, "q": query[:300], "safe": "active", "num": 8},
+            timeout=10,
+        )
         data = r.json()
         if not r.ok:
             return fail("SEARCH_UPSTREAM", "Search provider rejected the request.", 502)
-        items = [{"title": x.get("title", ""), "url": x.get("link", ""), "snippet": x.get("snippet", "")}
-                 for x in data.get("items", [])]
+        items = [
+            {"title": x.get("title", ""), "url": x.get("link", ""), "snippet": x.get("snippet", "")}
+            for x in data.get("items", [])
+        ]
         return ok({"query": query, "results": items})
     except requests.RequestException:
         return fail("SEARCH_TIMEOUT", "Search provider could not be reached.", 502)
 
 
 @app.post("/api/analyze")
+@limiter.limit(os.getenv("ANALYZE_RATE_LIMIT", "30 per minute"))
 def analyze():
     body = request.get_json(silent=True)
     if not isinstance(body, dict):
@@ -97,6 +133,8 @@ def analyze():
             sequence = str(body.get("sequence", ""))
             if not sequence.strip():
                 return fail("MISSING_SEQUENCE", "sequence is required.", 422)
+            if len(sequence) > 100_000:
+                return fail("SEQUENCE_TOO_LARGE", "Sequence exceeds the 100,000-character limit.", 422)
             question = body.get("question")
             if question is not None and not isinstance(question, str):
                 return fail("INVALID_QUESTION", "question must be a string.", 422)
@@ -109,6 +147,8 @@ def analyze():
             text = str(body.get("variant", "")).strip()
             if not text:
                 return fail("MISSING_VARIANT", "variant is required.", 422)
+            if len(text) > 10_000:
+                return fail("VARIANT_TOO_LARGE", "Variant description is too large.", 422)
             return ok(result_payload(analyzer.variant(text)))
 
         if mode == "free":
@@ -116,14 +156,18 @@ def analyze():
             question = str(body.get("question", "")).strip()
             if not context or not question:
                 return fail("MISSING_INPUT", "context and question are required.", 422)
+            if len(context) > 20_000 or len(question) > 5_000:
+                return fail("INPUT_TOO_LARGE", "Question or context exceeds the configured limit.", 422)
             return ok(result_payload(analyzer.free(context, question)))
 
         rows, text = body.get("rows"), body.get("text")
         if rows is not None:
-            if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
-                return fail("INVALID_ROWS", "rows must be a list of objects.", 422)
+            if not isinstance(rows, list) or len(rows) > 20_000 or not all(isinstance(row, dict) for row in rows):
+                return fail("INVALID_ROWS", "rows must be a list of at most 20,000 objects.", 422)
             df = pd.DataFrame(rows)
         elif isinstance(text, str) and text.strip():
+            if len(text) > 8 * 1024 * 1024:
+                return fail("TABLE_TOO_LARGE", "Table text exceeds the 8 MB limit.", 422)
             sep = "\t" if str(body.get("format", "csv")).lower() in {"tsv", "txt"} else ","
             df = pd.read_csv(io.StringIO(text), sep=sep)
         else:
@@ -143,6 +187,11 @@ def analyze():
 @app.errorhandler(413)
 def too_large(_):
     return fail("PAYLOAD_TOO_LARGE", "Request exceeds the configured size limit.", 413)
+
+
+@app.errorhandler(429)
+def rate_limited(_):
+    return fail("RATE_LIMITED", "Too many requests. Please wait and try again.", 429)
 
 
 @app.errorhandler(404)
