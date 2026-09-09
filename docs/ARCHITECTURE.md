@@ -1,77 +1,93 @@
 # MARGOTS Architecture
 
-MARGOTS is designed as a browser-first scientific workspace with a clear separation between deterministic analysis, provider integrations, and presentation.
+MARGOTS keeps the existing browser-first scientific workspace while adding a real server boundary for API access and AI secrets.
 
-## High-level flow
-
-```text
-User input
-   │
-   ├── Sequence / file normalization
-   │
-   ▼
-Deterministic bioinformatics layer
-   │
-   ├── composition
-   ├── GC / molecular measurements
-   ├── ORF / translation helpers
-   └── format parsing
-   │
-   ▼
-Scientific context builder
-   │
-   ├── facts
-   ├── input metadata
-   └── analysis results
-   │
-   ▼
-Provider adapter layer
-   │
-   ├── model A
-   ├── model B
-   └── model C
-   │
-   ▼
-Comparison / human review
-   │
-   ▼
-Export / history / share
-```
-
-## Design rules
-
-### 1. Deterministic first
-
-Anything that can be calculated directly from the input should be calculated locally and deterministically before an AI model is asked to reason about it.
-
-### 2. AI is advisory
-
-Provider responses are model outputs, not ground truth. The UI should make this distinction clear and preserve the underlying deterministic measurements.
-
-### 3. Provider isolation
-
-AI providers should be replaceable without changing the biological analysis engine. Model IDs and credentials belong in configuration, never in source code.
-
-### 4. Browser-first privacy
-
-The normal application path does not require a MARGOTS database. Uploaded files and local sequence calculations stay in the browser unless the user explicitly sends data to an external provider.
-
-### 5. Human-in-the-loop
-
-Scientific conclusions require human review and, where appropriate, primary literature, validated databases, experiments, or domain-expert review.
-
-## Data boundaries
+## Production flow
 
 ```text
-LOCAL / DETERMINISTIC
-- sequence parsing
-- sequence measurements
-- UI state
-- local history
-
-EXTERNAL / USER-CONTROLLED
-- AI provider requests
-- third-party literature/search APIs
+User
+ ↓
+GitHub Pages static frontend
+ ↓ HTTPS / JSON
+Flask API (backend.py)
+ ↓
+Analyzer
+ ├── deterministic sequence analysis (BioPython)
+ └── deterministic table analysis (pandas)
+ ↓
+Engine
+ ├── Anthropic / strict role
+ ├── OpenAI / context role
+ └── xAI / skeptic role
+ ↓
+JSON response
+ ↓
+Frontend result cards + history
 ```
 
-Do not use MARGOTS with protected health information, confidential datasets, or proprietary sequences unless the user has verified that the selected deployment and external providers are appropriate for that data.
+Optional search follows:
+
+```text
+Frontend → POST /api/search → Flask → Google Custom Search → safe result objects → Frontend
+```
+
+## Components
+
+### `docs/`
+Static UI for GitHub Pages. `api-client.js` is the only frontend network abstraction and reads `window.MARGOTS_CONFIG.API_BASE_URL`.
+
+### `backend.py`
+Flask HTTP API. It owns validation, request limits, CORS, deterministic analysis, search proxying, and server-side provider access.
+
+### `core/bio_analyzer.py`
+Calculates sequence and table facts. These calculations do not require an AI key.
+
+### `core/llm_engine.py`
+Creates provider clients only when both a key and model are configured. Calls have explicit timeouts and provider failures are isolated per role.
+
+### `api/` and `functions/`
+Existing deployment-specific search gateways are retained for compatibility. The canonical GitHub Pages + Render path is `backend.py` + `/api/search`.
+
+## API contract
+
+All canonical API responses have the shape:
+
+```json
+{"success":true,"data":{},"error":null}
+```
+
+or:
+
+```json
+{"success":false,"data":null,"error":{"code":"ERROR_CODE","message":"Human-readable message"}}
+```
+
+Endpoints:
+
+- `GET /health`
+- `POST /api/analyze`
+- `POST /api/search`
+
+## Security boundary
+
+```text
+Browser
+  │ public data only
+  ▼
+HTTPS API
+  │ secrets stay here
+  ├── AI providers
+  └── Google Search
+```
+
+No provider credential is embedded in the frontend. Production CORS should contain the exact deployed frontend origin(s), not a wildcard.
+
+## Deployment
+
+- Frontend: GitHub Pages from `docs/`.
+- Backend: Python-compatible host such as Render, using `gunicorn backend:app`.
+- Pages workflow injects the backend URL from the `MARGOTS_API_BASE_URL` GitHub Actions variable.
+
+## Scientific boundary
+
+Deterministic measurements are separated from AI interpretation. AI output is advisory and must not be presented as experimental, clinical, or diagnostic validation.
