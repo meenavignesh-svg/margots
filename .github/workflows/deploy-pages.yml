@@ -27,6 +27,12 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Configure production API URL
+        env:
+          MARGOTS_API_BASE_URL: ${{ vars.MARGOTS_API_BASE_URL }}
+        run: |
+          printf 'window.MARGOTS_CONFIG = { API_BASE_URL: %s };\n' "$(python -c 'import json,os; print(json.dumps(os.environ.get("MARGOTS_API_BASE_URL", "")))')" > docs/config.js
+
       - name: Upload docs site
         uses: actions/upload-pages-artifact@v3
         with:
