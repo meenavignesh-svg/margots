@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feat/fullstack-functional]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  bio-core-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run bio-core unit tests
+        run: node docs/tests/bio-core.test.js
+
+  gateway-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gateway deps
+        run: pip install -r requirements-gateway.txt pytest
+      - name: Compile Python
+        run: python -m compileall core server
+      - name: Run gateway tests
+        run: pytest -q tests/test_gateway.py
+      - name: Security pattern scan
+        run: python tools/security_scan.py || true
