@@ -11,6 +11,14 @@ services:
         value: production
       - key: ALLOWED_ORIGINS
         sync: false
+      - key: RATE_LIMIT_DEFAULT
+        value: 120 per minute
+      - key: ANALYZE_RATE_LIMIT
+        value: 30 per minute
+      - key: SEARCH_RATE_LIMIT
+        value: 20 per minute
+      - key: RATELIMIT_STORAGE_URI
+        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
