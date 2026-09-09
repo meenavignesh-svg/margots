@@ -27,7 +27,7 @@ def test_sequence_success_without_ai():
     assert response.status_code == 200
     body = response.get_json()
     assert body["success"] is True
-    assert body["data"]["facts"]["length"] == 7
+    assert body["data"]["facts"]["length"] == 8
 
 
 def test_invalid_sequence():
