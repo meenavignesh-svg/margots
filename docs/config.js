@@ -11,22 +11,23 @@ window.MARGOTS_CONFIG = {
     document.head.appendChild(link);
   };
 
-  addCss('ui-polish.css?v=12');
-  addCss('chatgpt-margots.css?v=2');
-  addCss('chatgpt-layout.css?v=2');
+  addCss('ui-polish.css?v=13');
+  addCss('chatgpt-margots.css?v=3');
+  addCss('chatgpt-layout.css?v=3');
 
   const favicon = document.createElement('link');
   favicon.rel = 'icon';
   favicon.type = 'image/svg+xml';
-  favicon.href = 'icon.svg?v=2';
+  favicon.href = 'icon.svg?v=3';
   document.head.appendChild(favicon);
 
   const appleIcon = document.createElement('link');
   appleIcon.rel = 'apple-touch-icon';
-  appleIcon.href = 'icon.svg?v=2';
+  appleIcon.href = 'icon.svg?v=3';
   document.head.appendChild(appleIcon);
 
   const loadScript = (src) => {
+    if (document.querySelector(`script[src="${src}"]`)) return;
     const script = document.createElement('script');
     script.src = src;
     script.defer = true;
@@ -34,8 +35,8 @@ window.MARGOTS_CONFIG = {
   };
 
   const loadModules = () => {
-    if (!window.MARGOTSModules) loadScript('frontend-modules.js?v=live');
-    setTimeout(() => loadScript('chatgpt-layout.js?v=1'), 250);
+    loadScript('frontend-modules.js?v=live');
+    loadScript('chatgpt-layout.js?v=3');
   };
 
   if (document.readyState === 'loading') {
