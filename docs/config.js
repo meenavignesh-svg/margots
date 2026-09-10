@@ -13,6 +13,7 @@ window.MARGOTS_CONFIG = {
 
   addCss('ui-polish.css?v=12');
   addCss('chatgpt-margots.css?v=2');
+  addCss('chatgpt-layout.css?v=2');
 
   const favicon = document.createElement('link');
   favicon.rel = 'icon';
