@@ -36,7 +36,7 @@ window.MARGOTS_CONFIG = {
 
   const loadModules = () => {
     loadScript('frontend-modules.js?v=live');
-    loadScript('chatgpt-layout.js?v=3');
+    loadScript('chatgpt-layout-boot.js?v=1');
   };
 
   if (document.readyState === 'loading') {
