@@ -39,7 +39,11 @@ class Result:
 
 
 class Engine:
-    """Provider-backed reasoning layer with Ollama as the local-first provider."""
+    """Provider-backed reasoning layer with Ollama Cloud as the preferred online provider.
+
+    If OLLAMA_API_KEY is configured, requests go directly from the MARGOTS backend to
+    https://ollama.com/api. Without it, MARGOTS falls back to a local Ollama server.
+    """
 
     def __init__(self):
         self.clients: Dict[Role, Any] = {}
@@ -49,14 +53,28 @@ class Engine:
     def _init(self):
         timeout = float(os.getenv("LLM_TIMEOUT_SECONDS", "90"))
 
-        # Ollama is the preferred local MARGOTS provider. It needs no API key and
-        # has no per-request cloud quota; usage is limited by the host machine.
-        ollama_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
-        ollama_model = os.getenv("OLLAMA_MODEL", "qwen2.5:1.5b")
-        if os.getenv("OLLAMA_ENABLED", "1").lower() not in {"0", "false", "no", "off"}:
+        # Online Ollama Cloud. The API key stays server-side in the deployment environment.
+        cloud_key = os.getenv("OLLAMA_API_KEY")
+        if cloud_key:
+            cloud_url = os.getenv("OLLAMA_CLOUD_URL", "https://ollama.com").rstrip("/")
+            cloud_model = os.getenv("OLLAMA_CLOUD_MODEL", "gpt-oss:20b")
             for role in Role:
-                self.clients[role] = {"type": "ollama", "url": ollama_url, "timeout": timeout}
-                self.models[role] = ollama_model
+                self.clients[role] = {
+                    "type": "ollama-cloud",
+                    "url": cloud_url,
+                    "key": cloud_key,
+                    "timeout": timeout,
+                }
+                self.models[role] = cloud_model
+            return
+
+        # Local Ollama fallback: no API key required.
+        if os.getenv("OLLAMA_ENABLED", "1").lower() not in {"0", "false", "no", "off"}:
+            local_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
+            local_model = os.getenv("OLLAMA_MODEL", "qwen2.5:1.5b")
+            for role in Role:
+                self.clients[role] = {"type": "ollama", "url": local_url, "timeout": timeout}
+                self.models[role] = local_model
             return
 
         # Optional cloud fallbacks for deployments that already have these configured.
@@ -93,6 +111,8 @@ class Engine:
 
     def available(self) -> List[str]:
         types = {c.get("type") for c in self.clients.values() if isinstance(c, dict)}
+        if "ollama-cloud" in types:
+            return ["ollama-cloud"]
         if "ollama" in types:
             return ["ollama"]
         if "gemini" in types:
@@ -101,8 +121,13 @@ class Engine:
 
     def _call_ollama(self, role: Role, user_content: str) -> str:
         cfg = self.clients[role]
+        headers = {"Content-Type": "application/json"}
+        if cfg.get("type") == "ollama-cloud":
+            headers["Authorization"] = f"Bearer {cfg['key']}"
+
         response = requests.post(
             f"{cfg['url']}/api/chat",
+            headers=headers,
             json={
                 "model": self.models[role],
                 "messages": [
@@ -144,7 +169,7 @@ class Engine:
 
     def _call(self, role: Role, user_content: str) -> str:
         client = self.clients[role]
-        if isinstance(client, dict) and client.get("type") == "ollama":
+        if isinstance(client, dict) and client.get("type") in {"ollama", "ollama-cloud"}:
             return self._call_ollama(role, user_content)
         if isinstance(client, dict) and client.get("type") == "gemini":
             return self._call_gemini(role, user_content)
@@ -188,7 +213,7 @@ class Engine:
     @staticmethod
     def _safe_error(exc: Exception) -> str:
         message = str(exc).replace("\n", " ").strip()
-        for secret_name in ("GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "XAI_API_KEY"):
+        for secret_name in ("OLLAMA_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "XAI_API_KEY"):
             secret = os.getenv(secret_name)
             if secret:
                 message = message.replace(secret, "[redacted]")
