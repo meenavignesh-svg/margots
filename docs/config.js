@@ -25,12 +25,16 @@ window.MARGOTS_CONFIG = {
   appleIcon.href = 'icon.svg?v=2';
   document.head.appendChild(appleIcon);
 
-  const loadModules = () => {
-    if (window.MARGOTSModules) return;
+  const loadScript = (src) => {
     const script = document.createElement('script');
-    script.src = 'frontend-modules.js?v=live';
+    script.src = src;
     script.defer = true;
     document.head.appendChild(script);
+  };
+
+  const loadModules = () => {
+    if (!window.MARGOTSModules) loadScript('frontend-modules.js?v=live');
+    setTimeout(() => loadScript('chatgpt-layout.js?v=1'), 250);
   };
 
   if (document.readyState === 'loading') {
