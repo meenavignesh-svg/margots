@@ -41,54 +41,41 @@ window.MARGOTS_CONFIG = {
           <linearGradient id="tubeB" x1="410" y1="0" x2="80" y2="510" gradientUnits="userSpaceOnUse">
             <stop stop-color="#eee7ff"/><stop offset=".16" stop-color="#8764f5"/><stop offset=".38" stop-color="#438de9"/><stop offset=".6" stop-color="#a16bf2"/><stop offset=".82" stop-color="#52d3e3"/><stop offset="1" stop-color="#eee8ff"/>
           </linearGradient>
-          <radialGradient id="blueSphere" cx="28%" cy="22%">
-            <stop stop-color="#fff"/><stop offset=".18" stop-color="#baf6ff"/><stop offset=".58" stop-color="#438fe9"/><stop offset="1" stop-color="#4658cb" stop-opacity=".55"/>
-          </radialGradient>
-          <radialGradient id="purpleSphere" cx="28%" cy="22%">
-            <stop stop-color="#fff"/><stop offset=".18" stop-color="#e7e0ff"/><stop offset=".58" stop-color="#9270f2"/><stop offset="1" stop-color="#5b50c9" stop-opacity=".55"/>
-          </radialGradient>
-          <radialGradient id="cyanSphere" cx="28%" cy="22%">
-            <stop stop-color="#fff"/><stop offset=".2" stop-color="#c6fbff"/><stop offset=".58" stop-color="#28c9c7"/><stop offset="1" stop-color="#278fc9" stop-opacity=".5"/>
-          </radialGradient>
-          <filter id="tubeShadow" x="-80%" y="-30%" width="260%" height="160%">
-            <feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="sphereShadow" x="-100%" y="-100%" width="300%" height="300%">
-            <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#355da8" flood-opacity=".22"/>
-          </filter>
+          <radialGradient id="blueSphere" cx="28%" cy="22%"><stop stop-color="#fff"/><stop offset=".18" stop-color="#baf6ff"/><stop offset=".58" stop-color="#438fe9"/><stop offset="1" stop-color="#4658cb" stop-opacity=".55"/></radialGradient>
+          <radialGradient id="purpleSphere" cx="28%" cy="22%"><stop stop-color="#fff"/><stop offset=".18" stop-color="#e7e0ff"/><stop offset=".58" stop-color="#9270f2"/><stop offset="1" stop-color="#5b50c9" stop-opacity=".55"/></radialGradient>
+          <radialGradient id="cyanSphere" cx="28%" cy="22%"><stop stop-color="#fff"/><stop offset=".2" stop-color="#c6fbff"/><stop offset=".58" stop-color="#28c9c7"/><stop offset="1" stop-color="#278fc9" stop-opacity=".5"/></radialGradient>
+          <filter id="tubeShadow" x="-80%" y="-30%" width="260%" height="160%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="sphereShadow" x="-100%" y="-100%" width="300%" height="300%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#355da8" flood-opacity=".22"/></filter>
         </defs>
-
-        <!-- subtle orbital atmosphere -->
         <ellipse class="orbit" cx="250" cy="255" rx="215" ry="125" transform="rotate(-22 250 255)"/>
         <ellipse class="orbit" cx="250" cy="255" rx="185" ry="72" transform="rotate(30 250 255)" opacity=".55"/>
-
-        <!-- two continuous glass ribbons; NO horizontal DNA rungs -->
         <path class="tube a" d="M125 18 C410 70 410 142 125 194 C-160 246 -160 318 125 370 C410 422 410 458 350 492"/>
         <path class="tube b" d="M375 18 C90 70 90 142 375 194 C660 246 660 318 375 370 C90 422 90 458 150 492"/>
-
-        <!-- photographic glass highlights -->
         <path class="shine" d="M118 18 C396 70 396 137 126 188 C-140 239 -140 309 126 360"/>
         <path class="shine b" d="M382 18 C104 70 104 137 374 188 C640 239 640 309 374 360"/>
-        <path class="shine" d="M126 370 C390 418 394 451 350 484"/>
-        <path class="shine b" d="M374 370 C110 418 106 451 150 484"/>
-
-        <!-- floating molecular spheres from the reference aesthetic -->
+        <path class="shine" d="M126 370 C390 418 394 451 350 484"/><path class="shine b" d="M374 370 C110 418 106 451 150 484"/>
         <g>
-          <circle class="molecule" fill="url(#blueSphere)" cx="82" cy="82" r="19"/>
-          <circle class="molecule" fill="url(#purpleSphere)" cx="425" cy="112" r="15"/>
-          <circle class="molecule" fill="url(#cyanSphere)" cx="63" cy="304" r="12"/>
-          <circle class="molecule" fill="url(#purpleSphere)" cx="426" cy="339" r="21"/>
-          <circle class="molecule" fill="url(#blueSphere)" cx="403" cy="48" r="8"/>
-          <circle class="molecule" fill="url(#cyanSphere)" cx="92" cy="417" r="7"/>
-          <circle class="molecule" fill="url(#purpleSphere)" cx="453" cy="216" r="7"/>
-          <circle class="molecule" fill="url(#cyanSphere)" cx="43" cy="220" r="6"/>
-          <circle class="molecule" fill="url(#blueSphere)" cx="103" cy="150" r="6"/>
-          <circle class="molecule" fill="url(#purpleSphere)" cx="393" cy="278" r="6"/>
+          <circle class="molecule" fill="url(#blueSphere)" cx="82" cy="82" r="19"/><circle class="molecule" fill="url(#purpleSphere)" cx="425" cy="112" r="15"/>
+          <circle class="molecule" fill="url(#cyanSphere)" cx="63" cy="304" r="12"/><circle class="molecule" fill="url(#purpleSphere)" cx="426" cy="339" r="21"/>
+          <circle class="molecule" fill="url(#blueSphere)" cx="403" cy="48" r="8"/><circle class="molecule" fill="url(#cyanSphere)" cx="92" cy="417" r="7"/>
+          <circle class="molecule" fill="url(#purpleSphere)" cx="453" cy="216" r="7"/><circle class="molecule" fill="url(#cyanSphere)" cx="43" cy="220" r="6"/>
+          <circle class="molecule" fill="url(#blueSphere)" cx="103" cy="150" r="6"/><circle class="molecule" fill="url(#purpleSphere)" cx="393" cy="278" r="6"/>
         </g>
-        <g opacity=".25" stroke="#62b9eb" stroke-width="1.5">
-          <line x1="82" y1="82" x2="125" y2="53"/><line x1="425" y1="112" x2="375" y2="137"/><line x1="426" y1="339" x2="375" y2="363"/>
-        </g>
+        <g opacity=".25" stroke="#62b9eb" stroke-width="1.5"><line x1="82" y1="82" x2="125" y2="53"/><line x1="425" y1="112" x2="375" y2="137"/><line x1="426" y1="339" x2="375" y2="363"/></g>
       </svg>`;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+
+// Load the live frontend module bridge after the API client is available.
+(() => {
+  const load = () => {
+    if (window.MARGOTSModules) return;
+    const s = document.createElement('script');
+    s.src = 'frontend-modules.js?v=live';
+    s.defer = true;
+    document.head.appendChild(s);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, {once:true});
+  else load();
 })();
