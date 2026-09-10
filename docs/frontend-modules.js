@@ -120,6 +120,16 @@
     }, true);
   }
 
-  function boot(){installStyles();captureClicks();window.MARGOTSModules={theme,settings,keys,literature,backendAnalyze};}
+  function boot(){
+    installStyles();
+    captureClicks();
+    window.MARGOTSModules={theme,settings,keys,literature,backendAnalyze};
+    if(!window.MARGOTSSamePage){
+      const s=document.createElement('script');
+      s.src='same-page-workspace.js?v=1';
+      s.defer=true;
+      document.head.appendChild(s);
+    }
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
