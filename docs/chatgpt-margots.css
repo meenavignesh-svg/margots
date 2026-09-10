@@ -1,0 +1,57 @@
+/* MARGOTS ChatGPT-inspired research workspace: single page, dark, focused, spiral-wave visual. */
+:root{--cg-bg:#070d19;--cg-sidebar:#0a1220;--cg-panel:#0d1728;--cg-panel2:#101d31;--cg-line:#20314b;--cg-text:#eef5ff;--cg-muted:#91a3bd;--cg-blue:#4f8cff;--cg-violet:#8a63ff;--cg-cyan:#31d5e8}
+body:has(#mx-shell){background:var(--cg-bg)!important;color:var(--cg-text)!important}
+body:has(#mx-shell) .landing{display:none!important}
+body:has(#mx-shell) .workspace-app{display:block!important;min-height:100vh;background:var(--cg-bg)!important}
+body:has(#mx-shell) .appbar{display:none!important}
+body:has(#mx-shell) .mx{max-width:none!important;padding:0 0 80px!important;min-height:100vh;background:radial-gradient(circle at 64% 10%,rgba(75,91,255,.10),transparent 28%),linear-gradient(180deg,#080f1d,#070d19 70%)}
+body:has(#mx-shell) .mx:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(100,140,210,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(100,140,210,.08) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,black,transparent 75%)}
+body:has(#mx-shell) .mx-head{position:sticky;top:0;height:68px;padding:0 26px;background:rgba(7,13,25,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--cg-line);z-index:50}
+body:has(#mx-shell) .mx-head>div:first-child{display:flex;align-items:center;gap:12px}
+body:has(#mx-shell) .mx-logo{font-size:17px;color:#fff;display:flex;align-items:center;gap:10px}
+body:has(#mx-shell) .mx-logo:before{content:"";width:30px;height:30px;border-radius:9px;background:#111c30 url('icon.svg') center/24px 24px no-repeat;border:1px solid #2a4063;box-shadow:0 0 22px rgba(80,103,255,.22)}
+body:has(#mx-shell) .mx-sub{color:#71849f;font-size:8px;letter-spacing:.14em}
+body:has(#mx-shell) .mx-live{margin-left:auto;background:#0c2929;color:#45dfbd;border:1px solid #1b7469;padding:7px 12px}
+body:has(#mx-shell) .mx-head nav{margin-left:10px}
+body:has(#mx-shell) .mx-head nav a{color:#8ea1bc}
+body:has(#mx-shell) .mx-head nav a:hover{background:#13213a;color:#cfe1ff}
+body:has(#mx-shell) .mx-hero{display:block;position:relative;max-width:1120px;margin:0 auto;padding:62px 24px 20px}
+body:has(#mx-shell) .mx-banner{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(14,26,45,.94),rgba(8,16,30,.92))!important;border:1px solid #203554!important;border-radius:28px!important;padding:34px!important;box-shadow:0 30px 100px rgba(0,0,0,.28)!important}
+body:has(#mx-shell) .mx-banner:before{content:"";position:absolute;left:-3%;right:-3%;top:5px;height:300px;background:url('spiral-wave.svg') center/cover no-repeat;opacity:.68;pointer-events:none;animation:cgWave 12s ease-in-out infinite}
+body:has(#mx-shell) .mx-banner:after{content:"";position:absolute;width:340px;height:340px;right:8%;top:0;background:radial-gradient(circle,rgba(105,79,255,.18),transparent 68%);pointer-events:none}
+body:has(#mx-shell) .mx-banner>*{position:relative;z-index:2}
+body:has(#mx-shell) .mx-eyebrow{color:#64dceb}
+body:has(#mx-shell) .mx-banner h1{max-width:760px;color:#f4f8ff;font-size:clamp(34px,5vw,60px);margin-top:70px}
+body:has(#mx-shell) .mx-banner h1 span{background:linear-gradient(100deg,#55cfff,#6975ff 48%,#b067ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+body:has(#mx-shell) .mx-banner p{color:#98a9c1;max-width:780px;font-size:13px}
+body:has(#mx-shell) .mx-pill{background:#101e33;border-color:#263a59;color:#a9b9d0}
+body:has(#mx-shell) .mx-quick{display:none!important}
+body:has(#mx-shell) .mx-grid{max-width:1120px;margin:0 auto;display:block;padding:0 24px}
+body:has(#mx-shell) .mx-side{position:fixed;right:22px;top:88px;width:250px;display:none}
+body:has(#mx-shell) .mx-grid>main{max-width:920px;margin:auto}
+body:has(#mx-shell) .mx-card{background:rgba(12,22,38,.94)!important;border:1px solid #1f314b!important;border-radius:20px!important;color:var(--cg-text);box-shadow:0 18px 60px rgba(0,0,0,.22)!important}
+body:has(#mx-shell) .mx-card h2{color:#f0f5ff}
+body:has(#mx-shell) .mx-card>p{color:#899cb7}
+body:has(#mx-shell) .mx-modes{border-bottom:1px solid #1b2a41;padding-bottom:13px}
+body:has(#mx-shell) .mx-mode,body:has(#mx-shell) .mx-btn{background:#101c2f;border-color:#293d5b;color:#a9b9d1}
+body:has(#mx-shell) .mx-mode.active{background:#18386a;border-color:#376fca;color:#dceaff}
+body:has(#mx-shell) .mx-btn.primary{background:linear-gradient(100deg,#347fff,#7957ff);color:white;border:0}
+body:has(#mx-shell) .mx-field label{color:#8fa4c0}
+body:has(#mx-shell) .mx-field textarea,body:has(#mx-shell) .mx-field input,body:has(#mx-shell) .mx-field select{background:#091321!important;color:#edf5ff!important;border-color:#253a57!important}
+body:has(#mx-shell) .mx-field textarea::placeholder,body:has(#mx-shell) .mx-field input::placeholder{color:#61748e}
+body:has(#mx-shell) .mx-result,body:has(#mx-shell) .mx-paper,body:has(#mx-shell) .mx-kpi{background:#0b1626!important;border-color:#20334f!important;color:#e7f0ff}
+body:has(#mx-shell) .mx-facts{background:#07111f;border-color:#1e314a;color:#b8c9df}
+body:has(#mx-shell) .mx-ai{background:linear-gradient(90deg,#10152b,#101a2d);border-left-color:#8268ff}
+body:has(#mx-shell) .mx-status{background:#0b2525;border-color:#1b514b;color:#8db8af}
+body:has(#mx-shell) .mx-chat{max-height:none;min-height:80px}
+body:has(#mx-shell) .mx-msg{background:#101c2e;color:#c2d0e2;border:1px solid #20334e}
+body:has(#mx-shell) .mx-msg.user{background:#122a4b;color:#d7e7ff;border-color:#28518a}
+body:has(#mx-shell) .mx-msg.ai{background:#18152d;color:#ddd7ff;border-color:#3a315f}
+body:has(#mx-shell) .mx-note,body:has(#mx-shell) .mx-muted{color:#7387a4}
+body:has(#mx-shell) .mx-card+.mx-card{margin-top:16px}
+body:has(#mx-shell) #mx-literature .mx-actions{align-items:center}
+body:has(#mx-shell) #mx-literature .mx-actions input{background:#091321!important;color:#eef5ff!important;border-color:#253a57!important}
+@keyframes cgWave{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-10px,5px,0) scale(1.025)}}
+@media(min-width:1250px){body:has(#mx-shell) .mx-grid>main{max-width:920px}body:has(#mx-shell) .mx-side{display:block}}
+@media(max-width:760px){body:has(#mx-shell) .mx-head{padding:0 14px}.mx-head nav{display:none!important}body:has(#mx-shell) .mx-hero{padding:30px 14px 12px}body:has(#mx-shell) .mx-banner{padding:22px!important}body:has(#mx-shell) .mx-banner h1{margin-top:55px;font-size:38px}body:has(#mx-shell) .mx-grid{padding:0 14px}}
+@media(prefers-reduced-motion:reduce){body:has(#mx-shell) .mx-banner:before{animation:none}}
