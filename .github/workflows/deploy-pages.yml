@@ -31,7 +31,17 @@ jobs:
         env:
           MARGOTS_API_BASE_URL: ${{ vars.MARGOTS_API_BASE_URL }}
         run: |
-          printf 'window.MARGOTS_CONFIG = { API_BASE_URL: %s };\n' "$(python -c 'import json,os; print(json.dumps(os.environ.get("MARGOTS_API_BASE_URL", "")))')" > docs/config.js
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          path = Path('docs/config.js')
+          text = path.read_text(encoding='utf-8')
+          url = os.environ.get('MARGOTS_API_BASE_URL', '').strip().rstrip('/')
+          if not url:
+              url = 'https://margots-api.onrender.com'
+          text = text.replace('API_BASE_URL: ""', 'API_BASE_URL: ' + repr(url))
+          path.write_text(text, encoding='utf-8')
+          PY
 
       - name: Upload docs site
         uses: actions/upload-pages-artifact@v3
