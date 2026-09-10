@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List
 
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,7 +42,8 @@ class Engine:
     """Real provider-backed reasoning layer.
 
     Deterministic bioinformatics produces measurements; this class sends those measurements
-    to configured trained foundation models for interpretation. No hardcoded AI answer is used.
+    to a configured foundation model for interpretation. Gemini is the primary backend
+    provider for MARGOTS. No hardcoded AI answer is used.
     """
 
     def __init__(self):
@@ -52,6 +54,16 @@ class Engine:
     def _init(self):
         timeout = float(os.getenv("LLM_TIMEOUT_SECONDS", "45"))
 
+        # Gemini is the primary MARGOTS server-side AI provider.
+        key = os.getenv("GEMINI_API_KEY")
+        model = os.getenv("GEMINI_MODEL") or "gemini-2.5-flash"
+        if key:
+            for role in Role:
+                self.clients[role] = {"type": "gemini", "key": key, "timeout": timeout}
+                self.models[role] = model
+            return
+
+        # Optional fallbacks for deployments that already have these configured.
         key = os.getenv("ANTHROPIC_API_KEY")
         model = os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-4-5"
         if key:
@@ -78,9 +90,39 @@ class Engine:
             self.models[Role.SKEPTIC] = model or "grok-4-1-fast-reasoning"
 
     def available(self) -> List[str]:
+        if any(isinstance(c, dict) and c.get("type") == "gemini" for c in self.clients.values()):
+            return ["gemini"]
         return [r.value for r in self.clients]
 
+    def _call_gemini(self, role: Role, user_content: str) -> str:
+        cfg = self.clients[role]
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{self.models[role]}:generateContent"
+        )
+        prompt = f"{PROMPTS[role]}\n\n{user_content}"
+        response = requests.post(
+            url,
+            params={"key": cfg["key"]},
+            json={
+                "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 1800},
+            },
+            timeout=cfg["timeout"],
+        )
+        response.raise_for_status()
+        data = response.json()
+        candidates = data.get("candidates") or []
+        parts = (candidates[0].get("content", {}).get("parts", []) if candidates else [])
+        text = "".join(p.get("text", "") for p in parts if isinstance(p, dict))
+        if not text:
+            raise RuntimeError("Gemini returned an empty response")
+        return text
+
     def _call(self, role: Role, user_content: str) -> str:
+        if isinstance(self.clients[role], dict) and self.clients[role].get("type") == "gemini":
+            return self._call_gemini(role, user_content)
+
         client = self.clients[role]
         model = self.models[role]
         system = PROMPTS[role]
@@ -95,7 +137,6 @@ class Engine:
             )
             text = "".join(getattr(block, "text", "") for block in response.content)
         elif role == Role.CONTEXT:
-            # OpenAI's current SDK supports the Responses API for current models.
             response = client.responses.create(
                 model=model,
                 instructions=system,
@@ -145,7 +186,7 @@ class Engine:
     @staticmethod
     def _safe_error(exc: Exception) -> str:
         message = str(exc).replace("\n", " ").strip()
-        for secret_name in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "XAI_API_KEY"):
+        for secret_name in ("GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "XAI_API_KEY"):
             secret = os.getenv(secret_name)
             if secret:
                 message = message.replace(secret, "[redacted]")
