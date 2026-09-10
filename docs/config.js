@@ -1,5 +1,6 @@
 window.MARGOTS_CONFIG = {
-  API_BASE_URL: ""
+  API_BASE_URL: "",
+  GOOGLE_CLIENT_ID: ""
 };
 
 /* MARGOTS UI boot: keep the existing page functional, but open the real workspace immediately. */
@@ -17,6 +18,7 @@ window.MARGOTS_CONFIG = {
   addCss('ui-polish.css?v=15');
   addCss('chatgpt-margots.css?v=5');
   addCss('chatgpt-layout.css?v=5');
+  addCss('google-login.css?v=1');
 
   const favicon = document.createElement('link');
   favicon.rel = 'icon';
@@ -50,6 +52,7 @@ window.MARGOTS_CONFIG = {
     loadScript('frontend-modules.js?v=live');
     loadScript('same-page-workspace.js?v=5');
     loadScript('chatgpt-layout-boot.js?v=3');
+    loadScript('google-login.js?v=1');
 
     /* Do not wait for a Start button: MARGOTS is the workspace. */
     openWorkspace();
