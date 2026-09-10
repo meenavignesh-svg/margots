@@ -2,28 +2,31 @@ window.MARGOTS_CONFIG = {
   API_BASE_URL: ""
 };
 
-/* MARGOTS production UI loader. */
+/* MARGOTS UI boot: keep the existing page functional, but open the real workspace immediately. */
 (() => {
+  'use strict';
+
   const addCss = (href) => {
+    if (document.querySelector(`link[href="${href}"]`)) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = href;
     document.head.appendChild(link);
   };
 
-  addCss('ui-polish.css?v=14');
-  addCss('chatgpt-margots.css?v=4');
-  addCss('chatgpt-layout.css?v=4');
+  addCss('ui-polish.css?v=15');
+  addCss('chatgpt-margots.css?v=5');
+  addCss('chatgpt-layout.css?v=5');
 
   const favicon = document.createElement('link');
   favicon.rel = 'icon';
   favicon.type = 'image/svg+xml';
-  favicon.href = 'icon.svg?v=4';
+  favicon.href = 'icon.svg?v=5';
   document.head.appendChild(favicon);
 
   const appleIcon = document.createElement('link');
   appleIcon.rel = 'apple-touch-icon';
-  appleIcon.href = 'icon.svg?v=4';
+  appleIcon.href = 'icon.svg?v=5';
   document.head.appendChild(appleIcon);
 
   const loadScript = (src) => {
@@ -34,15 +37,29 @@ window.MARGOTS_CONFIG = {
     document.head.appendChild(script);
   };
 
-  const loadModules = () => {
+  const openWorkspace = () => {
+    const landing = document.querySelector('.landing');
+    const app = document.querySelector('.workspace-app');
+    if (!landing || !app) return false;
+    landing.classList.add('hide');
+    app.classList.add('show');
+    return true;
+  };
+
+  const boot = () => {
     loadScript('frontend-modules.js?v=live');
-    loadScript('same-page-workspace.js?v=4');
-    loadScript('chatgpt-layout-boot.js?v=2');
+    loadScript('same-page-workspace.js?v=5');
+    loadScript('chatgpt-layout-boot.js?v=3');
+
+    /* Do not wait for a Start button: MARGOTS is the workspace. */
+    openWorkspace();
+    setTimeout(openWorkspace, 50);
+    setTimeout(openWorkspace, 250);
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadModules, { once: true });
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {
-    loadModules();
+    boot();
   }
 })();
