@@ -9,6 +9,8 @@ services:
     envVars:
       - key: ENVIRONMENT
         value: production
+      - key: REQUIRE_AI
+        value: "1"
       - key: ALLOWED_ORIGINS
         sync: false
       - key: RATE_LIMIT_DEFAULT
@@ -22,7 +24,7 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
-        sync: false
+        value: gpt-5.6-luna
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: ANTHROPIC_MODEL
@@ -30,8 +32,4 @@ services:
       - key: XAI_API_KEY
         sync: false
       - key: XAI_MODEL
-        sync: false
-      - key: GOOGLE_SEARCH_API_KEY
-        sync: false
-      - key: GOOGLE_SEARCH_ENGINE_ID
         sync: false
